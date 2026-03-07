@@ -25,23 +25,15 @@ const Cube = ({ position, size, color }) => {
     </mesh>
   )
 }
-function Box() {
-  return (
-    <mesh>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color="orange" metalness={0.4} roughness={0.3} />
-    </mesh>
-  );
-}
 
 export default function App() {
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
-      <Canvas camera={{ position: [2, 2, 2], fov: 50 }}>
+      <Canvas camera={{ position: [2, 2, 2], fov: 80 }}>
         <ambientLight intensity={0.6} />
         <directionalLight position={[5, 5, 5]} intensity={1} />
         <Cube position={[1, 0, 0]} size={[1, 1, 1]} color="blue" />
-        <OrbitControls />
+        {/* <OrbitControls /> */}
       </Canvas>
     </div>
   );

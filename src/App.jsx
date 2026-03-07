@@ -1,27 +1,26 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { useRef } from "react";
+import {useState} from 'react';
 
 const Cube = ({ position, size, color }) => {
   const meshRef = useRef(null);
+  const [hovered, setHovered] = useState(false);
 
   return (
     <mesh
       ref={meshRef}
       position={position}
-      onPointerEnter={() => {
-        if (meshRef.current) {
-          meshRef.current.material.color.set("hotpink");
-        }
+      onPointerEnter={(event) => {
+        event.stopPropagation();
+        setHovered(true);
       }}
       onPointerLeave={() => {
-        if (meshRef.current) {
-          meshRef.current.material.color.set(color);
-        }
+        setHovered(false);
       }}
     >
       <boxGeometry args={size} />
-      <meshStandardMaterial color={color} />
+      <meshStandardMaterial color={hovered ? "hotpink" : color} />
     </mesh>
   )
 }

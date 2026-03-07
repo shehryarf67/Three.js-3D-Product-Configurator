@@ -6,6 +6,7 @@ import {useState} from 'react';
 const Cube = ({ position, size, color }) => {
   const meshRef = useRef(null);
   const [hovered, setHovered] = useState(false);
+  const [clicked, setClicked] = useState(false);
 
   return (
     <mesh
@@ -18,6 +19,11 @@ const Cube = ({ position, size, color }) => {
       onPointerLeave={() => {
         setHovered(false);
       }}
+      onClick={(event) => {
+        event.stopPropagation();
+        setClicked(!clicked);
+      }}
+      scale={clicked ? 1.5 : 1}
     >
       <boxGeometry args={size} />
       <meshStandardMaterial color={hovered ? "hotpink" : color} />

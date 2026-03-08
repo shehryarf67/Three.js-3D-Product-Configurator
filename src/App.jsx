@@ -2,11 +2,13 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { useRef } from "react";
 import {useState} from 'react';
+import { IoLogoCodepen } from "react-icons/io";
 
 const Navbar = () => {
   return(
     <header>
       <nav>
+        <IoLogoCodepen size={64} />
         <ul>
           {[
             { label : 'Home'},
@@ -22,6 +24,7 @@ const Navbar = () => {
     </header>
   )
 }
+
 const Cube = ({ position, size, color }) => {
   const meshRef = useRef(null);
   const [hovered, setHovered] = useState(false);

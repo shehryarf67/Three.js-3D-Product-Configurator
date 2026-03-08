@@ -3,6 +3,25 @@ import { OrbitControls } from "@react-three/drei";
 import { useRef } from "react";
 import {useState} from 'react';
 
+const Navbar = () => {
+  return(
+    <header>
+      <nav>
+        <ul>
+          {[
+            { label : 'Home'},
+            { label : 'About'},
+            { label : 'Contact'},
+          ].map((item) => (
+            <li key={item.label}>
+              <a href={item.label}>{item.label}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </header>
+  )
+}
 const Cube = ({ position, size, color }) => {
   const meshRef = useRef(null);
   const [hovered, setHovered] = useState(false);
@@ -34,6 +53,7 @@ const Cube = ({ position, size, color }) => {
 export default function App() {
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
+      <Navbar /> 
       <Canvas camera={{ position: [2, 2, 2], fov: 80 }}>
         <ambientLight intensity={0.6} />
         <directionalLight position={[5, 5, 5]} intensity={1} />

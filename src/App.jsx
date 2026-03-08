@@ -1,19 +1,18 @@
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-import { useRef } from "react";
-import {useState} from 'react';
+import { OrbitControls, DragControls } from "@react-three/drei";
+import { useRef, useState } from "react";
 import { IoLogoCodepen } from "react-icons/io";
 
 const Navbar = () => {
-  return(
+  return (
     <header>
       <nav>
         <IoLogoCodepen size={64} />
         <ul>
           {[
-            { label : 'Home'},
-            { label : 'About'},
-            { label : 'Contact'},
+            { label: "Home" },
+            { label: "About" },
+            { label: "Contact" },
           ].map((item) => (
             <li key={item.label}>
               <a href={item.label}>{item.label}</a>
@@ -22,8 +21,8 @@ const Navbar = () => {
         </ul>
       </nav>
     </header>
-  )
-}
+  );
+};
 
 const Cube = ({ position, size, color }) => {
   const meshRef = useRef(null);
@@ -50,18 +49,22 @@ const Cube = ({ position, size, color }) => {
       <boxGeometry args={size} />
       <meshStandardMaterial color={hovered ? "hotpink" : color} />
     </mesh>
-  )
-}
+  );
+};
 
 export default function App() {
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
-      <Navbar /> 
+      <Navbar />
       <Canvas camera={{ position: [2, 2, 2], fov: 80 }}>
         <ambientLight intensity={0.6} />
         <directionalLight position={[5, 5, 5]} intensity={1} />
-        <Cube position={[1, 0, 0]} size={[1, 1, 1]} color="blue" />
-        {/* <OrbitControls /> */}
+
+        <DragControls>
+          <Cube position={[1, 0, 0]} size={[1, 1, 1]} color="blue" />
+        </DragControls>
+
+        <OrbitControls />
       </Canvas>
     </div>
   );

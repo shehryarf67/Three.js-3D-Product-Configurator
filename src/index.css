@@ -41,6 +41,37 @@ ul {
   padding: 0;
 }
 
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  min-height: 5vh;
+  padding: 1rem;
+}
+
+.hero-content {
+  max-width: 500px;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+}
+
+.hero-content p {
+  margin: 1rem 0;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.hero-3d {
+  width: 50%;
+  height: 500px;
+}
+
 body {
   margin: 0;
   display: flex;

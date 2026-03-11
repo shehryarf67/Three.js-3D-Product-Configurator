@@ -24,6 +24,29 @@ const Navbar = () => {
   );
 };
 
+const Hero = () => {
+  return (
+    <section className="hero">
+
+      <div className="hero-content">
+
+        <h1>Interactive 3D Product Experiences</h1>
+
+        <p>
+          Check out different products using a 3D immersive experience. 
+        </p>
+
+        <div className="hero-buttons">
+          <button>Get Started</button>
+          <button>Learn More</button>
+        </div>
+
+      </div>
+
+    </section>
+  );
+};
+
 const Cube = ({ position, size, color }) => {
   const meshRef = useRef(null);
   const [hovered, setHovered] = useState(false);
@@ -47,7 +70,7 @@ const Cube = ({ position, size, color }) => {
       scale={clicked ? 1.5 : 1}
     >
       <boxGeometry args={size} />
-      <meshStandardMaterial color={hovered ? "hotpink" : color} />
+      <meshStandardMaterial color={hovered ? "limegreen" : color} />
     </mesh>
   );
 };
@@ -56,15 +79,16 @@ export default function App() {
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <Navbar />
+      <Hero />
       <Canvas camera={{ position: [2, 2, 2], fov: 80 }}>
         <ambientLight intensity={0.6} />
         <directionalLight position={[5, 5, 5]} intensity={1} />
 
         <DragControls>
-          <Cube position={[1, 0, 0]} size={[1, 1, 1]} color="blue" />
+          <Cube position={[0, 0, 0]} size={[1, 1, 1]} color="blue" />
         </DragControls>
 
-        <OrbitControls />
+        {/* <OrbitControls /> */}
       </Canvas>
     </div>
   );

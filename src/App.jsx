@@ -27,6 +27,7 @@ const Navbar = () => {
 
 const Hero = () => {
   const [cubeColor, setCubeColor] = useState("red");
+  const [cubeSize, setCubeSize] = useState([1, 1, 1]);
 
   return (
     <section className="hero">
@@ -54,7 +55,7 @@ const Hero = () => {
             {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} castShadow /> */}
 
             <OrbitControls minDistance={2} maxDistance={4}/>
-            <Cube position={[0, 0, 0]} size={[1, 1, 1]} color={cubeColor} />
+            <Cube position={[0, 0, 0]} size={cubeSize} color={cubeColor} />
 
           </Canvas>
         </div>
@@ -62,6 +63,9 @@ const Hero = () => {
         <div className="toggle-button">
           <button id="Color-toggler" onClick={() => setCubeColor(cubeColor === "red" ? "limegreen" : "red")}>
             Toggle Color
+          </button>
+          <button id="Size-toggler" onClick={() => setCubeSize(cubeSize[0] === 1 ? [2, 2, 2] : [1, 1, 1])}>
+            Change Size
           </button>
         </div>
 
@@ -78,21 +82,9 @@ const Cube = ({ position, size, color }) => {
     <mesh
       ref={meshRef}
       position={position}
-      onPointerEnter={(event) => {
-        event.stopPropagation();
-        setHovered(true);
-      }}
-      onPointerLeave={() => {
-        setHovered(false);
-      }}
-      onClick={(event) => {
-        event.stopPropagation();
-        setClicked(!clicked);
-      }}
-      scale={clicked ? 1.5 : 1}
     >
       <boxGeometry args={size} />
-      <meshStandardMaterial color={hovered ? "limegreen" : color} />
+      <meshStandardMaterial color={color} />
     </mesh>
   );
 };

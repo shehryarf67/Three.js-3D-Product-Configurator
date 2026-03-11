@@ -26,6 +26,8 @@ const Navbar = () => {
 };
 
 const Hero = () => {
+  const [cubeColor, setCubeColor] = useState("red");
+
   return (
     <section className="hero">
 
@@ -52,9 +54,15 @@ const Hero = () => {
             {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} castShadow /> */}
 
             <OrbitControls minDistance={2} maxDistance={4}/>
-            <Cube position={[0, 0, 0]} size={[1, 1, 1]} color="blue" />
+            <Cube position={[0, 0, 0]} size={[1, 1, 1]} color={cubeColor} />
 
           </Canvas>
+        </div>
+
+        <div className="toggle-button">
+          <button id="Color-toggler" onClick={() => setCubeColor(cubeColor === "red" ? "limegreen" : "red")}>
+            Toggle Color
+          </button>
         </div>
 
     </section>

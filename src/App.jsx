@@ -75,8 +75,6 @@ const Hero = () => {
 
 const Cube = ({ position, size, color }) => {
   const meshRef = useRef(null);
-  const [hovered, setHovered] = useState(false);
-  const [clicked, setClicked] = useState(false);
 
   return (
     <mesh
@@ -112,7 +110,9 @@ export default function App() {
     <div style={{ width: "100vw", height: "100vh" }}>
       <Navbar />
       <Hero />
+      <div className="footer">© 2026 My Three.js Scene</div>
 
     </div>
+    
   );
 }

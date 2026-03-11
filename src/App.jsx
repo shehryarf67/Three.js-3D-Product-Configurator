@@ -51,11 +51,9 @@ const Hero = () => {
             {/* <SceneLights /> */}
             {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} castShadow /> */}
 
-            <DragControls>
-              <Cube position={[0, 0, 0]} size={[1, 1, 1]} color="blue" />
-            </DragControls>
+            <OrbitControls minDistance={2} maxDistance={4}/>
+            <Cube position={[0, 0, 0]} size={[1, 1, 1]} color="blue" />
 
-            {/* <OrbitControls /> */}
           </Canvas>
         </div>
 

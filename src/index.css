@@ -55,15 +55,19 @@ ul {
 
 .hero-content h1 {
   font-size: 3rem;
+  margin-bottom: 0.5rem;
+  margin-left: 1rem;
 }
 
 .hero-content p {
-  margin: 1rem 0;
+  margin: 0.5rem 0 1rem 0;
+  margin-left: 1rem;
 }
 
 .hero-buttons {
   display: flex;
   gap: 1rem;
+  margin-left: 1rem;
 }
 
 .hero-3d {
@@ -75,10 +79,20 @@ ul {
 
 .about{
   display: flex;
-  justify-content: space-between;
   flex-direction: column;
-  min-height: 10vh;
+  min-height: 1vh;
   padding: 1rem;
+  margin-left: 1rem;
+}
+
+.about h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.about p {
+  margin: 0.5rem 0 1rem 0;
+  font-size: 1.2rem;
 }
 
 body {
@@ -91,7 +105,8 @@ body {
 
 h1 {
   font-size: 3.2em;
-  line-height: 1.1;
+  line-height: 1.0;
+  padding: 0.5rem 0;
 }
 
 .toggle-button {

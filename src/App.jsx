@@ -41,33 +41,32 @@ const Hero = () => {
         </p>
 
         <div className="hero-buttons">
-          <button>Get Started</button>
-          <button>Learn More</button>
+          <button onClick={() => document.getElementById('canvas').scrollIntoView({ behavior: 'smooth' })}>Get Started</button>
+          <button onClick={() => document.getElementById('about').scrollIntoView({ behavior: 'smooth' })}>Learn More</button>
         </div>
 
       </div>
 
-      <div className="hero-3d">
-          <Canvas camera={{ position: [2, 2, 2], fov: 80 }}>
-            <ambientLight intensity={0.6} />
-            <directionalLight position={[5, 5, 5]} intensity={1} />
-            {/* <SceneLights /> */}
-            {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} castShadow /> */}
+      <div className="hero-3d" id="canvas">
+        <Canvas camera={{ position: [2, 2, 2], fov: 80 }}>
+          <ambientLight intensity={0.6} />
+          <directionalLight position={[5, 5, 5]} intensity={1} />
+          {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} castShadow /> */}
 
-            <OrbitControls minDistance={2} maxDistance={4}/>
-            <Cube position={[0, 0, 0]} size={cubeSize} color={cubeColor} />
+          <OrbitControls minDistance={2} maxDistance={4} />
+          <Cube position={[0, 0, 0]} size={cubeSize} color={cubeColor} />
 
-          </Canvas>
-        </div>
+        </Canvas>
+      </div>
 
-        <div className="toggle-button">
-          <button id="Color-toggler" onClick={() => setCubeColor(cubeColor === "red" ? "limegreen" : "red")}>
-            Toggle Color
-          </button>
-          <button id="Size-toggler" onClick={() => setCubeSize(cubeSize[0] === 1 ? [2, 2, 2] : [1, 1, 1])}>
-            Change Size
-          </button>
-        </div>
+      <div className="toggle-button">
+        <button id="Color-toggler" onClick={() => setCubeColor(cubeColor === "red" ? "limegreen" : "red")}>
+          Toggle Color
+        </button>
+        <button id="Size-toggler" onClick={() => setCubeSize(cubeSize[0] === 1 ? [2, 2, 2] : [1, 1, 1])}>
+          Change Size
+        </button>
+      </div>
 
     </section>
   );
@@ -75,7 +74,7 @@ const Hero = () => {
 
 const About = () => {
   return (
-    <section className="about">
+    <section className="about" id="about">
       <h1>About This Project</h1>
       <p>
         This project demonstrates how to create an interactive 3D scene using React Three Fiber. It includes a simple cube that can be manipulated with buttons to change its color and size, as well as orbit controls for navigation.
@@ -98,24 +97,6 @@ const Cube = ({ position, size, color }) => {
   );
 };
 
-function SceneLights() {
-  const { intensity, x, y, z, color } = useControls("Light", {
-    intensity: { value: 1, min: 0, max: 5, step: 0.1 },
-    x: { value: 5, min: -10, max: 10, step: 0.1 },
-    y: { value: 5, min: -10, max: 10, step: 0.1 },
-    z: { value: 5, min: -10, max: 10, step: 0.1 },
-    color: "#ffffff",
-  });
-
-  return (
-    <directionalLight
-      intensity={intensity}
-      position={[x, y, z]}
-      color={color}
-    />
-  );
-}
-
 export default function App() {
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
@@ -125,6 +106,6 @@ export default function App() {
       <div className="footer">© 2026 My Three.js Scene</div>
 
     </div>
-    
+
   );
 }

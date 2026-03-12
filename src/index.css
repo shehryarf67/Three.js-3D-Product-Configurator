@@ -73,6 +73,14 @@ ul {
   display: flex;
 }
 
+.about{
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  min-height: 10vh;
+  padding: 1rem;
+}
+
 body {
   margin: 0;
   display: flex;
@@ -105,6 +113,7 @@ button {
   transition: border-color 0.25s;
 }
 button:hover {
+  scale: 1.05;
   border-color: #646cff;
   background-color: #535bf2;
 }

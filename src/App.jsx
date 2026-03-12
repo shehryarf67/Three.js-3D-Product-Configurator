@@ -73,6 +73,17 @@ const Hero = () => {
   );
 };
 
+const About = () => {
+  return (
+    <section className="about">
+      <h1>About This Project</h1>
+      <p>
+        This project demonstrates how to create an interactive 3D scene using React Three Fiber. It includes a simple cube that can be manipulated with buttons to change its color and size, as well as orbit controls for navigation.
+      </p>
+    </section>
+  );
+};
+
 const Cube = ({ position, size, color }) => {
   const meshRef = useRef(null);
 
@@ -110,6 +121,7 @@ export default function App() {
     <div style={{ width: "100vw", height: "100vh" }}>
       <Navbar />
       <Hero />
+      <About />
       <div className="footer">© 2026 My Three.js Scene</div>
 
     </div>

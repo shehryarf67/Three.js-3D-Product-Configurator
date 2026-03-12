@@ -7,12 +7,26 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: rgba(248, 250, 248, 0.721);
+  /* background-color: rgba(248, 250, 248, 0.721); */
+  /* --hdr-gradient: radial-gradient(
+    farthest-corner circle at 35% 115% in oklch,
+    oklch(80% .3 34)  0%,
+    oklch(90% .3 200) 100%
+  );
+  --sdr-gradient: radial-gradient(farthest-corner circle at 35% 115%, #ff4700 0%, #0ff 100%); */
+  background: #54bf39;
+background: linear-gradient(90deg, rgba(84, 191, 57, 1) 0%, rgba(9, 9, 121, 1) 48%, rgba(0, 212, 255, 1) 100%);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  background: var(--hdr-gradient);
+  background-attachment: fixed;
+  height: 100%;
 }
 
 a {
@@ -93,11 +107,12 @@ ul {
 .about p {
   margin: 0.5rem 0 1rem 0;
   font-size: 1.2rem;
+  margin-right: 1rem;
 }
 
 body {
   margin: 0;
-  display: flex;
+  /* display: flex; */
   place-items: center;
   min-width: 320px;
   min-height: 100vh;

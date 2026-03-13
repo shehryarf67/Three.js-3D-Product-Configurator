@@ -27,9 +27,11 @@
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
@@ -45,11 +47,11 @@ a {
   font-weight: 500;
   color: #ffffff;
   text-decoration: inherit;
-  font-size: 20px;
+  font-size: 23px;
 }
 
 a:hover {
-  color: #535bf2;
+  color: grey;
 }
 
 nav {
@@ -95,6 +97,18 @@ ul {
   display: flex;
   gap: 1rem;
   margin-left: 1rem;
+}
+
+.hero-buttons button {
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  color: white;
+}
+
+.hero-buttons button:hover {
+  background: #EEAECA;
+  background: radial-gradient(circle, rgba(148, 187, 233, 1) 0%, rgba(238, 174, 202, 1) 100%);
 }
 
 .hero-3d {
@@ -144,6 +158,16 @@ h1 {
   margin: 0 auto;
 }
 
+.toggle-button button {
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  color: white;
+}
+.toggle-button button:hover {
+  background: #EEAECA;
+  background: radial-gradient(circle, rgba(148, 187, 233, 1) 0%, rgba(238, 174, 202, 1) 100%);
+}
 button {
   border-radius: 8px;
   border: 1px solid transparent;

@@ -137,6 +137,69 @@ ul {
   margin-right: 1rem;
 }
 
+.floating-circle {
+  position: absolute;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  z-index: -1;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.432);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.5),
+    0 4px 24px rgba(180, 140, 220, 0.12);
+  opacity: 0.85;
+  animation: float 8s ease-in-out infinite;
+}
+
+.floating-circle.circle-1 {
+  top: 20%;
+  left: 10%;
+  animation-delay: 2s;
+}
+
+.floating-circle.circle-2 {
+  top: 40%;
+  left: 80%;
+  animation-delay: 4s;
+}
+
+.floating-circle.circle-3 {
+  top: 70%;
+  left: 30%;
+  animation-delay: 6s;
+}
+
+.floating-circle.circle-4 {
+  top: 50%;
+  left: 50%;
+  animation-delay: 8s;
+}
+
+.floating-circle.circle-5 {
+  top: 10%;
+  right: 20%;
+  animation-delay: 10s;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  33% {
+    transform: translateY(-30px) rotate(15deg);
+  }
+
+  66% {
+    transform: translateY(15px) rotate(-10deg);
+  }
+}
+
 body {
   margin: 0;
   /* display: flex; */
@@ -164,10 +227,12 @@ h1 {
   backdrop-filter: blur(10px);
   color: white;
 }
+
 .toggle-button button:hover {
   background: #EEAECA;
   background: radial-gradient(circle, rgba(148, 187, 233, 1) 0%, rgba(238, 174, 202, 1) 100%);
 }
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;

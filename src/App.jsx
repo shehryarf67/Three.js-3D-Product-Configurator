@@ -108,10 +108,23 @@ const Cube = ({ position, size, color }) => {
   );
 };
 
+const CircleFloating = () => {
+  return (
+    <>
+      <div className="floating-circle circle-1"></div>
+      <div className="floating-circle circle-2"></div>
+      <div className="floating-circle circle-3"></div>
+      <div className="floating-circle circle-4"></div>
+      <div className="floating-circle circle-5"></div>
+    </>
+  );
+}
+
 export default function App() {
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <Navbar />
+      <CircleFloating />
       <Hero />
       <About />
       <div className="footer">© 2026 My Three.js Scene</div>

@@ -5,6 +5,17 @@ import { IoLogoCodepen } from "react-icons/io";
 import { Leva, useControls } from "leva";
 
 const Navbar = () => {
+  const handleNavClick = (label, e) => {
+    if (label === "About") {
+      e.preventDefault();
+      document.getElementById("about").scrollIntoView({ behavior: "smooth" });
+    }
+    else if (label === "Home") {
+      e.preventDefault();
+      document.getElementById("canvas").scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <header>
       <nav>
@@ -16,7 +27,7 @@ const Navbar = () => {
             { label: "Contact" },
           ].map((item) => (
             <li key={item.label}>
-              <a href={item.label}>{item.label}</a>
+              <a href="#" onClick={(e) => handleNavClick(item.label, e)}>{item.label}</a>
             </li>
           ))}
         </ul>

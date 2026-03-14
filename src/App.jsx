@@ -128,8 +128,6 @@ export default function App() {
       <Hero />
       <About />
       <div className="footer">© 2026 My Three.js Scene</div>
-
     </div>
-
   );
 }

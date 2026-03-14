@@ -166,36 +166,6 @@ header {
   animation: float 8s ease-in-out infinite;
 }
 
-.floating-circle.circle-1 {
-  top: 20%;
-  left: 10%;
-  animation-delay: 2s;
-}
-
-.floating-circle.circle-2 {
-  top: 40%;
-  left: 80%;
-  animation-delay: 4s;
-}
-
-.floating-circle.circle-3 {
-  top: 70%;
-  left: 30%;
-  animation-delay: 6s;
-}
-
-.floating-circle.circle-4 {
-  top: 50%;
-  left: 50%;
-  animation-delay: 8s;
-}
-
-.floating-circle.circle-5 {
-  top: 10%;
-  right: 20%;
-  animation-delay: 10s;
-}
-
 @keyframes float {
 
   0%,

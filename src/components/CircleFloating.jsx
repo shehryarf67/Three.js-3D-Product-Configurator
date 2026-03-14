@@ -8,6 +8,9 @@ const CircleFloating = () => {
     { top: "70%", left: "30%", delay: "6s", size: "100px" },
     { top: "50%", left: "50%", delay: "8s", size: "100px" },
     { top: "10%", right: "20%", delay: "10s", size: "100px" },
+    { top: "120%", right: "10%", delay: "12s", size: "100px" },
+    { top: "110%", left: "20%", delay: "14s", size: "100px" },
+    { top: "100%", left: "70%", delay: "16s", size: "100px" },
   ];
 
   return (

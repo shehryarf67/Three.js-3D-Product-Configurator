@@ -4,3 +4,4 @@ export { default as About } from './About';
 export { default as CircleFloating } from './CircleFloating';
 export { default as Footer } from './Footer';
 export { default as Cube } from './Cube';
+export { default as Cards } from './Cards';

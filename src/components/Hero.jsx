@@ -5,9 +5,9 @@ const Hero = () => {
   
   return (
     <section className="hero" id="home">
-
       <div className="hero-content">
-
+        <h1 className="hero-title">Discover the Future of 3D Product Visualization</h1>
+        <p className="hero-description">Experience your products like never before with our cutting-edge 3D visualization platform. Explore every angle, customize in real-time, and captivate your audience with stunning interactive displays.</p>
       </div>
 
     </section>

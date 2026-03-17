@@ -12,10 +12,8 @@
     oklch(90% .3 200) 100%
   );
   --sdr-gradient: radial-gradient(farthest-corner circle at 35% 115%, #ff4700 0%, #0ff 100%); */
-  background: #EEAECA;
-  background: radial-gradient(circle, rgba(238, 174, 202, 1) 0%, rgba(148, 187, 233, 1) 100%);
+  background-color: #CC9B6D;
   background-size: 200% 200%;
-  animation: gradientShift 5s linear infinite;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;

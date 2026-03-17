@@ -78,7 +78,7 @@ nav ul {
   gap: 1rem;
   margin: 0;
   padding: 0;
-  margin-right: auto;
+  margin-left: auto;
   padding-left: 2rem;
 }
 
@@ -213,6 +213,7 @@ body {
   display: flex;
   gap: 1rem;
   margin-left: 1rem;
+  transition: all 0.3s ease;
 }
 
 .hero-buttons button {

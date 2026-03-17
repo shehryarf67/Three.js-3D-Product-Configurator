@@ -2,27 +2,24 @@ import { Canvas, OrbitControls, useState } from "../imports.js";
 import { Cube } from "./index.js";
 
 const Hero = () => {
-  const [cubeColor, setCubeColor] = useState("red");
-  const [cubeSize, setCubeSize] = useState([1, 1, 1]);
-
+  
   return (
     <section className="hero">
 
       <div className="hero-content">
 
-        <h1>Interactive 3D Product Experiences</h1>
-
-        <p>
-          Check out different products using a 3D immersive experience.
-        </p>
-
-        <div className="hero-buttons">
-          <button onClick={() => document.getElementById('canvas').scrollIntoView({ behavior: 'smooth' })}>Get Started</button>
-          <button onClick={() => document.getElementById('about').scrollIntoView({ behavior: 'smooth' })}>Learn More</button>
-        </div>
-
       </div>
 
+    </section>
+  );
+};
+export default Hero;
+
+const Extra = () => {
+  const [cubeColor, setCubeColor] = useState("red");
+  const [cubeSize, setCubeSize] = useState([1, 1, 1]);
+  return (
+    <section>
       <div className="hero-3d" id="canvas">
         <Canvas camera={{ position: [2, 2, 2], fov: 80 }}>
           <ambientLight intensity={0.6} />
@@ -43,9 +40,6 @@ const Hero = () => {
           Change Size
         </button>
       </div>
-
     </section>
   );
-};
-
-export default Hero;
+}

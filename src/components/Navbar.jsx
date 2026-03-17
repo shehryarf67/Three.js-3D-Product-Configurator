@@ -1,4 +1,4 @@
-import { IoLogoCodepen } from "../imports.js";
+import React from "react";
 
 const Navbar = () => {
   const handleNavClick = (label, e) => {
@@ -15,7 +15,6 @@ const Navbar = () => {
   return (
     <header>
       <nav>
-        <IoLogoCodepen size={64} />
         <ul>
           {[
             { label: "Home" },

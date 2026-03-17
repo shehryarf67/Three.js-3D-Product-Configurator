@@ -8,7 +8,7 @@ const Navbar = () => {
     }
     else if (label === "Home") {
       e.preventDefault();
-      document.getElementById("canvas").scrollIntoView({ behavior: "smooth" });
+      document.getElementById("home").scrollIntoView({ behavior: "smooth" });
     }
   };
 

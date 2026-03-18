@@ -1,6 +1,6 @@
 // React & Three.js
-export { Canvas } from "@react-three/fiber";
-export { OrbitControls, DragControls, useGLTF } from "@react-three/drei";
+export { Canvas, useFrame } from "@react-three/fiber";
+export { OrbitControls, DragControls, useGLTF, ScrollControls, useScroll, Scroll } from "@react-three/drei";
 export { useRef, useState } from "react";
 
 // UI Libraries

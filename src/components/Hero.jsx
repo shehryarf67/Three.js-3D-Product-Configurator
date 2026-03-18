@@ -1,4 +1,12 @@
-import { Canvas, OrbitControls, useState, useGLTF } from "../imports.js";
+import {
+  Canvas,
+  OrbitControls,
+  useState,
+  useRef,
+  useGLTF,
+  useFrame,
+} from "../imports.js";
+import { useEffect } from "react";
 import { Cube } from "./index.js";
 
 function CameraModel(props) {
@@ -7,7 +15,41 @@ function CameraModel(props) {
 }
 
 
+function ScrollingModel({rotationTarget, ...props}) {
+  const ref = useRef();
+
+  useFrame((_, delta) => {
+    if (!ref.current) return;
+    const smoothing = Math.min(1, delta * 8);
+    ref.current.rotation.y += (rotationTarget.current - ref.current.rotation.y) * smoothing;
+  });
+
+  return (
+    <group ref={ref}>
+      <CameraModel {...props} />
+    </group>
+  );
+}
+
 const Hero = () => {
+  const hero3dRef = useRef(null);
+  const isPointerInside = useRef(false);
+  const rotationTarget = useRef(0);
+
+  useEffect(() => {
+    const node = hero3dRef.current;
+    if (!node) return;
+
+    const handleWheel = (event) => {
+      if (!isPointerInside.current) return;
+      event.preventDefault();
+      event.stopPropagation();
+      rotationTarget.current += event.deltaY * 0.003;
+    };
+
+    node.addEventListener("wheel", handleWheel, { passive: false });
+    return () => node.removeEventListener("wheel", handleWheel);
+  }, []);
 
   return (
     <section className="hero" id="home">
@@ -15,14 +57,24 @@ const Hero = () => {
         <h1 className="hero-title">Fill Your<br /> World<br /> With Joy</h1>
         <p className="hero-description">3D Camera Models</p>
       </div>
-      <div className="hero-3d" id="canvas">
+      <div
+        className="hero-3d"
+        id="canvas"
+        ref={hero3dRef}
+        onPointerEnter={() => {
+          isPointerInside.current = true;
+        }}
+        onPointerLeave={() => {
+          isPointerInside.current = false;
+        }}
+      >
         <Canvas camera={{ position: [0, 1, 3], fov: 50 }}>
           <ambientLight intensity={1} />
           <directionalLight position={[2, 2, 2]} />
 
-          <CameraModel scale={1.2} position={[-0.4, -0.1, 0]} />
+          <ScrollingModel position={[-0.4, 0, 0]} scale={1.3} rotationTarget={rotationTarget} />
 
-          <OrbitControls enablePan={false} minDistance={2} maxDistance={6} />
+          <OrbitControls enablePan={false} enableZoom={false} minDistance={2} maxDistance={6} />
         </Canvas>
       </div>
 

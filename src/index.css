@@ -12,8 +12,8 @@
     oklch(90% .3 200) 100%
   );
   --sdr-gradient: radial-gradient(farthest-corner circle at 35% 115%, #ff4700 0%, #0ff 100%); */
-  --main_bg_color: #CC9B6D;
-  --secondary_color: #F2DAC3;
+  --main_bg_color: black;
+  --secondary_color: white;
   background-size: 200% 200%;
   background-color: var(--secondary_color);
 
@@ -96,6 +96,17 @@ body {
   height: 100%;
 }
 
+.reveal {
+  opacity: 0;
+  transform: translateX(-24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
 .hero {
   display: flex;
   justify-content: space-between;
@@ -103,7 +114,7 @@ body {
   min-height: 100vh;
   padding: 1rem;
   background-color: var(--main_bg_color);
-  border-top-left-radius: 30% 65%;
+  border-top-left-radius: 25% 55%;
   overflow: hidden;
   position: relative; 
 }
@@ -111,8 +122,8 @@ body {
 .hero-content {
   max-width: 500px;
   z-index: 1;
-  margin-left: 15rem;
-  margin-top: 10rem;
+  margin-left: 10rem;
+  margin-top: 6rem;
 }
 
 .hero-content h1 {
@@ -122,9 +133,18 @@ body {
 }
 
 .hero-content p {
-  font-size: 1.1rem;
   margin: 0.5rem 0 1rem 0;
   margin-left: 1rem;
+}
+
+.hero-title{
+  color: rgba(255, 255, 255, 0.945);
+  line-height: 1.2;
+}
+
+.hero-description{
+  color: rgba(255, 255, 255, 0.945);
+  font-size: 2rem;
 }
 
 .card-grid {
@@ -208,6 +228,16 @@ body {
   text-shadow: 2px 2px 20px rgba(0, 0, 0, 0.2);
   line-height: 1.2;
   word-spacing: 100vw;
+}
+
+.card:nth-child(2){
+  transition-delay: 100ms;
+}
+.card:nth-child(3){
+  transition-delay: 300ms;
+}
+.card:nth-child(4){
+  transition-delay: 500ms;
 }
 
 .about {

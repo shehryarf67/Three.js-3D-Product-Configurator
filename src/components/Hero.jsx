@@ -1,13 +1,29 @@
-import { Canvas, OrbitControls, useState } from "../imports.js";
+import { Canvas, OrbitControls, useState, useGLTF } from "../imports.js";
 import { Cube } from "./index.js";
 
+function CameraModel(props) {
+  const { scene } = useGLTF('/models/pixel_polaroid_camera/scene.gltf')
+  return <primitive object={scene} {...props} />
+}
+
+
 const Hero = () => {
-  
+
   return (
     <section className="hero" id="home">
       <div className="hero-content reveal">
         <h1 className="hero-title">Fill Your<br /> World<br /> With Joy</h1>
         <p className="hero-description">3D Camera Models</p>
+      </div>
+      <div className="hero-3d" id="canvas">
+        <Canvas camera={{ position: [0, 1, 3], fov: 50 }}>
+          <ambientLight intensity={1} />
+          <directionalLight position={[2, 2, 2]} />
+
+          <CameraModel scale={1.2} position={[-1, 0.2, 0]} />
+
+          <OrbitControls enablePan={false} minDistance={2} maxDistance={6} />
+        </Canvas>
       </div>
 
     </section>

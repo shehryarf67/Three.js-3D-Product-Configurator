@@ -1,6 +1,7 @@
 import { Navbar, Hero, About, Footer, CircleFloating } from "./components";
 import { useEffect } from "react";
 
+
 export default function App() {
   useEffect(() => {
     const observer = new IntersectionObserver((entries, obs) => {

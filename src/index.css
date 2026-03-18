@@ -110,9 +110,10 @@ body {
 .hero {
   display: flex;
   justify-content: space-between;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: flex-start;
   min-height: 100vh;
-  padding: 1rem;
+  padding: 1rem 4rem;
   background-color: var(--main_bg_color);
   border-top-left-radius: 25% 55%;
   overflow: hidden;
@@ -120,10 +121,12 @@ body {
 }
 
 .hero-content {
-  max-width: 500px;
-  z-index: 1;
-  margin-left: 10rem;
+  max-width: 300px;
+  z-index: 0;
+  margin-left: 4rem;
   margin-top: 6rem;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 
 .hero-content h1 {
@@ -135,6 +138,13 @@ body {
 .hero-content p {
   margin: 0.5rem 0 1rem 0;
   margin-left: 1rem;
+}
+
+.hero-3d {
+  width: 50%;
+  height: 500px; 
+  flex-shrink: 0;
+  margin-top: 8rem;
 }
 
 .hero-title{

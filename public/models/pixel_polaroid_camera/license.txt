@@ -1,0 +1,11 @@
+Model Information:
+* title:	Pixel Polaroid Camera
+* source:	https://sketchfab.com/3d-models/pixel-polaroid-camera-4b92c2d96bf944a2b94a4cc27dea32b6
+* author:	soupffle (https://sketchfab.com/soupffle)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Pixel Polaroid Camera" (https://sketchfab.com/3d-models/pixel-polaroid-camera-4b92c2d96bf944a2b94a4cc27dea32b6) by soupffle (https://sketchfab.com/soupffle) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

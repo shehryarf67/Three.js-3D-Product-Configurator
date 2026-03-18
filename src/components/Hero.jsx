@@ -20,7 +20,7 @@ const Hero = () => {
           <ambientLight intensity={1} />
           <directionalLight position={[2, 2, 2]} />
 
-          <CameraModel scale={1.2} position={[-1, 0.2, 0]} />
+          <CameraModel scale={1.2} position={[-0.4, -0.1, 0]} />
 
           <OrbitControls enablePan={false} minDistance={2} maxDistance={6} />
         </Canvas>

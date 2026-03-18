@@ -15,7 +15,7 @@ const Hero = () => {
         <h1 className="hero-title">Fill Your<br /> World<br /> With Joy</h1>
         <p className="hero-description">3D Camera Models</p>
       </div>
-      <div className="hero-3d reveal" id="canvas">
+      <div className="hero-3d" id="canvas">
         <Canvas camera={{ position: [0, 1, 3], fov: 50 }}>
           <ambientLight intensity={1} />
           <directionalLight position={[2, 2, 2]} />

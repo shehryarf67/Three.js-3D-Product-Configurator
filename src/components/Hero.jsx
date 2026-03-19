@@ -6,13 +6,17 @@ import {
   useGLTF,
   useFrame,
   useEffect,
+  useAnimations,
 } from "../imports.js";
 import { useMemo } from "react";
 import { Box3, Vector3 } from "three";
 import { Cube } from "./index.js";
 
 function CameraModel(props) {
-  const { scene } = useGLTF('/models/pixel_polaroid_camera/scene.gltf');
+  const { scene, animations } = useGLTF('/models/pixel_polaroid_camera/scene.gltf');
+  const groupRef = useRef(); 
+  const { actions } = useAnimations(animations, groupRef); 
+
   const centeredScene = useMemo(() => {
     const model = scene.clone(true);
     const box = new Box3().setFromObject(model);
@@ -22,7 +26,16 @@ function CameraModel(props) {
     return model;
   }, [scene]);
 
-  return <primitive object={centeredScene} {...props} />;
+  useEffect(() => {
+    const anim = Object.values(actions)[0]
+    if (anim) anim.play()
+  }, [actions])
+
+  return (
+    <group ref={groupRef} {...props}>
+      <primitive object={centeredScene} />
+    </group>
+  );
 }
 
 

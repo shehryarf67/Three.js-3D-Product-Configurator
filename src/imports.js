@@ -8,6 +8,7 @@ export {
     useScroll, 
     Scroll,
     Center, 
+    useAnimations,
 } from "@react-three/drei";
 export { useRef, useState, useEffect } from "react";
 

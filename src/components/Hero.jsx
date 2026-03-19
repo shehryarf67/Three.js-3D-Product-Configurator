@@ -5,17 +5,28 @@ import {
   useRef,
   useGLTF,
   useFrame,
+  useEffect,
 } from "../imports.js";
-import { useEffect } from "react";
+import { useMemo } from "react";
+import { Box3, Vector3 } from "three";
 import { Cube } from "./index.js";
 
 function CameraModel(props) {
-  const { scene } = useGLTF('/models/pixel_polaroid_camera/scene.gltf')
-  return <primitive object={scene} {...props} />
+  const { scene } = useGLTF('/models/pixel_polaroid_camera/scene.gltf');
+  const centeredScene = useMemo(() => {
+    const model = scene.clone(true);
+    const box = new Box3().setFromObject(model);
+    const center = new Vector3();
+    box.getCenter(center);
+    model.position.sub(center);
+    return model;
+  }, [scene]);
+
+  return <primitive object={centeredScene} {...props} />;
 }
 
 
-function ScrollingModel({rotationTarget, ...props}) {
+function ScrollingModel({ rotationTarget, ...groupProps }) {
   const ref = useRef();
 
   useFrame((_, delta) => {
@@ -25,8 +36,8 @@ function ScrollingModel({rotationTarget, ...props}) {
   });
 
   return (
-    <group ref={ref}>
-      <CameraModel {...props} />
+    <group ref={ref} {...groupProps}>
+      <CameraModel />
     </group>
   );
 }
@@ -72,7 +83,7 @@ const Hero = () => {
           <ambientLight intensity={1} />
           <directionalLight position={[2, 2, 2]} />
 
-          <ScrollingModel position={[-0.4, 0, 0]} scale={1.3} rotationTarget={rotationTarget} />
+          <ScrollingModel position={[-0.4, 0.5, 0]} scale={1.3} rotationTarget={rotationTarget} />
 
           <OrbitControls enablePan={false} enableZoom={false} minDistance={2} maxDistance={6} />
         </Canvas>

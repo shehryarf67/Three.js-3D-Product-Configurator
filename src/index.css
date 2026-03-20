@@ -146,7 +146,7 @@ body {
   flex-shrink: 0;
   margin-top: 8rem;
   animation: fadeSlideIn 0.9s ease forwards;
-  animation-delay: 0.3s;
+  animation-delay: 0.5s;
   opacity: 0; 
 }
 

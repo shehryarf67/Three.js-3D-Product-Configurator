@@ -97,9 +97,9 @@ const Hero = () => {
           <ambientLight intensity={1} />
           <directionalLight position={[2, 2, 2]} />
 
-          <ScrollingModel position={[-0.4, 0.5, 0]} scale={1.3} rotationTarget={rotationTarget} />
+          <ScrollingModel position={[-0.4, 0.6, 0]} scale={1.3} rotationTarget={rotationTarget} />
 
-          <OrbitControls enablePan={false} enableZoom={false} minDistance={2} maxDistance={6} />
+          <OrbitControls enablePan={false} enableZoom={false} minDistance={2} maxDistance={3} />
         </Canvas>
       </div>
 

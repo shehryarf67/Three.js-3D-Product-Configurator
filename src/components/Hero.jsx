@@ -44,6 +44,7 @@ function ScrollingModel({ rotationTarget, ...groupProps }) {
 
   useFrame((_, delta) => {
     if (!ref.current) return;
+    rotationTarget.current += delta * -0.5;
     const smoothing = Math.min(1, delta * 8);
     ref.current.rotation.y += (rotationTarget.current - ref.current.rotation.y) * smoothing;
   });

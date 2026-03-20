@@ -261,6 +261,18 @@ body {
   transition-delay: 300ms;
 }
 
+.model-canvas {
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  background-color: var(--main_bg_color);
+  overflow: hidden;
+  position: relative;
+}
+
 .about {
   display: flex;
   flex-direction: column;

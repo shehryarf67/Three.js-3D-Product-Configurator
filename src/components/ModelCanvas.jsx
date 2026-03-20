@@ -54,12 +54,12 @@ function ScrollingModel({ rotationTarget, ...groupProps }) {
 }
 
 const ModelCanvas = () => {
-    const modelCanvasRef = useRef(null);
+    const model3dRef = useRef(null);
     const isPointerInside = useRef(false);
     const rotationTarget = useRef(0);
 
     useEffect(() => {
-        const node = modelCanvasRef.current;
+        const node = model3dRef.current;
         if (!node) return;
 
         const handleWheel = (event) => {
@@ -74,23 +74,28 @@ const ModelCanvas = () => {
     }, []);
 
     return (
-        <section
-            className="model-canvas"
-            id="model-canvas"
-            ref={modelCanvasRef}
-            onPointerEnter={() => {
-                isPointerInside.current = true;
-            }}
-            onPointerLeave={() => {
-                isPointerInside.current = false;
-            }}
-        >
-            <Canvas camera={{ position: [0, 1, 3], fov: 50 }}>
-                <ambientLight intensity={0.8} />
-                <directionalLight position={[2, 2, 2]} />
-                <ScrollingModel scale={0.7} position={[0, 0.8, 0]} rotationTarget={rotationTarget} />
-                <OrbitControls enablePan={false} enableZoom={false} />
-            </Canvas>
+        <section className="model-canvas" id="model-canvas">
+            <div className="model-canvas-content reveal">
+                <h1 className="model-canvas-title">Capture The Moment</h1>
+                <p className="model-canvas-description">Scroll on the model panel to rotate the camera.</p>
+            </div>
+            <div
+                className="model-3d"
+                ref={model3dRef}
+                onPointerEnter={() => {
+                    isPointerInside.current = true;
+                }}
+                onPointerLeave={() => {
+                    isPointerInside.current = false;
+                }}
+            >
+                <Canvas camera={{ position: [0, 1, 3], fov: 50 }}>
+                    <ambientLight intensity={0.8} />
+                    <directionalLight position={[2, 2, 2]} />
+                    <ScrollingModel scale={1} position={[0, 0.8, 0]} rotationTarget={rotationTarget} />
+                    <OrbitControls enablePan={false} enableZoom={false} />
+                </Canvas>
+            </div>
         </section>
     );
 };

@@ -236,3 +236,30 @@ Add Framer Motion animations
 hero text entrance
 
 card hover effects
+
+
+1. Fix the fundamentals first (CSS & Responsiveness)
+Your site likely breaks on mobile right now. Before adding more features, make sure what you have looks good at all screen sizes. This is the most overlooked thing that separates amateur from professional work.
+2. Build the interactive canvas section
+This is the most impressive thing you can add right now and directly showcases your Three.js/R3F skills. A dedicated section where the user can:
+
+Rotate/zoom the model freely
+Switch between models
+Maybe change a material color with a simple picker
+
+This teaches you useState, useRef, R3F event handlers, and drei helpers all at once.
+3. Smooth out the CSS details that make it feel premium
+Small things with huge visual impact:
+
+Consistent spacing system (you already have CSS variables for this, use them)
+Typography hierarchy — font sizes, weights, line heights
+Subtle hover states on every interactive element
+A proper color palette instead of just black/white
+
+4. Add a proper About and Contact section
+Your navbar links go nowhere. Even simple placeholder sections make the site feel complete and give you practice with React Router.
+What I'd skip for now:
+
+Custom shaders — wait for your friend's models first
+Framer Motion — your CSS animations are working fine
+Any backend/data fetching — premature

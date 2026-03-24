@@ -9,6 +9,8 @@ export {
     Scroll,
     Center, 
     useAnimations,
+    Environment,
+    ContactShadows,
 } from "@react-three/drei";
 export { useRef, useState, useEffect } from "react";
 

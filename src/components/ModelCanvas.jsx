@@ -6,6 +6,8 @@ import {
     useAnimations,
     useFrame,
     useEffect,
+    Environment, 
+    ContactShadows,
 } from "../imports.js";
 import { useMemo } from "react";
 import { Box3, Vector3 } from "three";
@@ -90,6 +92,8 @@ const ModelCanvas = () => {
                 }}
             >
                 <Canvas camera={{ position: [0, 1, 3], fov: 50 }}>
+                    <Environment preset="city" />
+                    <ContactShadows opacity={0.4} scale={10} blur={2} far={10} />
                     <ambientLight intensity={0.8} />
                     <directionalLight position={[2, 2, 2]} />
                     <ScrollingModel scale={1} position={[0, 0.8, 0]} rotationTarget={rotationTarget} />

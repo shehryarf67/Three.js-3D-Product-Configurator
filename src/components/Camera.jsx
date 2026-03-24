@@ -12,7 +12,7 @@ import { useGLTF, useAnimations } from '@react-three/drei'
 
 export function Model(props) {
   const group = React.useRef()
-  const { nodes, materials, animations } = useGLTF('/scene.gltf')
+  const { nodes, materials, animations } = useGLTF('/models/pixel_polaroid_camera/scene.gltf')
   const { actions } = useAnimations(animations, group)
   return (
     <group ref={group} {...props} dispose={null}>
@@ -40,4 +40,4 @@ export function Model(props) {
   )
 }
 
-useGLTF.preload('/scene.gltf')
+useGLTF.preload('/models/pixel_polaroid_camera/scene.gltf')

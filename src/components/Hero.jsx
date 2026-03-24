@@ -60,6 +60,9 @@ const Hero = () => {
   const hero3dRef = useRef(null);
   const isPointerInside = useRef(false);
   const rotationTarget = useRef(0);
+  const isDragging = useRef(false);
+  const lastPointerX = useRef(0);
+  const dragRotateSpeed = 0.01;
 
   useEffect(() => {
     const node = hero3dRef.current;
@@ -74,6 +77,29 @@ const Hero = () => {
 
     node.addEventListener("wheel", handleWheel, { passive: false });
     return () => node.removeEventListener("wheel", handleWheel);
+  }, []);
+
+  useEffect(() => {
+    const handlePointerMove = (event) => {
+      if (!isDragging.current) return;
+      const deltaX = event.clientX - lastPointerX.current;
+      lastPointerX.current = event.clientX;
+      rotationTarget.current += deltaX * dragRotateSpeed;
+    };
+
+    const endDrag = () => {
+      isDragging.current = false;
+    };
+
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", endDrag);
+    window.addEventListener("pointercancel", endDrag);
+
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", endDrag);
+      window.removeEventListener("pointercancel", endDrag);
+    };
   }, []);
 
   return (
@@ -91,6 +117,11 @@ const Hero = () => {
         }}
         onPointerLeave={() => {
           isPointerInside.current = false;
+          isDragging.current = false;
+        }}
+        onPointerDown={(event) => {
+          isDragging.current = true;
+          lastPointerX.current = event.clientX;
         }}
       >
         <Canvas camera={{ position: [0, 1, 3], fov: 50 }}>

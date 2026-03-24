@@ -33,7 +33,7 @@ function CameraModel(props) {
 
   return (
     <group ref={groupRef} {...props}>
-      <primitive object={centeredScene} />
+      <primitive object={centeredScene} rotation={[Math.PI / -14, 0.2, 0]}/>
     </group>
   );
 }

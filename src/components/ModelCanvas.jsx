@@ -1,16 +1,41 @@
+import { useState } from "react";
 import {
     Canvas,
     OrbitControls,
     useRef,
     useFrame,
     useEffect,
-    Environment, 
+    Environment,
     ContactShadows,
 } from "../imports.js";
 import { Model as CameraModel } from "./Camera.jsx";
 
-function ScrollingModel({ rotationTarget, ...groupProps }) {
+function ScrollingModel({ rotationTarget, modelColor, ...groupProps }) {
     const ref = useRef();
+
+    useEffect(() => {
+        if (!ref.current) return;
+
+        ref.current.traverse((child) => {
+            if (!child.isMesh || !child.material) return;
+
+            const materials = Array.isArray(child.material) ? child.material : [child.material];
+
+            materials.forEach((material) => {
+                if (!material || !material.color) return;
+
+                if (!material.userData.originalColor) {
+                    material.userData.originalColor = material.color.clone();
+                }
+
+                if (modelColor) {
+                    material.color.set(modelColor);
+                } else {
+                    material.color.copy(material.userData.originalColor);
+                }
+            });
+        });
+    }, [modelColor]);
 
     useFrame((_, delta) => {
         if (!ref.current) return;
@@ -29,6 +54,8 @@ const ModelCanvas = () => {
     const model3dRef = useRef(null);
     const isPointerInside = useRef(false);
     const rotationTarget = useRef(0);
+    const [modelColor, setModelColor] = useState(null);
+    const [modelSize, setModelSize] = useState([1, 1, 1]);
 
     useEffect(() => {
         const node = model3dRef.current;
@@ -50,6 +77,14 @@ const ModelCanvas = () => {
             <div className="model-canvas-content reveal">
                 <h1 className="model-canvas-title">Capture The Moment</h1>
                 <p className="model-canvas-description">Scroll on the model panel to rotate the camera.</p>
+                <div className="toggle-button">
+                    <button id="Color-toggler" onClick={() => setModelColor(modelColor === "red" ? null : "red")}>
+                        Toggle Color
+                    </button>
+                    <button id="Size-toggler" onClick={() => setModelSize(modelSize[0] === 1 ? [1.5, 1.5, 1.5] : [1, 1, 1])}>
+                        Change Size
+                    </button>
+                </div>
             </div>
             <div
                 className="model-3d"
@@ -62,11 +97,31 @@ const ModelCanvas = () => {
                 }}
             >
                 <Canvas camera={{ position: [0, 1, 3], fov: 50 }}>
+                    <color attach="background" args={['#0a0a0a']} />
+
+                    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.8, 0]}>
+                        <circleGeometry args={[2, 64]} />
+                        <meshBasicMaterial color="#ffffff" transparent opacity={0.5} />
+                    </mesh>
+
+                    <ContactShadows
+                        position={[0, 0.2, 0]}
+                        opacity={0.9}
+                        scale={5}
+                        blur={1.5}
+                        far={2}
+                        color="#00000082"
+                    />
                     <Environment preset="city" />
                     <ContactShadows opacity={0.4} scale={10} blur={2} far={10} />
                     <ambientLight intensity={0.8} />
                     <directionalLight position={[2, 2, 2]} />
-                    <ScrollingModel scale={1} position={[0, 0.4, 0]} rotationTarget={rotationTarget} />
+                    <ScrollingModel
+                        scale={modelSize}
+                        position={[0, 0, 0]}
+                        rotationTarget={rotationTarget}
+                        modelColor={modelColor}
+                    />
                     <OrbitControls enablePan={false} enableZoom={false} />
                 </Canvas>
             </div>

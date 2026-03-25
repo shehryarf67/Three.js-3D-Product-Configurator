@@ -82,7 +82,7 @@ nav ul {
   padding: 0;
   margin-left: auto;
   padding-left: 2rem;
-  
+
 }
 
 header {
@@ -117,7 +117,7 @@ body {
   background-color: var(--main_bg_color);
   border-top-left-radius: 25% 55%;
   overflow: hidden;
-  position: relative; 
+  position: relative;
 }
 
 .hero-content {
@@ -142,12 +142,12 @@ body {
 
 .hero-3d {
   width: 50%;
-  height: 500px; 
+  height: 500px;
   flex-shrink: 0;
   margin-top: 8rem;
   animation: fadeSlideIn 0.9s ease forwards;
   animation-delay: 0.5s;
-  opacity: 0; 
+  opacity: 0;
 }
 
 @keyframes fadeSlideIn {
@@ -155,18 +155,19 @@ body {
     opacity: 0;
     transform: translateX(24px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
   }
 }
 
-.hero-title{
+.hero-title {
   color: rgba(255, 255, 255, 0.945);
   line-height: 1.2;
 }
 
-.hero-description{
+.hero-description {
   color: rgba(255, 255, 255, 0.945);
   font-size: 2rem;
 }
@@ -254,10 +255,11 @@ body {
   word-spacing: 100vw;
 }
 
-.card:nth-child(2){
+.card:nth-child(2) {
   transition-delay: 100ms;
 }
-.card:nth-child(3){
+
+.card:nth-child(3) {
   transition-delay: 300ms;
 }
 
@@ -279,7 +281,8 @@ body {
 .model-canvas-content {
   max-width: 340px;
   margin-left: 8rem;
-  margin-top: 6rem;
+  margin-top: 4rem;
+  align-items: flex-start;
 }
 
 .model-canvas-title {
@@ -299,10 +302,11 @@ body {
   width: 46%;
   height: 500px;
   flex-shrink: 0;
-  margin-top: 8rem;
+  margin-top: 2rem;
   margin-right: 8rem;
   border-radius: 16px;
   overflow: hidden;
+  background: radial-gradient(ellipse 60% 40% at 50% 60%, #2a2a3e 0%, #0a0a0a 100%);
 }
 
 .about {
@@ -327,7 +331,7 @@ body {
   margin-right: 1rem;
 }
 
-@keyframes appear{
+@keyframes appear {
   0% {
     opacity: 0;
     clip-path: inset(0 0 100% 0);
@@ -410,15 +414,15 @@ h1 {
 }
 
 .toggle-button button {
-  background: rgba(255, 255, 255, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(10px);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
+  backdrop-filter: blur(10px);
 }
 
 .toggle-button button:hover {
-  background: #EEAECA;
-  background: radial-gradient(circle, rgba(148, 187, 233, 1) 0%, rgba(238, 174, 202, 1) 100%);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.8);
 }
 
 button {
@@ -434,7 +438,6 @@ button {
 }
 
 button:hover {
-  scale: 1.05;
   border-color: #646cff;
   background-color: #535bf2;
 }
@@ -454,4 +457,3 @@ button:focus-visible {
   z-index: 100;
   margin-top: 4rem;
 }
-

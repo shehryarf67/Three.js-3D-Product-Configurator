@@ -1,0 +1,11 @@
+Model Information:
+* title:	Digital Rangefinder camera
+* source:	https://sketchfab.com/3d-models/digital-rangefinder-camera-7303e6eb21be483e957788ed2172ee7d
+* author:	Samuel Francis Johnson (Oneironauticus) (https://sketchfab.com/oneironauticus)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Digital Rangefinder camera" (https://sketchfab.com/3d-models/digital-rangefinder-camera-7303e6eb21be483e957788ed2172ee7d) by Samuel Francis Johnson (Oneironauticus) (https://sketchfab.com/oneironauticus) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

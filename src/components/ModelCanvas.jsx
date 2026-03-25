@@ -7,6 +7,8 @@ import {
     useEffect,
     Environment,
     ContactShadows,
+    useControls,
+    Leva,
 } from "../imports.js";
 import { Model as CameraModel } from "./Camera.jsx";
 import { Model as SampleModel } from "./SampleCamera.jsx";
@@ -51,6 +53,7 @@ function ScrollingModel({ rotationTarget, modelColor, ...groupProps }) {
     );
 }
 
+
 const ModelCanvas = () => {
     const model3dRef = useRef(null);
     const isPointerInside = useRef(false);
@@ -72,7 +75,13 @@ const ModelCanvas = () => {
         node.addEventListener("wheel", handleWheel, { passive: false });
         return () => node.removeEventListener("wheel", handleWheel);
     }, []);
-
+    
+    const { intensity, lightX, lightY, lightZ } = useControls({
+        intensity: { value: 2, min: 1, max: 10, step: 0.1 },
+        lightX: { value: 2, min: -10, max: 10, step: 0.1 },
+        lightY: { value: 2, min: -10, max: 10, step: 0.1 },
+        lightZ: { value: 2, min: -10, max: 10, step: 0.1 },
+    });
     return (
         <section className="model-canvas" id="model-canvas">
             <div className="model-canvas-content reveal">
@@ -87,6 +96,7 @@ const ModelCanvas = () => {
                     </button>
                 </div>
             </div>
+            <Leva/>
             <div
                 className="model-3d"
                 ref={model3dRef}
@@ -116,7 +126,7 @@ const ModelCanvas = () => {
                     <Environment preset="city" />
                     <ContactShadows opacity={0.4} scale={10} blur={2} far={10} />
                     <ambientLight intensity={2} />
-                    <directionalLight position={[2, 2, 2]} intensity={10}/>
+                    <directionalLight position={[lightX, lightY, lightZ]} intensity={intensity} />
                     <ScrollingModel
                         scale={modelSize}
                         position={[-0.1, 0, 0]}

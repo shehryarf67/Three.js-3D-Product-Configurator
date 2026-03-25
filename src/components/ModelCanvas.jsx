@@ -45,7 +45,7 @@ function ScrollingModel({ rotationTarget, modelColor, ...groupProps }) {
     });
 
     return (
-        <group ref={ref} {...groupProps}>
+        <group ref={ref} rotation={[0, -Math.PI/2, 0]} {...groupProps}>
             <SampleModel />
         </group>
     );
@@ -54,7 +54,7 @@ function ScrollingModel({ rotationTarget, modelColor, ...groupProps }) {
 const ModelCanvas = () => {
     const model3dRef = useRef(null);
     const isPointerInside = useRef(false);
-    const rotationTarget = useRef(0);
+    const rotationTarget = useRef(-Math.PI/2);
     const [modelColor, setModelColor] = useState(null);
     const [modelSize, setModelSize] = useState([2, 2, 2]);
 
@@ -107,7 +107,7 @@ const ModelCanvas = () => {
 
                     <ContactShadows
                         position={[0, 0.2, 0]}
-                        opacity={0.9}
+                        opacity={1.5}
                         scale={5}
                         blur={1.5}
                         far={2}
@@ -119,7 +119,7 @@ const ModelCanvas = () => {
                     <directionalLight position={[2, 2, 2]} intensity={10}/>
                     <ScrollingModel
                         scale={modelSize}
-                        position={[0.2, 0, 0]}
+                        position={[-0.1, 0, 0]}
                         rotationTarget={rotationTarget}
                         modelColor={modelColor}
                     />

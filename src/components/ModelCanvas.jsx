@@ -77,10 +77,10 @@ const ModelCanvas = () => {
     }, []);
     
     const { intensity, lightX, lightY, lightZ } = useControls({
-        intensity: { value: 2, min: 1, max: 10, step: 0.1 },
-        lightX: { value: 2, min: -10, max: 10, step: 0.1 },
-        lightY: { value: 2, min: -10, max: 10, step: 0.1 },
-        lightZ: { value: 2, min: -10, max: 10, step: 0.1 },
+        intensity: { value: 10, min: 8, max: 15, step: 0.1 },
+        lightY: { value: 10, min: 5, max: 15, step: 0.2 },
+        lightX: { value: 10, min: 5, max: 15, step: 0.2 },
+        lightZ: { value: 10, min: 5, max: 15, step: 0.2 },
     });
     return (
         <section className="model-canvas" id="model-canvas">

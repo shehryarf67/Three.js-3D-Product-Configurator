@@ -89,7 +89,7 @@ const ModelCanvas = () => {
                 <h1 className="model-canvas-title">Capture The Moment</h1>
                 <p className="model-canvas-description">Scroll on the model panel to rotate the camera.</p>
                 <div className="toggle-button">
-                    <button id="Color-toggler" onClick={() => setModelColor(modelColor === "aqua" ? null : "aqua")}>
+                    <button id="Color-toggler" onClick={() => setModelColor(modelColor === "#39FF14" ? null : "#39FF14")}>
                         Toggle Color
                     </button>
                     <button id="Size-toggler" onClick={() => setModelSize(modelSize[0] === 2 ? [3, 3, 3] : [2, 2, 2])}>

@@ -17,6 +17,7 @@ function ScrollingModel({
     modelColor,
     onLensEnter,
     onLensLeave,
+    isLensHovered,
     ...groupProps
 }) {
     const ref = useRef();
@@ -55,6 +56,7 @@ function ScrollingModel({
     return (
         <group ref={ref} rotation={[0, -Math.PI/2, 0]} {...groupProps}>
             <SampleModel 
+                isLensHovered={isLensHovered}
                 onLensEnter={onLensEnter}
                 onLensLeave={onLensLeave}
             />
@@ -154,6 +156,7 @@ const ModelCanvas = () => {
                         modelColor={modelColor}
                         onLensEnter={() => setIsLensHovered(true)}
                         onLensLeave={() => setIsLensHovered(false)}
+                        isLensHovered={isLensHovered}
                     />
                     <OrbitControls enablePan={false} enableZoom={false} />
                 </Canvas>

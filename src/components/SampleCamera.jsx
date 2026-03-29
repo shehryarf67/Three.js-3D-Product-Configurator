@@ -9,13 +9,13 @@ Title: Digital Rangefinder camera
 
 import { useGLTF } from '@react-three/drei'
 
-export function Model({ onLensEnter, onLensLeave, ...props }) {
+export function Model({ onLensEnter, onLensLeave, isLensHovered, ...props }) {
   const { nodes, materials } = useGLTF('/models/digital_rangefinder_camera/scene.gltf')
 
   return (
     <group {...props} dispose={null}>
       <mesh geometry={nodes.Object_4.geometry} material={materials.KameraMat} position={[0.001, 0.197, -0.073]} scale={0.243} />
-      <mesh geometry={nodes.Object_6.geometry} material={materials.OptiklMat} position={[0.234, 0.179, -0.132]} rotation={[0, 0, -Math.PI / 2]} scale={[0.128, 0.156, 0.128]}
+      <mesh geometry={nodes.Object_6.geometry} material={materials.OptiklMat} position={[0.234, 0.179, -0.132]} rotation={[0, 0, -Math.PI / 2]} scale={isLensHovered ? [0.16, 0.19, 0.16] : [0.128, 0.156, 0.128]}
         onPointerEnter={onLensEnter}
         onPointerLeave={onLensLeave}
       />

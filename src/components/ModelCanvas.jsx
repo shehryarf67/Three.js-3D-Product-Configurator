@@ -48,7 +48,7 @@ function ScrollingModel({
 
     useFrame((_, delta) => {
         if (!ref.current) return;
-        if (!isLensHovered) rotationTarget.current += delta * -0.25;
+        if (!isLensHovered) rotationTarget.current += delta * -0.2;
         const smoothing = Math.min(1, delta * 8);
         ref.current.rotation.y += (rotationTarget.current - ref.current.rotation.y) * smoothing;
     });

@@ -7,15 +7,18 @@ Source: https://sketchfab.com/3d-models/digital-rangefinder-camera-7303e6eb21be4
 Title: Digital Rangefinder camera
 */
 
-import React from 'react'
 import { useGLTF } from '@react-three/drei'
 
-export function Model(props) {
+export function Model({ onLensEnter, onLensLeave, ...props }) {
   const { nodes, materials } = useGLTF('/models/digital_rangefinder_camera/scene.gltf')
+
   return (
     <group {...props} dispose={null}>
       <mesh geometry={nodes.Object_4.geometry} material={materials.KameraMat} position={[0.001, 0.197, -0.073]} scale={0.243} />
-      <mesh geometry={nodes.Object_6.geometry} material={materials.OptiklMat} position={[0.234, 0.179, -0.132]} rotation={[0, 0, -Math.PI / 2]} scale={[0.128, 0.156, 0.128]} />
+      <mesh geometry={nodes.Object_6.geometry} material={materials.OptiklMat} position={[0.234, 0.179, -0.132]} rotation={[0, 0, -Math.PI / 2]} scale={[0.128, 0.156, 0.128]}
+        onPointerEnter={onLensEnter}
+        onPointerLeave={onLensLeave}
+      />
       <mesh geometry={nodes.Object_8.geometry} material={materials.SockelMat} position={[0.001, 0.177, -0.069]} scale={[0.277, 0.247, 0.247]} />
     </group>
   )

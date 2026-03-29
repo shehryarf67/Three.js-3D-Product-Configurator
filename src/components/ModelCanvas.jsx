@@ -10,10 +10,15 @@ import {
     useControls,
     Leva,
 } from "../imports.js";
-import { Model as CameraModel } from "./Camera.jsx";
 import { Model as SampleModel } from "./SampleCamera.jsx";
 
-function ScrollingModel({ rotationTarget, modelColor, ...groupProps }) {
+function ScrollingModel({
+    rotationTarget,
+    modelColor,
+    onLensEnter,
+    onLensLeave,
+    ...groupProps
+}) {
     const ref = useRef();
 
     useEffect(() => {
@@ -49,7 +54,10 @@ function ScrollingModel({ rotationTarget, modelColor, ...groupProps }) {
 
     return (
         <group ref={ref} rotation={[0, -Math.PI/2, 0]} {...groupProps}>
-            <SampleModel />
+            <SampleModel 
+                onLensEnter={onLensEnter}
+                onLensLeave={onLensLeave}
+            />
         </group>
     );
 }
@@ -61,6 +69,7 @@ const ModelCanvas = () => {
     const rotationTarget = useRef(-Math.PI/2);
     const [modelColor, setModelColor] = useState(null);
     const [modelSize, setModelSize] = useState([2, 2, 2]);
+    const [isLensHovered, setIsLensHovered] = useState(false);
 
     useEffect(() => {
         const node = model3dRef.current;
@@ -96,6 +105,16 @@ const ModelCanvas = () => {
                         Change Size
                     </button>
                 </div>
+                {isLensHovered && (
+                    <div className="lens-specs">
+                        <p className="lens-specs-label">Lens Specs</p>
+                        <h2 className="lens-specs-title">Digital Rangefinder Lens</h2>
+                        <p className="lens-specs-text">
+                            Multi-element front optic with a compact barrel profile, styled for a classic
+                            rangefinder look and highlighted independently from the body.
+                        </p>
+                    </div>
+                )}
             </div>
             <Leva/>
             <div
@@ -133,6 +152,8 @@ const ModelCanvas = () => {
                         position={[-0.1, 0, 0]}
                         rotationTarget={rotationTarget}
                         modelColor={modelColor}
+                        onLensEnter={() => setIsLensHovered(true)}
+                        onLensLeave={() => setIsLensHovered(false)}
                     />
                     <OrbitControls enablePan={false} enableZoom={false} />
                 </Canvas>

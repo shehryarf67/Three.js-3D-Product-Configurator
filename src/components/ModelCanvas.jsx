@@ -18,6 +18,8 @@ function ScrollingModel({
     onLensEnter,
     onLensLeave,
     isLensHovered,
+    onSockelClick,
+    isSockelClicked,
     ...groupProps
 }) {
     const ref = useRef();
@@ -59,6 +61,8 @@ function ScrollingModel({
                 isLensHovered={isLensHovered}
                 onLensEnter={onLensEnter}
                 onLensLeave={onLensLeave}
+                onSockelClick={onSockelClick}
+                isSockelClicked={isSockelClicked}
             />
         </group>
     );
@@ -72,6 +76,7 @@ const ModelCanvas = () => {
     const [modelColor, setModelColor] = useState(null);
     const [modelSize, setModelSize] = useState([2, 2, 2]);
     const [isLensHovered, setIsLensHovered] = useState(false);
+    const [isSockelClicked, setSockelClicked] = useState(false);
 
     useEffect(() => {
         const node = model3dRef.current;
@@ -157,6 +162,8 @@ const ModelCanvas = () => {
                         onLensEnter={() => setIsLensHovered(true)}
                         onLensLeave={() => setIsLensHovered(false)}
                         isLensHovered={isLensHovered}
+                        onSockelClick={() => setSockelClicked(!isSockelClicked)}
+                        isSockelClicked={isSockelClicked}
                     />
                     <OrbitControls enablePan={false} enableZoom={false} />
                 </Canvas>

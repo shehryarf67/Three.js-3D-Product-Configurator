@@ -11,6 +11,7 @@ export {
     useAnimations,
     Environment,
     ContactShadows,
+    CameraControls,
 } from "@react-three/drei";
 export { useRef, useState, useEffect } from "react";
 

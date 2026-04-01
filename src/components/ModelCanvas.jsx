@@ -9,6 +9,7 @@ import {
     ContactShadows,
     useControls,
     Leva,
+    CameraControls,
 } from "../imports.js";
 import { Model as SampleModel } from "./SampleCamera.jsx";
 
@@ -99,6 +100,16 @@ const ModelCanvas = () => {
         lightY: { value: 2, min: -10, max: 10, step: 0.1 },
         lightZ: { value: 2, min: -10, max: 10, step: 0.1 },
     });
+
+    const { cameraX, cameraY, cameraZ, targetX, targetY, targetZ } = useControls({
+        cameraX: { value: 0, min: -5, max: 5, step: 0.1 },
+        cameraY: { value: 1, min: 0, max: 5, step: 0.1 },
+        cameraZ: { value: 3, min: 1, max: 10, step: 0.1 },
+        targetX: { value: 0, min: -5, max: 5, step: 0.1 },
+        targetY: { value: 0, min: -5, max: 5, step: 0.1 },
+        targetZ: { value: 0, min: -5, max: 5, step: 0.1 },
+    });
+
     return (
         <section className="model-canvas" id="model-canvas">
             <div className="model-canvas-content reveal">

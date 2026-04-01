@@ -9,18 +9,36 @@ Title: Digital Rangefinder camera
 
 import { useGLTF } from '@react-three/drei'
 
-export function Model({ onLensEnter, onLensLeave, isLensHovered, onSockelClick, isSockelClicked, ...props }) {
+export function Model({ onLensEnter, onLensLeave, isLensHovered, onSockelClick, isSockelClicked, onSelect, ...props }) {
   const { nodes, materials } = useGLTF('/models/digital_rangefinder_camera/scene.gltf')
 
   return (
     <group {...props} dispose={null}>
-      <mesh geometry={nodes.Object_4.geometry} material={materials.KameraMat} position={[0.001, 0.197, -0.073]} scale={0.243} />
-      <mesh geometry={nodes.Object_6.geometry} material={materials.OptiklMat} position={[0.234, 0.179, -0.132]} rotation={[0, 0, -Math.PI / 2]} scale={isLensHovered ? [0.16, 0.19, 0.16] : [0.128, 0.156, 0.128]}
+      <mesh name="body" geometry={nodes.Object_4.geometry} material={materials.KameraMat} position={[0.001, 0.197, -0.073]} scale={0.243}
+        onClick={(e) => {
+          e.stopPropagation()
+          onSelect("body")
+        }}
+      />
+      <mesh name="lens" geometry={nodes.Object_6.geometry} material={materials.OptiklMat} position={[0.234, 0.179, -0.132]} rotation={[0, 0, -Math.PI / 2]} scale={isLensHovered ? [0.16, 0.19, 0.16] : [0.128, 0.156, 0.128]}
         onPointerEnter={onLensEnter}
         onPointerLeave={onLensLeave}
+        onClick={(e) => {
+          e.stopPropagation()
+          onSelect("lens")
+        }}
       />
-      <mesh geometry={nodes.Object_8.geometry} material={materials.SockelMat} position={[0.001, 0.177, -0.069]} scale={isSockelClicked ? [0.3, 0.27, 0.27] : [0.277, 0.247, 0.247]} 
-        onClick={onSockelClick}
+      <mesh
+        name="sockel"
+        geometry={nodes.Object_8.geometry}
+        material={materials.SockelMat}
+        position={[0.001, 0.177, -0.069]}
+        scale={isSockelClicked ? [0.3, 0.27, 0.27] : [0.277, 0.247, 0.247]}
+        onClick={(e) => {
+          e.stopPropagation();
+          onSockelClick();
+          onSelect("sockel");
+        }}
       />
     </group>
   )

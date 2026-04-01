@@ -10,8 +10,56 @@ import {
     useControls,
     Leva,
     CameraControls,
+    CameraControlsImpl,
 } from "../imports.js";
 import { Model as SampleModel } from "./SampleCamera.jsx";
+
+function CameraRig({ selectedPart }) {
+    const controlsRef = useRef();
+
+    useEffect(() => {
+        if (!controlsRef.current) return;
+
+        if (selectedPart === "lens") {
+            controlsRef.current.setLookAt(
+                1, 1, 2, 
+                0, 0, 0,
+                true
+            );
+        } else if (selectedPart === "body") {
+            controlsRef.current.setLookAt(
+                2, 0.5, 1,
+                0, 0, 0,
+                true
+            );
+        } else if (selectedPart === "sockel") {
+            controlsRef.current.setLookAt(
+                2, 0, 1,
+                0, 0, 0,
+                true
+            );
+        }
+        else {
+            controlsRef.current.setLookAt(
+                0, 1, 3,
+                0, 0, 0,
+                true
+            );
+        }
+    }, [selectedPart]);
+
+    return (
+        <CameraControls
+            ref={controlsRef}
+            mouseButtons={{
+                left: CameraControlsImpl.ACTION.ROTATE,
+                middle: CameraControlsImpl.ACTION.NONE,
+                right: CameraControlsImpl.ACTION.NONE,
+                wheel: CameraControlsImpl.ACTION.NONE,
+            }}
+        />
+    );
+}
 
 function ScrollingModel({
     rotationTarget,
@@ -21,6 +69,7 @@ function ScrollingModel({
     isLensHovered,
     onSockelClick,
     isSockelClicked,
+    onSelect,
     ...groupProps
 }) {
     const ref = useRef();
@@ -51,7 +100,6 @@ function ScrollingModel({
 
     useFrame((_, delta) => {
         if (!ref.current) return;
-        if (!isLensHovered) rotationTarget.current += delta * -0.2;
         const smoothing = Math.min(1, delta * 8);
         ref.current.rotation.y += (rotationTarget.current - ref.current.rotation.y) * smoothing;
     });
@@ -64,6 +112,7 @@ function ScrollingModel({
                 onLensLeave={onLensLeave}
                 onSockelClick={onSockelClick}
                 isSockelClicked={isSockelClicked}
+                onSelect={onSelect}
             />
         </group>
     );
@@ -78,6 +127,7 @@ const ModelCanvas = () => {
     const [modelSize, setModelSize] = useState([2, 2, 2]);
     const [isLensHovered, setIsLensHovered] = useState(false);
     const [isSockelClicked, setSockelClicked] = useState(false);
+    const [selectedPart, setSelectedPart] = useState(null);
 
     useEffect(() => {
         const node = model3dRef.current;
@@ -145,7 +195,10 @@ const ModelCanvas = () => {
                     isPointerInside.current = false;
                 }}
             >
-                <Canvas camera={{ position: [0, 1, 3], fov: 50 }}>
+                <Canvas
+                    camera={{ position: [0, 1, 3], fov: 50 }}
+                    onPointerMissed={() => setSelectedPart(null)}
+                >
                     <color attach="background" args={['#0a0a0a']} />
 
                     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.8, 0]}>
@@ -175,8 +228,10 @@ const ModelCanvas = () => {
                         isLensHovered={isLensHovered}
                         onSockelClick={() => setSockelClicked(!isSockelClicked)}
                         isSockelClicked={isSockelClicked}
+                        onSelect={setSelectedPart}
                     />
-                    <OrbitControls enablePan={false} enableZoom={false} />
+                    {/* <OrbitControls enablePan={false} enableZoom={false} /> */}
+                    <CameraRig selectedPart={selectedPart} />
                 </Canvas>
             </div>
         </section>

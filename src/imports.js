@@ -12,6 +12,7 @@ export {
     Environment,
     ContactShadows,
     CameraControls,
+    CameraControlsImpl,
 } from "@react-three/drei";
 export { useRef, useState, useEffect } from "react";
 

@@ -7,7 +7,7 @@ Source: https://sketchfab.com/3d-models/digital-rangefinder-camera-7303e6eb21be4
 Title: Digital Rangefinder camera
 */
 
-import { useGLTF } from '@react-three/drei'
+import { useGLTF, useEffect, useState } from '../imports.js'
 
 export function Model({
   onLensEnter,
@@ -20,6 +20,12 @@ export function Model({
   ...props
 }) {
   const { nodes, materials } = useGLTF('/models/digital_rangefinder_camera/scene.gltf')
+  const [hovered, setHovered] = useState(false);
+
+  useEffect(() => {
+    document.body.style.cursor = hovered ? "pointer" : "auto";
+    return () => (document.body.style.cursor = "auto");
+  }, [hovered]);
 
   return (
     <group {...props} dispose={null}>
@@ -28,6 +34,8 @@ export function Model({
           e.stopPropagation()
           onSelect("body")
         }}
+        onPointerOver={() => setHovered(true)}
+        onPointerOut={() => setHovered(false)}
       />
       <mesh name="lens" geometry={nodes.Object_6.geometry} material={materials.OptiklMat} position={[0.234, 0.179, -0.132]} rotation={[0, 0, -Math.PI / 2]} scale={isLensHovered ? [0.16, 0.19, 0.16] : [0.128, 0.156, 0.128]}
         onPointerEnter={onLensEnter}
@@ -36,6 +44,8 @@ export function Model({
           e.stopPropagation()
           onSelect("lens")
         }}
+        onPointerOver={() => setHovered(true)}
+        onPointerOut={() => setHovered(false)}
       />
       <mesh
         name="sockel"
@@ -49,6 +59,8 @@ export function Model({
           e.stopPropagation();
           onSelect("sockel");
         }}
+        onPointerOver={() => setHovered(true)}
+        onPointerOut={() => setHovered(false)}
       />
     </group>
   )

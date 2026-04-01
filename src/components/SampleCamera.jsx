@@ -9,7 +9,16 @@ Title: Digital Rangefinder camera
 
 import { useGLTF } from '@react-three/drei'
 
-export function Model({ onLensEnter, onLensLeave, isLensHovered, onSockelClick, isSockelClicked, onSelect, ...props }) {
+export function Model({
+  onLensEnter,
+  onLensLeave,
+  isLensHovered,
+  onSockelEnter,
+  onSockelLeave,
+  isSockelHovered,
+  onSelect,
+  ...props
+}) {
   const { nodes, materials } = useGLTF('/models/digital_rangefinder_camera/scene.gltf')
 
   return (
@@ -33,10 +42,11 @@ export function Model({ onLensEnter, onLensLeave, isLensHovered, onSockelClick, 
         geometry={nodes.Object_8.geometry}
         material={materials.SockelMat}
         position={[0.001, 0.177, -0.069]}
-        scale={isSockelClicked ? [0.3, 0.27, 0.27] : [0.277, 0.247, 0.247]}
+        scale={isSockelHovered ? [0.3, 0.27, 0.27] : [0.277, 0.247, 0.247]}
+        onPointerEnter={onSockelEnter}
+        onPointerLeave={onSockelLeave}
         onClick={(e) => {
           e.stopPropagation();
-          onSockelClick();
           onSelect("sockel");
         }}
       />

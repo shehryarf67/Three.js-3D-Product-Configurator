@@ -67,8 +67,9 @@ function ScrollingModel({
     onLensEnter,
     onLensLeave,
     isLensHovered,
-    onSockelClick,
-    isSockelClicked,
+    onSockelEnter,
+    onSockelLeave,
+    isSockelHovered,
     onSelect,
     ...groupProps
 }) {
@@ -110,8 +111,9 @@ function ScrollingModel({
                 isLensHovered={isLensHovered}
                 onLensEnter={onLensEnter}
                 onLensLeave={onLensLeave}
-                onSockelClick={onSockelClick}
-                isSockelClicked={isSockelClicked}
+                onSockelEnter={onSockelEnter}
+                onSockelLeave={onSockelLeave}
+                isSockelHovered={isSockelHovered}
                 onSelect={onSelect}
             />
         </group>
@@ -126,7 +128,7 @@ const ModelCanvas = () => {
     const [modelColor, setModelColor] = useState(null);
     const [modelSize, setModelSize] = useState([2, 2, 2]);
     const [isLensHovered, setIsLensHovered] = useState(false);
-    const [isSockelClicked, setSockelClicked] = useState(false);
+    const [isSockelHovered, setIsSockelHovered] = useState(false);
     const [selectedPart, setSelectedPart] = useState(null);
 
     useEffect(() => {
@@ -183,6 +185,15 @@ const ModelCanvas = () => {
                         </p>
                     </div>
                 )}
+                {isSockelHovered && (
+                    <div className="sockel-specs">
+                        <p className="sockel-specs-label">Sockel Specs</p>
+                        <h2 className="sockel-specs-title">Camera Sockel</h2>
+                        <p className="sockel-specs-text">
+                            The camera's base, designed to provide stability and support for the entire structure, ensuring a secure grip and balance.
+                        </p>
+                    </div>
+                )}
             </div>
             <Leva/>
             <div
@@ -226,8 +237,9 @@ const ModelCanvas = () => {
                         onLensEnter={() => setIsLensHovered(true)}
                         onLensLeave={() => setIsLensHovered(false)}
                         isLensHovered={isLensHovered}
-                        onSockelClick={() => setSockelClicked(!isSockelClicked)}
-                        isSockelClicked={isSockelClicked}
+                        onSockelEnter={() => setIsSockelHovered(true)}
+                        onSockelLeave={() => setIsSockelHovered(false)}
+                        isSockelHovered={isSockelHovered}
                         onSelect={setSelectedPart}
                     />
                     {/* <OrbitControls enablePan={false} enableZoom={false} /> */}

@@ -330,6 +330,38 @@ body {
   line-height: 1.55;
 }
 
+.sockel-specs {
+  margin-top: 1.5rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+}
+
+.sockel-specs-label {
+  margin: 0 0 0.35rem 0;
+  color: rgba(255, 255, 255, 0.68);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+}
+
+.sockel-specs-title {
+  margin: 0 0 0.55rem 0;
+  color: rgba(255, 255, 255, 0.97);
+  font-size: 1.4rem;
+  line-height: 1.15;
+  padding: 0;
+}
+
+.sockel-specs-text {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+
 .model-3d {
   width: 46%;
   height: 500px;

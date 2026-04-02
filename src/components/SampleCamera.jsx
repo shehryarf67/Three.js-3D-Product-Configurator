@@ -28,14 +28,15 @@ export function Model({
   }, [hovered]);
 
   return (
-    <group {...props} dispose={null}>
+    <group {...props} dispose={null}
+      onPointerOver={() => setHovered(true)}
+      onPointerOut={() => setHovered(false)}
+    >
       <mesh name="body" geometry={nodes.Object_4.geometry} material={materials.KameraMat} position={[0.001, 0.197, -0.073]} scale={0.243}
         onClick={(e) => {
           e.stopPropagation()
           onSelect("body")
         }}
-        onPointerOver={() => setHovered(true)}
-        onPointerOut={() => setHovered(false)}
       />
       <mesh name="lens" geometry={nodes.Object_6.geometry} material={materials.OptiklMat} position={[0.234, 0.179, -0.132]} rotation={[0, 0, -Math.PI / 2]} scale={isLensHovered ? [0.16, 0.19, 0.16] : [0.128, 0.156, 0.128]}
         onPointerEnter={onLensEnter}
@@ -44,8 +45,6 @@ export function Model({
           e.stopPropagation()
           onSelect("lens")
         }}
-        onPointerOver={() => setHovered(true)}
-        onPointerOut={() => setHovered(false)}
       />
       <mesh
         name="sockel"
@@ -59,8 +58,6 @@ export function Model({
           e.stopPropagation();
           onSelect("sockel");
         }}
-        onPointerOver={() => setHovered(true)}
-        onPointerOut={() => setHovered(false)}
       />
     </group>
   )

@@ -1,13 +1,13 @@
 // React & Three.js
 export { Canvas, useFrame } from "@react-three/fiber";
-export { 
-    OrbitControls, 
-    DragControls, 
-    useGLTF, 
-    ScrollControls, 
-    useScroll, 
+export {
+    OrbitControls,
+    DragControls,
+    useGLTF,
+    ScrollControls,
+    useScroll,
     Scroll,
-    Center, 
+    Center,
     useAnimations,
     Environment,
     ContactShadows,
@@ -19,3 +19,4 @@ export { useRef, useState, useEffect } from "react";
 // UI Libraries
 export { IoLogoCodepen } from "react-icons/io";
 export { Leva, useControls } from "leva";
+export { damp3, dampE } from "maath/easing";

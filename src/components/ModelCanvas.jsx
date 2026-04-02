@@ -64,14 +64,8 @@ function CameraRig({ selectedPart }) {
 function ScrollingModel({
     rotationTarget,
     modelColor,
-    onBodyEnter,
-    onBodyLeave,
-    onLensEnter,
-    onLensLeave,
-    isLensHovered,
-    onSockelEnter,
-    onSockelLeave,
-    isSockelHovered,
+    hoveredPart,
+    setHoveredPart,
     onSelect,
     ...groupProps
 }) {
@@ -110,14 +104,8 @@ function ScrollingModel({
     return (
         <group ref={ref} rotation={[0, -Math.PI/2, 0]} {...groupProps}>
             <SampleModel 
-                onBodyEnter={onBodyEnter}
-                onBodyLeave={onBodyLeave}
-                isLensHovered={isLensHovered}
-                onLensEnter={onLensEnter}
-                onLensLeave={onLensLeave}
-                onSockelEnter={onSockelEnter}
-                onSockelLeave={onSockelLeave}
-                isSockelHovered={isSockelHovered}
+                hoveredPart={hoveredPart}
+                setHoveredPart={setHoveredPart}
                 onSelect={onSelect}
             />
         </group>
@@ -131,9 +119,7 @@ const ModelCanvas = () => {
     const rotationTarget = useRef(-Math.PI/2);
     const [modelColor, setModelColor] = useState(null);
     const [modelSize, setModelSize] = useState([2, 2, 2]);
-    const [isBodyHovered, setIsBodyHovered] = useState(false);
-    const [isLensHovered, setIsLensHovered] = useState(false);
-    const [isSockelHovered, setIsSockelHovered] = useState(false);
+    const [hoveredPart, setHoveredPart] = useState(null);
     const [selectedPart, setSelectedPart] = useState(null);
 
     useEffect(() => {
@@ -171,7 +157,7 @@ const ModelCanvas = () => {
                         Change Size
                     </button>
                 </div>
-                {isBodyHovered && (
+                {hoveredPart === "body" && (
                     <div className="body-specs">
                         <p className="body-specs-label">Body Specs</p>
                         <h2 className="body-specs-title">Rangefinder Camera Body</h2>
@@ -181,7 +167,7 @@ const ModelCanvas = () => {
                         </p>
                     </div>
                 )}
-                {isLensHovered && (
+                {hoveredPart === "lens" && (
                     <div className="lens-specs">
                         <p className="lens-specs-label">Lens Specs</p>
                         <h2 className="lens-specs-title">Digital Rangefinder Lens</h2>
@@ -191,7 +177,7 @@ const ModelCanvas = () => {
                         </p>
                     </div>
                 )}
-                {isSockelHovered && (
+                {hoveredPart === "sockel" && (
                     <div className="sockel-specs">
                         <p className="sockel-specs-label">Sockel Specs</p>
                         <h2 className="sockel-specs-title">Camera Sockel</h2>
@@ -240,14 +226,8 @@ const ModelCanvas = () => {
                         position={[-0.1, 0, 0]}
                         rotationTarget={rotationTarget}
                         modelColor={modelColor}
-                        onBodyEnter={() => setIsBodyHovered(true)}
-                        onBodyLeave={() => setIsBodyHovered(false)}
-                        onLensEnter={() => setIsLensHovered(true)}
-                        onLensLeave={() => setIsLensHovered(false)}
-                        isLensHovered={isLensHovered}
-                        onSockelEnter={() => setIsSockelHovered(true)}
-                        onSockelLeave={() => setIsSockelHovered(false)}
-                        isSockelHovered={isSockelHovered}
+                        hoveredPart={hoveredPart}
+                        setHoveredPart={setHoveredPart}
                         onSelect={setSelectedPart}
                     />
                     {/* <OrbitControls enablePan={false} enableZoom={false} /> */}

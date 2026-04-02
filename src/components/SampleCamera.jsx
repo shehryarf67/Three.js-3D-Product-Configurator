@@ -3,19 +3,12 @@ import { useRef, useEffect, useState, useFrame } from '../imports.js'
 import { damp3 } from 'maath/easing'
 
 export function Model({
-  onBodyEnter,
-  onBodyLeave,
-  onLensEnter,
-  onLensLeave,
-  isLensHovered,
-  onSockelEnter,
-  onSockelLeave,
-  isSockelHovered,
+  hoveredPart,
+  setHoveredPart,
   onSelect,
   ...props
 }) {
   const { nodes, materials } = useGLTF('/models/digital_rangefinder_camera/scene.gltf')
-
   const lensRef = useRef()
   const sockelRef = useRef()
   const [hovered, setHovered] = useState(false)
@@ -31,7 +24,7 @@ export function Model({
     if (lensRef.current) {
       damp3(
         lensRef.current.scale,
-        isLensHovered ? [0.16, 0.19, 0.16] : [0.128, 0.156, 0.128],
+        hoveredPart === 'lens' ? [0.16, 0.19, 0.16] : [0.128, 0.156, 0.128],
         0.15,
         delta
       )
@@ -40,7 +33,7 @@ export function Model({
     if (sockelRef.current) {
       damp3(
         sockelRef.current.scale,
-        isSockelHovered ? [0.3, 0.27, 0.27] : [0.277, 0.247, 0.247],
+        hoveredPart === 'sockel' ? [0.3, 0.27, 0.27] : [0.277, 0.247, 0.247],
         0.15,
         delta
       )
@@ -60,8 +53,8 @@ export function Model({
         material={materials.KameraMat}
         position={[0.001, 0.197, -0.073]}
         scale={0.243}
-        onPointerEnter={onBodyEnter}
-        onPointerLeave={onBodyLeave}
+        onPointerEnter={() => setHoveredPart('body')}
+        onPointerLeave={() => setHoveredPart(null)}
         onClick={(e) => {
           e.stopPropagation()
           onSelect('body')
@@ -76,8 +69,8 @@ export function Model({
         position={[0.234, 0.179, -0.132]}
         rotation={[0, 0, -Math.PI / 2]}
         scale={[0.128, 0.156, 0.128]}
-        onPointerEnter={onLensEnter}
-        onPointerLeave={onLensLeave}
+        onPointerEnter={() => setHoveredPart('lens')}
+        onPointerLeave={() => setHoveredPart(null)}
         onClick={(e) => {
           e.stopPropagation()
           onSelect('lens')
@@ -91,8 +84,8 @@ export function Model({
         material={materials.SockelMat}
         position={[0.001, 0.177, -0.069]}
         scale={[0.277, 0.247, 0.247]}
-        onPointerEnter={onSockelEnter}
-        onPointerLeave={onSockelLeave}
+        onPointerEnter={() => setHoveredPart('sockel')}
+        onPointerLeave={() => setHoveredPart(null)}
         onClick={(e) => {
           e.stopPropagation()
           onSelect('sockel')

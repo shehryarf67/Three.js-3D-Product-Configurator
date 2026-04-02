@@ -3,6 +3,8 @@ import { useRef, useEffect, useState, useFrame } from '../imports.js'
 import { damp3 } from 'maath/easing'
 
 export function Model({
+  onBodyEnter,
+  onBodyLeave,
   onLensEnter,
   onLensLeave,
   isLensHovered,
@@ -58,6 +60,8 @@ export function Model({
         material={materials.KameraMat}
         position={[0.001, 0.197, -0.073]}
         scale={0.243}
+        onPointerEnter={onBodyEnter}
+        onPointerLeave={onBodyLeave}
         onClick={(e) => {
           e.stopPropagation()
           onSelect('body')

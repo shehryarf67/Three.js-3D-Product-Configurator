@@ -64,6 +64,8 @@ function CameraRig({ selectedPart }) {
 function ScrollingModel({
     rotationTarget,
     modelColor,
+    onBodyEnter,
+    onBodyLeave,
     onLensEnter,
     onLensLeave,
     isLensHovered,
@@ -108,6 +110,8 @@ function ScrollingModel({
     return (
         <group ref={ref} rotation={[0, -Math.PI/2, 0]} {...groupProps}>
             <SampleModel 
+                onBodyEnter={onBodyEnter}
+                onBodyLeave={onBodyLeave}
                 isLensHovered={isLensHovered}
                 onLensEnter={onLensEnter}
                 onLensLeave={onLensLeave}
@@ -127,6 +131,7 @@ const ModelCanvas = () => {
     const rotationTarget = useRef(-Math.PI/2);
     const [modelColor, setModelColor] = useState(null);
     const [modelSize, setModelSize] = useState([2, 2, 2]);
+    const [isBodyHovered, setIsBodyHovered] = useState(false);
     const [isLensHovered, setIsLensHovered] = useState(false);
     const [isSockelHovered, setIsSockelHovered] = useState(false);
     const [selectedPart, setSelectedPart] = useState(null);
@@ -166,6 +171,16 @@ const ModelCanvas = () => {
                         Change Size
                     </button>
                 </div>
+                {isBodyHovered && (
+                    <div className="body-specs">
+                        <p className="body-specs-label">Body Specs</p>
+                        <h2 className="body-specs-title">Rangefinder Camera Body</h2>
+                        <p className="body-specs-text">
+                            The main shell houses the camera internals and defines the classic rangefinder silhouette,
+                            balancing portability with a sturdy metal-and-leather inspired profile.
+                        </p>
+                    </div>
+                )}
                 {isLensHovered && (
                     <div className="lens-specs">
                         <p className="lens-specs-label">Lens Specs</p>
@@ -225,6 +240,8 @@ const ModelCanvas = () => {
                         position={[-0.1, 0, 0]}
                         rotationTarget={rotationTarget}
                         modelColor={modelColor}
+                        onBodyEnter={() => setIsBodyHovered(true)}
+                        onBodyLeave={() => setIsBodyHovered(false)}
                         onLensEnter={() => setIsLensHovered(true)}
                         onLensLeave={() => setIsLensHovered(false)}
                         isLensHovered={isLensHovered}

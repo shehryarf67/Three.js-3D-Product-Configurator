@@ -1,5 +1,5 @@
 import { useGLTF } from '@react-three/drei'
-import { useRef, useEffect, useState, useFrame } from '../imports.js'
+import { useRef, useEffect, useFrame } from '../imports.js'
 import { damp3 } from 'maath/easing'
 
 export function Model({
@@ -11,14 +11,13 @@ export function Model({
   const { nodes, materials } = useGLTF('/models/digital_rangefinder_camera/scene.gltf')
   const lensRef = useRef()
   const sockelRef = useRef()
-  const [hovered, setHovered] = useState(false)
 
   useEffect(() => {
-    document.body.style.cursor = hovered ? 'pointer' : 'auto'
+    document.body.style.cursor = hoveredPart ? 'pointer' : 'auto'
     return () => {
       document.body.style.cursor = 'auto'
     }
-  }, [hovered])
+  }, [hoveredPart])
 
   useFrame((_, delta) => {
     if (lensRef.current) {
@@ -44,8 +43,6 @@ export function Model({
     <group
       {...props}
       dispose={null}
-      onPointerEnter={() => setHovered(true)}
-      onPointerLeave={() => setHovered(false)}
     >
       <mesh
         name="body"
@@ -53,8 +50,11 @@ export function Model({
         material={materials.KameraMat}
         position={[0.001, 0.197, -0.073]}
         scale={0.243}
-        onPointerEnter={() => setHoveredPart('body')}
-        onPointerLeave={() => setHoveredPart(null)}
+        onPointerOver={(e) => {
+          e.stopPropagation()
+          setHoveredPart('body')
+        }}
+        onPointerOut={() => setHoveredPart(null)}
         onClick={(e) => {
           e.stopPropagation()
           onSelect('body')
@@ -69,8 +69,11 @@ export function Model({
         position={[0.234, 0.179, -0.132]}
         rotation={[0, 0, -Math.PI / 2]}
         scale={[0.128, 0.156, 0.128]}
-        onPointerEnter={() => setHoveredPart('lens')}
-        onPointerLeave={() => setHoveredPart(null)}
+        onPointerOver={(e) => {
+          e.stopPropagation()
+          setHoveredPart('lens')
+        }}
+        onPointerOut={() => setHoveredPart(null)}
         onClick={(e) => {
           e.stopPropagation()
           onSelect('lens')
@@ -84,8 +87,11 @@ export function Model({
         material={materials.SockelMat}
         position={[0.001, 0.177, -0.069]}
         scale={[0.277, 0.247, 0.247]}
-        onPointerEnter={() => setHoveredPart('sockel')}
-        onPointerLeave={() => setHoveredPart(null)}
+        onPointerOver={(e) => {
+          e.stopPropagation()
+          setHoveredPart('sockel')
+        }}
+        onPointerOut={() => setHoveredPart(null)}
         onClick={(e) => {
           e.stopPropagation()
           onSelect('sockel')

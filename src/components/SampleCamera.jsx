@@ -22,7 +22,7 @@ export function Model({
 
   useFrame((_, delta) => {
     if (bodyRef.current?.material?.emissive) {
-      bodyRef.current.material.emissive.set('#7fe8ffa0')
+      bodyRef.current.material.emissive.set('#7fe8ff')
       bodyRef.current.material.emissiveIntensity +=
         ((hoveredPart === 'body' ? 0.5 : 0) - bodyRef.current.material.emissiveIntensity) * delta * 8
     }
@@ -37,7 +37,7 @@ export function Model({
     }
 
     if (lensRef.current?.material?.emissive) {
-      lensRef.current.material.emissive.set('#7fe8ffa0')
+      lensRef.current.material.emissive.set('#7fe8ff')
       lensRef.current.material.emissiveIntensity +=
         ((hoveredPart === 'lens' ? 0.5 : 0) - lensRef.current.material.emissiveIntensity) * delta * 8
     }
@@ -52,7 +52,7 @@ export function Model({
     }
 
     if (sockelRef.current?.material?.emissive) {
-      sockelRef.current.material.emissive.set('#7fe8ffa0')
+      sockelRef.current.material.emissive.set('#7fe8ff')
       sockelRef.current.material.emissiveIntensity +=
         ((hoveredPart === 'sockel' ? 0.5 : 0) - sockelRef.current.material.emissiveIntensity) * delta * 8
     }

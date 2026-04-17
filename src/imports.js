@@ -4,6 +4,8 @@ export {
     OrbitControls,
     DragControls,
     useGLTF,
+    Html,
+    useProgress,
     ScrollControls,
     useScroll,
     Scroll,
@@ -14,7 +16,7 @@ export {
     CameraControls,
     CameraControlsImpl,
 } from "@react-three/drei";
-export { useRef, useState, useEffect } from "react";
+export { useRef, useState, useEffect, Suspense } from "react";
 
 // UI Libraries
 export { IoLogoCodepen } from "react-icons/io";

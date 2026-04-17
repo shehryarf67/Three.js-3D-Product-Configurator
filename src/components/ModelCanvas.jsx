@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import {
     Canvas,
     OrbitControls,
@@ -11,8 +11,33 @@ import {
     Leva,
     CameraControls,
     CameraControlsImpl,
+    Html,
+    useProgress,
 } from "../imports.js";
 import { Model as SampleModel } from "./SampleCamera.jsx";
+
+function ModelLoader() {
+    const { progress } = useProgress();
+
+    return (
+        <Html center>
+            <div className="model-loader">
+                <div className="model-loader__ring" />
+                <p className="model-loader__label">Loading camera...</p>
+                <span className="model-loader__progress">{Math.round(progress)}%</span>
+            </div>
+        </Html>
+    );
+}
+
+function Loader() {
+    return (
+        <div className="model-loader">
+            <div className="loader-spinner" />
+            <p>Loading Camera...</p>
+        </div>
+    )
+}
 
 function CameraRig({ selectedPart }) {
     const controlsRef = useRef();
@@ -22,7 +47,7 @@ function CameraRig({ selectedPart }) {
 
         if (selectedPart === "lens") {
             controlsRef.current.setLookAt(
-                1, 1, 2, 
+                1, 1, 2,
                 0, 0, 0,
                 true
             );
@@ -102,8 +127,8 @@ function ScrollingModel({
     });
 
     return (
-        <group ref={ref} rotation={[0, -Math.PI/2, 0]} {...groupProps}>
-            <SampleModel 
+        <group ref={ref} rotation={[0, -Math.PI / 2, 0]} {...groupProps}>
+            <SampleModel
                 hoveredPart={hoveredPart}
                 setHoveredPart={setHoveredPart}
                 onSelect={onSelect}
@@ -116,7 +141,7 @@ function ScrollingModel({
 const ModelCanvas = () => {
     const model3dRef = useRef(null);
     const isPointerInside = useRef(false);
-    const rotationTarget = useRef(-Math.PI/2);
+    const rotationTarget = useRef(-Math.PI / 2);
     const [modelColor, setModelColor] = useState(null);
     const [modelSize, setModelSize] = useState([2, 2, 2]);
     const [hoveredPart, setHoveredPart] = useState(null);
@@ -136,7 +161,7 @@ const ModelCanvas = () => {
         node.addEventListener("wheel", handleWheel, { passive: false });
         return () => node.removeEventListener("wheel", handleWheel);
     }, []);
-    
+
     const { intensity, lightX, lightY, lightZ } = useControls({
         intensity: { value: 10, min: 8, max: 15, step: 0.1 },
         lightX: { value: 2, min: -10, max: 10, step: 0.1 },
@@ -187,7 +212,7 @@ const ModelCanvas = () => {
                     </div>
                 )}
             </div>
-            <Leva/>
+            <Leva />
             <div
                 className="model-3d"
                 ref={model3dRef}
@@ -198,41 +223,45 @@ const ModelCanvas = () => {
                     isPointerInside.current = false;
                 }}
             >
-                <Canvas
-                    camera={{ position: [0, 1, 3], fov: 50 }}
-                    onPointerMissed={() => setSelectedPart(null)}
-                >
-                    <color attach="background" args={['#0a0a0a']} />
+                <Suspense fallback={<Loader/>}>
+                    <Canvas
+                        camera={{ position: [0, 1, 3], fov: 50 }}
+                        onPointerMissed={() => setSelectedPart(null)}
+                    >
+                        <color attach="background" args={['#0a0a0a']} />
 
-                    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.8, 0]}>
-                        <circleGeometry args={[2, 64]} />
-                        <meshBasicMaterial color="#ffffff" transparent opacity={0.5} />
-                    </mesh>
+                        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.8, 0]}>
+                            <circleGeometry args={[2, 64]} />
+                            <meshBasicMaterial color="#ffffff" transparent opacity={0.5} />
+                        </mesh>
 
-                    <ContactShadows
-                        position={[0, 0.2, 0]}
-                        opacity={1.5}
-                        scale={5}
-                        blur={1.5}
-                        far={2}
-                        color="#00000082"
-                    />
-                    <Environment preset="city" />
-                    <ContactShadows opacity={0.4} scale={10} blur={2} far={10} />
-                    <ambientLight intensity={2} />
-                    <directionalLight position={[lightX, lightY, lightZ]} intensity={intensity} />
-                    <ScrollingModel
-                        scale={modelSize}
-                        position={[-0.1, 0, 0]}
-                        rotationTarget={rotationTarget}
-                        modelColor={modelColor}
-                        hoveredPart={hoveredPart}
-                        setHoveredPart={setHoveredPart}
-                        onSelect={setSelectedPart}
-                    />
-                    {/* <OrbitControls enablePan={false} enableZoom={false} /> */}
-                    <CameraRig selectedPart={selectedPart} />
-                </Canvas>
+                        <ContactShadows
+                            position={[0, 0.2, 0]}
+                            opacity={1.5}
+                            scale={5}
+                            blur={1.5}
+                            far={2}
+                            color="#00000082"
+                        />
+                        <Environment preset="city" />
+                        <ContactShadows opacity={0.4} scale={10} blur={2} far={10} />
+                        <ambientLight intensity={2} />
+                        <directionalLight position={[lightX, lightY, lightZ]} intensity={intensity} />
+                        <Suspense fallback={<ModelLoader />}>
+                            <ScrollingModel
+                                scale={modelSize}
+                                position={[-0.1, 0, 0]}
+                                rotationTarget={rotationTarget}
+                                modelColor={modelColor}
+                                hoveredPart={hoveredPart}
+                                setHoveredPart={setHoveredPart}
+                                onSelect={setSelectedPart}
+                            />
+                        </Suspense>
+                        {/* <OrbitControls enablePan={false} enableZoom={false} /> */}
+                        <CameraRig selectedPart={selectedPart} />
+                    </Canvas>
+                </Suspense>
             </div>
         </section>
     );

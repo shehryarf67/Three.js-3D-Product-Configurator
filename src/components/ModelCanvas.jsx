@@ -1,7 +1,6 @@
 import { Suspense, useState } from "react";
 import {
     Canvas,
-    OrbitControls,
     useRef,
     useFrame,
     useEffect,
@@ -28,15 +27,6 @@ function ModelLoader() {
             </div>
         </Html>
     );
-}
-
-function Loader() {
-    return (
-        <div className="model-loader">
-            <div className="loader-spinner" />
-            <p>Loading Camera...</p>
-        </div>
-    )
 }
 
 function CameraRig({ selectedPart }) {
@@ -223,45 +213,42 @@ const ModelCanvas = () => {
                     isPointerInside.current = false;
                 }}
             >
-                <Suspense fallback={<Loader/>}>
-                    <Canvas
-                        camera={{ position: [0, 1, 3], fov: 50 }}
-                        onPointerMissed={() => setSelectedPart(null)}
-                    >
-                        <color attach="background" args={['#0a0a0a']} />
+                <Canvas
+                    camera={{ position: [0, 1, 3], fov: 50 }}
+                    onPointerMissed={() => setSelectedPart(null)}
+                >
+                    <color attach="background" args={['#0a0a0a']} />
 
-                        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.8, 0]}>
-                            <circleGeometry args={[2, 64]} />
-                            <meshBasicMaterial color="#ffffff" transparent opacity={0.5} />
-                        </mesh>
+                    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.4, 0]}>
+                        <circleGeometry args={[2, 64]} />
+                        <meshBasicMaterial color="#ffffff" transparent opacity={0.1} />
+                    </mesh>
 
-                        <ContactShadows
-                            position={[0, 0.2, 0]}
-                            opacity={1.5}
-                            scale={5}
-                            blur={1.5}
-                            far={2}
-                            color="#00000082"
+                    <ContactShadows
+                        position={[0, -0.5, 0]}
+                        opacity={1.5}
+                        scale={5}
+                        blur={1.5}
+                        far={2}
+                        color="#000000"
+                    />
+                    <Environment preset="warehouse" />
+                    <ContactShadows opacity={0.4} scale={10} blur={2} far={10} />
+                    <ambientLight intensity={3} />
+                    <directionalLight position={[lightX, lightY, lightZ]} intensity={intensity} />
+                    <Suspense fallback={<ModelLoader />}>
+                        <ScrollingModel
+                            scale={modelSize}
+                            position={[-0.1, 0, 0]}
+                            rotationTarget={rotationTarget}
+                            modelColor={modelColor}
+                            hoveredPart={hoveredPart}
+                            setHoveredPart={setHoveredPart}
+                            onSelect={setSelectedPart}
                         />
-                        <Environment preset="city" />
-                        <ContactShadows opacity={0.4} scale={10} blur={2} far={10} />
-                        <ambientLight intensity={2} />
-                        <directionalLight position={[lightX, lightY, lightZ]} intensity={intensity} />
-                        <Suspense fallback={<ModelLoader />}>
-                            <ScrollingModel
-                                scale={modelSize}
-                                position={[-0.1, 0, 0]}
-                                rotationTarget={rotationTarget}
-                                modelColor={modelColor}
-                                hoveredPart={hoveredPart}
-                                setHoveredPart={setHoveredPart}
-                                onSelect={setSelectedPart}
-                            />
-                        </Suspense>
-                        {/* <OrbitControls enablePan={false} enableZoom={false} /> */}
-                        <CameraRig selectedPart={selectedPart} />
-                    </Canvas>
-                </Suspense>
+                    </Suspense>
+                    <CameraRig selectedPart={selectedPart} />
+                </Canvas>
             </div>
         </section>
     );

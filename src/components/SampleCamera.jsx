@@ -1,5 +1,5 @@
 import { useGLTF } from '@react-three/drei'
-import { useRef, useEffect, useFrame } from '../imports.js'
+import { useRef, useEffect, useFrame, useState } from '../imports.js'
 import { damp3 } from 'maath/easing'
 
 export function Model({
@@ -9,6 +9,7 @@ export function Model({
   ...props
 }) {
   const { nodes, materials } = useGLTF('/models/digital_rangefinder_camera/scene.gltf')
+  const bodyRef = useRef()
   const lensRef = useRef()
   const sockelRef = useRef()
 
@@ -20,6 +21,12 @@ export function Model({
   }, [hoveredPart])
 
   useFrame((_, delta) => {
+    if (bodyRef.current?.material?.emissive) {
+      bodyRef.current.material.emissive.set('#7fe8ffa0')
+      bodyRef.current.material.emissiveIntensity +=
+        ((hoveredPart === 'body' ? 0.5 : 0) - bodyRef.current.material.emissiveIntensity) * delta * 8
+    }
+
     if (lensRef.current) {
       damp3(
         lensRef.current.scale,
@@ -27,6 +34,12 @@ export function Model({
         0.15,
         delta
       )
+    }
+
+    if (lensRef.current?.material?.emissive) {
+      lensRef.current.material.emissive.set('#7fe8ffa0')
+      lensRef.current.material.emissiveIntensity +=
+        ((hoveredPart === 'lens' ? 0.5 : 0) - lensRef.current.material.emissiveIntensity) * delta * 8
     }
 
     if (sockelRef.current) {
@@ -37,6 +50,12 @@ export function Model({
         delta
       )
     }
+
+    if (sockelRef.current?.material?.emissive) {
+      sockelRef.current.material.emissive.set('#7fe8ffa0')
+      sockelRef.current.material.emissiveIntensity +=
+        ((hoveredPart === 'sockel' ? 0.5 : 0) - sockelRef.current.material.emissiveIntensity) * delta * 8
+    }
   })
 
   return (
@@ -45,6 +64,7 @@ export function Model({
       dispose={null}
     >
       <mesh
+        ref={bodyRef}
         name="body"
         geometry={nodes.Object_4.geometry}
         material={materials.KameraMat}

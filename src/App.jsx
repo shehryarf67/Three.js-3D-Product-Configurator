@@ -1,4 +1,4 @@
-import { Navbar, Hero, About, Footer, CircleFloating, ModelCanvas } from "./components";
+import { Navbar, Hero, About, Footer, CircleFloating, ModelCanvas, Details } from "./components";
 import { useEffect } from "react";
 
 
@@ -25,6 +25,7 @@ export default function App() {
       <Navbar />
       <Hero />
       <ModelCanvas />
+      <Details />
       <About />
       <Footer />
     </div>

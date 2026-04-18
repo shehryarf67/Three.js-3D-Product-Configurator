@@ -431,6 +431,90 @@ body {
   background: radial-gradient(ellipse 80% 60% at 50% 50%, #1a1a2e 0%, #0a0a0a 100%);
 }
 
+.details {
+  width: 100%;
+  min-height: 100vh;
+  padding: 1rem 4rem;
+  box-sizing: border-box;
+  background-color: var(--main_bg_color);
+  overflow: hidden;
+  position: relative;
+}
+
+.details-stage {
+  position: relative;
+  width: 100%;
+  min-height: calc(100vh - 2rem);
+  border-radius: 28px;
+  overflow: hidden;
+  background: radial-gradient(ellipse 90% 75% at 50% 45%, #11111d 0%, #000000 68%);
+}
+
+#details-canvas {
+  width: 100%;
+  height: calc(100vh - 2rem);
+  min-height: 620px;
+  background: transparent;
+  padding: 6rem;
+  margin-top: 8rem;
+}
+
+.details-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; 
+    padding: 2.2rem 2.5rem 2rem;
+    pointer-events: none;
+}
+
+.details h2 {
+    color: rgba(255, 255, 255, 0.945);
+    font-size: 4rem;
+    max-width: 720px;
+    margin: 0 0 2rem 0; 
+    padding: 0;
+    text-align: center;
+    text-wrap: balance;
+}
+
+.details-boxes {
+    margin-top: auto; 
+    position: absolute; 
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 5rem);
+    max-width: 920px;
+}
+
+.details .box {
+  padding: 1.1rem 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  color: rgba(255, 255, 255, 0.92);
+  pointer-events: auto;
+}
+
+.details .box h3 {
+  margin: 0 0 0.45rem;
+  font-size: 1.2rem;
+  line-height: 1.2;
+  padding: 0;
+}
+
+.details .box p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+
 .model-loader {
   display: flex;
   flex-direction: column;

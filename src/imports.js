@@ -22,3 +22,6 @@ export { useRef, useState, useEffect, Suspense } from "react";
 export { IoLogoCodepen } from "react-icons/io";
 export { Leva, useControls } from "leva";
 export { damp3, dampE } from "maath/easing";
+export {gsap} from 'gsap';
+export { useGSAP } from '@gsap/react';
+export { default as clsx } from "clsx";

@@ -2,13 +2,19 @@ import { useGLTF } from '@react-three/drei'
 import { useRef, useEffect, useFrame, useState } from '../imports.js'
 import { damp3 } from 'maath/easing'
 
+export const SAMPLE_CAMERA_PATH = '/models/digital_rangefinder_camera/scene.gltf'
+
+export function useSampleCameraModel() {
+  return useGLTF(SAMPLE_CAMERA_PATH)
+}
+
 export function Model({
   hoveredPart,
   setHoveredPart,
   onSelect,
   ...props
 }) {
-  const { nodes, materials } = useGLTF('/models/digital_rangefinder_camera/scene.gltf')
+  const { nodes, materials } = useSampleCameraModel()
   const bodyRef = useRef()
   const lensRef = useRef()
   const sockelRef = useRef()
@@ -121,4 +127,4 @@ export function Model({
   )
 }
 
-useGLTF.preload('/models/digital_rangefinder_camera/scene.gltf')
+useGLTF.preload(SAMPLE_CAMERA_PATH)

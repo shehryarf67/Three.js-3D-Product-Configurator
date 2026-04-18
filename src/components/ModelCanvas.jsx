@@ -1,4 +1,3 @@
-import { Suspense, useState } from "react";
 import {
     Canvas,
     useRef,
@@ -12,6 +11,8 @@ import {
     CameraControlsImpl,
     Html,
     useProgress,
+    Suspense, 
+    useState,
 } from "../imports.js";
 import { Model as SampleModel } from "./SampleCamera.jsx";
 

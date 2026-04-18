@@ -5,8 +5,6 @@ import {
     useEffect,
     Environment,
     ContactShadows,
-    useControls,
-    Leva,
     CameraControls,
     CameraControlsImpl,
     Html,
@@ -153,13 +151,6 @@ const ModelCanvas = () => {
         return () => node.removeEventListener("wheel", handleWheel);
     }, []);
 
-    const { intensity, lightX, lightY, lightZ } = useControls({
-        intensity: { value: 10, min: 8, max: 15, step: 0.1 },
-        lightX: { value: 2, min: -10, max: 10, step: 0.1 },
-        lightY: { value: 2, min: -10, max: 10, step: 0.1 },
-        lightZ: { value: 2, min: -10, max: 10, step: 0.1 },
-    });
-
     return (
         <section className="model-canvas" id="model-canvas">
             <div className="model-canvas-content reveal">
@@ -203,7 +194,6 @@ const ModelCanvas = () => {
                     </div>
                 )}
             </div>
-            <Leva />
             <div
                 className="model-3d"
                 ref={model3dRef}
@@ -236,7 +226,7 @@ const ModelCanvas = () => {
                     <Environment preset="warehouse" />
                     <ContactShadows opacity={0.4} scale={10} blur={2} far={10} />
                     <ambientLight intensity={3} />
-                    <directionalLight position={[lightX, lightY, lightZ]} intensity={intensity} />
+                    <directionalLight position={[2, 2, 2]} intensity={10} />
                     <Suspense fallback={<ModelLoader />}>
                         <ScrollingModel
                             scale={modelSize}

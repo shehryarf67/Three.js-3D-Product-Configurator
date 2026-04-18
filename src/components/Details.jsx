@@ -1,5 +1,7 @@
 import { Model as SampleModel } from "./SampleCamera.jsx";
-import { Canvas, gsap, useGSAP, Suspense, useRef, useState, clsx, Html, useProgress, Environment, ContactShadows } from "../imports.js";
+import { Canvas, gsap, ScrollTrigger, useGSAP, Suspense, useRef, useState, clsx, Html, useProgress, Environment, ContactShadows } from "../imports.js";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const features = [
     {
@@ -48,14 +50,8 @@ const ModelScroll = () => {
         });
         
         if (groupRef.current) {
-            modelTimeline.to(groupRef.current.rotation, { y: Math.PI * 2, ease: "power1.inOut" }, 0);
+            modelTimeline.to(groupRef.current.rotation, { y: Math.PI * 2, ease: "power1.inOut" });
         }
-        featureTimeline.fromTo(
-            ".details .box",
-            { opacity: 0, y: 30 },
-            { opacity: 1, y: 0, stagger: 0.15, ease: "power2.out" },
-            0
-        );
     }, []);
 
     return (
@@ -65,9 +61,9 @@ const ModelScroll = () => {
                     hoveredPart={hoveredPart}
                     setHoveredPart={setHoveredPart}
                     onSelect={() => {}}
-                    position={[-1, -0.3, 0]}
+                    position={[-0.5, 0.3, 0]}
                     rotation={[0, -Math.PI / 2, 0]}
-                    scale={[2.9, 2.9, 2.9]}
+                    scale={[2, 2, 2]}
                 />
             </Suspense>
         </group>
@@ -81,9 +77,8 @@ const Details = () => {
                 <Canvas
                     id="details-canvas"
                     shadows
-                    camera={{ position: [0, 0.8, 2.8], fov: 34 }}
+                    camera={{ position: [0, 1, 3], fov: 50 }}
                 >
-                    <color attach="background" args={["#000000"]} />
                     <ambientLight intensity={3} />
                     <directionalLight position={[3.5, 4, 2.5]} intensity={2.2} castShadow />
                     <Environment preset="studio" />

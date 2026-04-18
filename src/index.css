@@ -428,7 +428,7 @@ body {
   margin-right: 8rem;
   border-radius: 16px;
   overflow: hidden;
-  background: radial-gradient(ellipse 60% 40% at 50% 60%, #2a2a3e 0%, #0a0a0a 100%);
+  background: radial-gradient(ellipse 80% 60% at 50% 50%, #1a1a2e 0%, #0a0a0a 100%);
 }
 
 .model-loader {

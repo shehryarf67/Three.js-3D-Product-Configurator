@@ -1,9 +1,11 @@
-import {Cards} from "./index.js";
+import { Cards } from "./index.js";
 
 const About = () => {
   return (
     <section className="about" id="about">
-      < Cards />
+      <div className="about-content">
+        < Cards />
+      </div>
     </section>
   );
 };

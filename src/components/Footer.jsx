@@ -27,8 +27,34 @@ const Footer = () => {
       </div>
 
       <div className="footer-content">
-        © 2026 My Three.js Scene
+        <div className="footer_content_box1">
+          <h2>InstaX-Fujifilm</h2>
+          <p>Crafted with React, Three.js & passion.
+            <br />
+            A 3D Camera Showcase Experience.
+          </p>
+        </div>
+        <div className="footer_content_box2">
+          <h3>NAVIGATE</h3>
+          <a href="#home">Home</a>
+          <a href="#about">About</a>
+          <a href="#details">Details</a>
+          <a href="#footer">Contact</a>
+        </div>
+        <div className="footer_content_box3">
+          <h2>The Team</h2>
+          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+            Twitter
+          </a>
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+            Instagram
+          </a>
+          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+            LinkedIn
+          </a>
+        </div>
       </div>
+      © 2026 My Three.js Scene
     </footer>
   );
 };

@@ -50,6 +50,7 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 a {
@@ -719,7 +720,7 @@ button:focus-visible {
 .footer {
   position: relative;
   width: 100%;
-  min-height: 500px;
+  min-height: 400px;
   background-color: #000000;
   color: rgb(0, 0, 0);
   overflow: hidden;
@@ -730,8 +731,50 @@ button:focus-visible {
 }
 
 .footer-content {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr; 
+  gap: 3rem;
+  align-items: flex-start;
   position: relative;
   z-index: 2;
+  padding: 1.5rem 2rem 1rem;
+  transform: translate(100px, -100px);
+}
+
+.footer_content_box1 {
+  display: flex;
+  flex-direction: column;
+  gap: 0rem;
+}
+
+.footer_content_box1 h2 {
+  margin: 0.5;
+}
+
+.footer_content_box1 p {
+  margin: 0;
+}
+
+.footer_content_box2 {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.footer_content_box2 h3 {
+  margin: 0.5;
+}
+
+.footer_content_box2 a {
+  display: block;
+  color: rgba(0, 0, 0, 0.473);
+  font-size: 0.95rem;
+  margin: 0;
+  cursor: pointer;
+}
+
+.footer_content_box2 a:hover {
+  color: black;
 }
 
 .waves-container {

@@ -896,3 +896,246 @@ button:focus-visible {
     transform: translate3d(85px, 0, 0);
   }
 }
+
+
+/* MAKING THE WEBSITE RESPONSIVE*/
+/* Tablet — 768px and below */
+@media (max-width: 768px) {
+
+  .hero {
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    min-height: auto;
+  }
+
+  .hero-content {
+    margin-left: 0;
+    margin-top: 3rem;
+    max-width: 100%;
+    text-align: left;
+  }
+
+  .hero-3d {
+    width: 100%;
+    height: 350px;
+    margin-top: 2rem;
+  }
+
+  .model-canvas {
+    flex-direction: column;
+    height: auto;
+    min-height: auto;
+    padding: 1rem 1.5rem;
+  }
+
+  .model-canvas-content {
+    margin-left: 0;
+    margin-top: 2rem;
+    max-width: 100%;
+  }
+
+  .model-3d {
+    width: 100%;
+    height: 400px;
+    margin-right: 0;
+    margin-top: 1.5rem;
+  }
+
+  .details {
+    padding: 1rem 1rem;
+  }
+
+  .details h2 {
+    font-size: 2.5rem;
+  }
+
+  .details .box {
+    width: 180px;
+    font-size: 0.85rem;
+    padding: 0.8rem 0.9rem;
+  }
+
+  .details .box h3 {
+    font-size: 1rem;
+  }
+
+  .about {
+    padding: 1rem 1.5rem;
+  }
+
+  .about h1 {
+    font-size: 2rem;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 1.5rem;
+    margin-top: 120px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+    padding: 1rem 1.5rem;
+  }
+
+  nav {
+    padding: 0.75rem 1rem;
+  }
+
+  a {
+    font-size: 18px;
+  }
+}
+
+/* Mobile — 480px and below */
+@media (max-width: 480px) {
+
+  .hero {
+    padding: 1rem;
+    border-top-left-radius: 15% 25%;  /* ← reduce bulge on mobile */
+  }
+
+  .hero-content {
+    margin-top: 2rem;
+  }
+
+  .hero-content h1 {
+    font-size: 2rem;
+    margin-left: 0;
+  }
+
+  .hero-content p {
+    margin-left: 0;
+  }
+
+  .hero-description {
+    font-size: 1.3rem;
+  }
+
+  .hero-3d {
+    height: 280px;
+  }
+
+  .model-canvas {
+    padding: 1rem;
+  }
+
+  .model-canvas-title {
+    font-size: 2rem;
+  }
+
+  .model-canvas-content {
+    margin-left: 0;
+    margin-top: 1.5rem;
+  }
+
+  .model-3d {
+    height: 300px;
+  }
+
+  .details {
+    padding: 0.5rem;
+  }
+
+  .details-stage {
+    border-radius: 16px;
+  }
+
+  .details h2 {
+    font-size: 1.8rem;
+  }
+
+  .details .box {
+    width: 140px;
+    font-size: 0.78rem;
+    padding: 0.65rem 0.75rem;
+  }
+
+  #details-canvas {
+    padding: 2rem;
+    margin-top: 4rem;
+    height: 70vh;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;  /* ← single column on mobile */
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    margin-top: 150px;
+    padding: 1rem;
+  }
+
+  .footer {
+    min-height: 500px;
+  }
+
+  .pills {
+    gap: 6px;
+  }
+
+  .pill {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+
+  h1 {
+    font-size: 2.2em;
+  }
+
+  a {
+    font-size: 16px;
+  }
+
+  nav ul {
+    gap: 0.5rem;
+  }
+
+  .color-palette {
+    gap: 8px;
+  }
+
+  .swatch {
+    width: 24px;
+    height: 24px;
+  }
+
+  .body-specs,
+  .lens-specs,
+  .sockel-specs {
+    padding: 0.8rem 0.9rem;
+  }
+
+  .body-specs-title,
+  .lens-specs-title,
+  .sockel-specs-title {
+    font-size: 1.1rem;
+  }
+}
+
+/* Large screens — 1400px and above */
+@media (min-width: 1400px) {
+
+  .hero-content {
+    margin-left: 12rem;
+  }
+
+  .model-canvas-content {
+    margin-left: 12rem;
+  }
+
+  .model-3d {
+    margin-right: 12rem;
+  }
+
+  .footer-content {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

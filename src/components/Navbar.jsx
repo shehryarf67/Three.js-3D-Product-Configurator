@@ -10,6 +10,10 @@ const Navbar = () => {
       e.preventDefault();
       document.getElementById("home").scrollIntoView({ behavior: "smooth" });
     }
+    else if (label === "Details") {
+      e.preventDefault();
+      document.getElementById("details").scrollIntoView({ behavior: "smooth" });
+    }
     else if (label === "Contact") {
       e.preventDefault();
       document.getElementById("contact").scrollIntoView({ behavior: "smooth" });
@@ -23,6 +27,7 @@ const Navbar = () => {
           {[
             { label: "Home" },
             { label: "About" },
+            { label: "Details" },
             { label: "Contact" },
           ].map((item) => (
             <li key={item.label}>

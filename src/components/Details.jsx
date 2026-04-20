@@ -93,7 +93,7 @@ const ModelScroll = () => {
 
 const Details = () => {
     return (
-        <section className="details">
+        <section className="details" id="details">
             <div className="details-stage">
                 <Canvas
                     id="details-canvas"

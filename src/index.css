@@ -757,6 +757,23 @@ button:focus-visible {
   margin: 0;
 }
 
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 0.75rem;
+}
+
+.pill {
+  background: rgba(255, 255, 255, 0.28);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: rgb(0, 0, 0);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  backdrop-filter: blur(4px);
+}
+
 .footer_content_box2 {
   display: flex;
   flex-direction: column;

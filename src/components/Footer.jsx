@@ -33,6 +33,12 @@ const Footer = () => {
             <br />
             A 3D Camera Showcase Experience.
           </p>
+          <div className="pills">
+            <span className="pill">React</span>
+            <span className="pill">Three.js</span>
+            <span className="pill">GSAP</span>
+            <span className="pill">Blender</span>
+          </div>
         </div>
         <div className="footer_content_box2">
           <h3>NAVIGATE</h3>

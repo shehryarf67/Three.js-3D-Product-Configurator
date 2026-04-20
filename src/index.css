@@ -94,6 +94,7 @@ nav ul {
   top: 1px;
   cursor: pointer;
   right: 0px;
+  display: none;
 }
 
 .crossburger {
@@ -939,10 +940,21 @@ button:focus-visible {
   }
 }
 
-
+@media (max-width: 400px) {
+  .sidebar {
+    width: 100%;
+  }
+}
 /* MAKING THE WEBSITE RESPONSIVE*/
 /* Tablet — 768px and below */
 @media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+
+  .hideOnMobile{
+    display: none;
+  }
 
   .hero {
     flex-direction: column;
@@ -1164,6 +1176,9 @@ button:focus-visible {
 
 /* Large screens — 1400px and above */
 @media (min-width: 1400px) {
+  .hideNotMobile {
+    display: none;
+  }
 
   .hero-content {
     margin-left: 12rem;

@@ -54,7 +54,7 @@ const Navbar = () => {
             { label: "Details" },
             { label: "Contact" }
           ].map((item) => (
-            <li key={item.label}>
+            <li className="hideOnMobile" key={item.label}>
               <a href="#" onClick={(e) => handleNavClick(item.label, e)}>{item.label}</a>
             </li>
           ))}

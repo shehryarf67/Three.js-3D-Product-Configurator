@@ -42,19 +42,25 @@ const Footer = () => {
           <a href="#footer">Contact</a>
         </div>
         <div className="footer_content_box3">
-          <h2>The Team</h2>
-          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-            Twitter
+          <h3>THE TEAM</h3>
+          <h2>Shehryar Faisal</h2>
+          <p>Frontend Developer & R3F <br />Developer</p>
+          <a href="https://github.com/shehryarf67" target="_blank" rel="noopener noreferrer">
+            github.com/shehryarf67
           </a>
-          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-            Instagram
+          <a href="https://www.linkedin.com/in/shehryar-faisal-524b59309/" target="_blank" rel="noopener noreferrer">
+            linkedin.com/in/shehryar-faisal
           </a>
-          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-            LinkedIn
+          <h2>Hussain Asif</h2>
+          <p>3D Artist & Blender</p>
+          <a href="https://www.instagram.com/sibro___?igsh=aGpqMWh0dnNuNmVh" target="_blank" rel="noopener noreferrer">
+            instgram.com/sibro___
           </a>
         </div>
       </div>
-      © 2026 My Three.js Scene
+      <div className="footer-bottom">
+        <p>© 2026 InstaX-Fujifilm. All rights reserved.</p>
+      </div>
     </footer>
   );
 };

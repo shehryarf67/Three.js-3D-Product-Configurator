@@ -9,7 +9,7 @@ import {
     CameraControlsImpl,
     Html,
     useProgress,
-    Suspense, 
+    Suspense,
     useState,
 } from "../imports.js";
 import { Model as SampleModel } from "./SampleCamera.jsx";
@@ -135,6 +135,14 @@ const ModelCanvas = () => {
     const [modelSize, setModelSize] = useState([2, 2, 2]);
     const [hoveredPart, setHoveredPart] = useState(null);
     const [selectedPart, setSelectedPart] = useState(null);
+    const colors = [
+        { name: "Lime Green", value: "#39FF14" },
+        { name: "Blue", value: "#1E90FF" },
+        { name: "Red", value: "#FF3131" },
+        { name: "Yellow", value: "#FFD60A" },
+        { name: "Pink", value: "#FF4FD8" },
+        { name: "Default", value: null },
+    ]
 
     useEffect(() => {
         const node = model3dRef.current;
@@ -156,13 +164,16 @@ const ModelCanvas = () => {
             <div className="model-canvas-content reveal">
                 <h1 className="model-canvas-title">Capture The Moment</h1>
                 <p className="model-canvas-description">Scroll on the model panel to rotate the camera.</p>
-                <div className="toggle-button">
-                    <button id="Color-toggler" onClick={() => setModelColor(modelColor === "#39FF14" ? null : "#39FF14")}>
-                        Toggle Color
-                    </button>
-                    <button id="Size-toggler" onClick={() => setModelSize(modelSize[0] === 2 ? [3, 3, 3] : [2, 2, 2])}>
-                        Change Size
-                    </button>
+                <div className="color-palette">
+                    {colors.map((color) => (
+                        <button
+                            key={color.name}
+                            className={`swatch ${modelColor === color.value ? "active" : ""}`}
+                            style={{ background: color.value ?? "#333333" }}
+                            title={color.name}
+                            onClick={() => setModelColor(color.value)}
+                        />
+                    ))}
                 </div>
                 {hoveredPart === "body" && (
                     <div className="body-specs">

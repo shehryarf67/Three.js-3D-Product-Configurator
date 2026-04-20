@@ -89,6 +89,46 @@ nav ul {
   padding-left: 2rem;
 }
 
+.hamburger {
+  position: relative;
+  top: 1px;
+  cursor: pointer;
+  right: 0px;
+}
+
+.crossburger {
+  position: relative;
+  top: 10px;
+  cursor: pointer;
+  right: 0px;
+}
+
+.hamburger:hover, .crossburger:hover{
+  color: grey;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 250px;
+  z-index: 999;
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: -10px 0 10px rgba(0, 0, 0, 0.1);
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+
+.sidebar li,
+a {
+  width: 100%;
+}
 
 header {
   position: sticky;
@@ -674,29 +714,29 @@ h1 {
 }
 
 .color-palette {
-    display: flex;
-    gap: 10px;
-    margin-top: 1rem;
-    flex-wrap: wrap;
+  display: flex;
+  gap: 10px;
+  margin-top: 1rem;
+  flex-wrap: wrap;
 }
 
 .swatch {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 2px solid transparent;
-    cursor: pointer;
-    padding: 0;
-    transition: transform 0.2s ease, border-color 0.2s ease;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
 .swatch:hover {
-    transform: scale(1.15);
+  transform: scale(1.15);
 }
 
 .swatch.active {
-    border-color: white;
-    transform: scale(1.15);
+  border-color: white;
+  transform: scale(1.15);
 }
 
 button {
@@ -738,7 +778,7 @@ button:focus-visible {
 
 .footer-content {
   display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr; 
+  grid-template-columns: 1.5fr 1fr 1fr;
   gap: 3rem;
   align-items: flex-start;
   position: relative;
@@ -845,6 +885,7 @@ button:focus-visible {
 .footer-bottom p {
   margin: 0;
 }
+
 .waves-container {
   position: absolute;
   left: 0;
@@ -860,7 +901,7 @@ button:focus-visible {
   height: 100%;
 }
 
-.parallax > use {
+.parallax>use {
   animation: move-forever 25s cubic-bezier(.55, .5, .45, .5) infinite;
 }
 
@@ -868,22 +909,22 @@ button:focus-visible {
   transform-origin: bottom;
 }
 
-.parallax > use:nth-child(1) {
+.parallax>use:nth-child(1) {
   animation-delay: -2s;
   animation-duration: 7s;
 }
 
-.parallax > use:nth-child(2) {
+.parallax>use:nth-child(2) {
   animation-delay: -3s;
   animation-duration: 10s;
 }
 
-.parallax > use:nth-child(3) {
+.parallax>use:nth-child(3) {
   animation-delay: -4s;
   animation-duration: 13s;
 }
 
-.parallax > use:nth-child(4) {
+.parallax>use:nth-child(4) {
   animation-delay: -5s;
   animation-duration: 20s;
 }
@@ -892,6 +933,7 @@ button:focus-visible {
   0% {
     transform: translate3d(-90px, 0, 0);
   }
+
   100% {
     transform: translate3d(85px, 0, 0);
   }
@@ -996,7 +1038,8 @@ button:focus-visible {
 
   .hero {
     padding: 1rem;
-    border-top-left-radius: 15% 25%;  /* ← reduce bulge on mobile */
+    border-top-left-radius: 15% 25%;
+    /* ← reduce bulge on mobile */
   }
 
   .hero-content {
@@ -1062,7 +1105,8 @@ button:focus-visible {
   }
 
   .card-grid {
-    grid-template-columns: 1fr;  /* ← single column on mobile */
+    grid-template-columns: 1fr;
+    /* ← single column on mobile */
   }
 
   .footer-content {

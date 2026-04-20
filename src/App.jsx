@@ -21,7 +21,7 @@ export default function App() {
 
 
   return (
-    <div style={{ width: "100vw", minHeight: "100vh" }}>
+    <div className="app-shell">
       <Navbar />
       <Hero />
       <ModelCanvas />

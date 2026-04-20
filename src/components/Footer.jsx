@@ -2,7 +2,7 @@
 
 const Footer = () => {
   return (
-    <footer className="footer">
+    <footer className="footer" id="contact">
       <div className="waves-container">
         <svg
           className="waves"
@@ -60,7 +60,10 @@ const Footer = () => {
           <h2>Hussain Asif</h2>
           <p>3D Artist & Blender</p>
           <a href="https://www.instagram.com/sibro___?igsh=aGpqMWh0dnNuNmVh" target="_blank" rel="noopener noreferrer">
-            instgram.com/sibro___
+            instagram.com/sibro___
+          </a>
+          <a href="https://sibro.artstation.com/projects?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAb21jcARSuZ5leHRuA2FlbQIxMQBzcnRjBmFwcF9pZA81NjcwNjczNDMzNTI0MjcAAacKT8DRC2Sc8wnU6RRk41YUJoFe35aFh6GRtJ60c2w_JAE69ttNDkFTWFyRRQ_aem_6EGTxLZEdnJYHTMzjKJhrQ">
+            artstation.com/sibro
           </a>
         </div>
       </div>

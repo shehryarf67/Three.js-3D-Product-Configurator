@@ -67,8 +67,6 @@ a:hover {
 nav {
   backdrop-filter: blur(10px);
   background-color: var(--secondary_color);
-  position: sticky;
-  top: 0;
   left: 0;
 
   display: flex;
@@ -665,7 +663,6 @@ body {
 body {
   margin: 0;
   /* display: flex; */
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }

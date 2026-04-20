@@ -10,6 +10,10 @@ const Navbar = () => {
       e.preventDefault();
       document.getElementById("home").scrollIntoView({ behavior: "smooth" });
     }
+    else if (label === "Contact") {
+      e.preventDefault();
+      document.getElementById("contact").scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (

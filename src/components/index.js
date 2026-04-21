@@ -7,3 +7,4 @@ export { default as Cube } from './Cube';
 export { default as Cards } from './Cards';
 export { default as ModelCanvas } from './ModelCanvas';
 export { default as Details } from './Details';
+export { default as Showcase } from './Showcase'

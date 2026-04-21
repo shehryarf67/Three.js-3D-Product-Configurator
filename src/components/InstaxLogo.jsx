@@ -1,4 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 113.4 58.06">
+const InstaxLogo = () => {
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 113.4 58.06">
   <g>
     <g id="fujifilm">
       <path d="M73.2,47.31v8.42a.76.76,0,0,0,.82.85h2.77v1a.16.16,0,0,1-.17.18H72.13c-1.39,0-1.59-.77-1.59-1.46V47.88c0-.39.15-.58.61-.57h2" fill="#fff"/>
@@ -22,3 +23,7 @@
     </g>
   </g>
 </svg>
+
+}
+
+export default InstaxLogo;

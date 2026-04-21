@@ -481,7 +481,7 @@ body {
   height: 500px;
   flex-shrink: 0;
   margin-top: 2rem;
-  margin-right: 8rem;
+  margin-right: 2rem;
   border-radius: 16px;
   overflow: hidden;
   background: radial-gradient(ellipse 80% 60% at 50% 50%, #1a1a2e 0%, #0a0a0a 100%);
@@ -1356,7 +1356,7 @@ button:focus-visible {
   }
 
   .model-3d {
-    margin-right: 12rem;
+    margin-right: 6rem;
   }
 
   .footer-content {

@@ -7,22 +7,22 @@ const features = [
     {
         title: "High-Resolution Sensor",
         description: "Capture stunning details with our high-resolution sensor.",
-        position: { top: "14%", left: "2%" },      // top left
+        position: { top: "18%", left: "10%" },
     },
     {
         title: "Premium Lens",
         description: "Multi-element optics for razor-sharp imagery.",
-        position: { top: "28%", right: "2%" },     // top right, a bit lower
+        position: { top: "30%", right: "10%" },
     },
     {
         title: "Rangefinder Body",
         description: "Classic silhouette built for comfort and precision.",
-        position: { bottom: "28%", left: "2%" },   // bottom left
+        position: { bottom: "26%", left: "10%" },
     },
     {
         title: "Stable Base",
         description: "Engineered base for balance and secure handling.",
-        position: { bottom: "14%", right: "2%" },   // bottom right, a bit lower
+        position: { bottom: "18%", right: "10%" },
     },
 ];
 

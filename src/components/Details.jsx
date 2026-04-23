@@ -6,23 +6,23 @@ gsap.registerPlugin(ScrollTrigger);
 const features = [
     {
         title: "High-Resolution Sensor",
-        description: "Capture stunning details with our high-resolution sensor.",
+        description: "Capture stunning details with our advanced high-resolution sensor, engineered to deliver crisp, vibrant images even in challenging lighting conditions.",
         position: { top: "18%", left: "10%" },
     },
     {
         title: "Premium Lens",
-        description: "Multi-element optics for razor-sharp imagery.",
-        position: { top: "30%", right: "10%" },
+                description: "Multi-element front optic with precision-ground glass delivers razor-sharp imagery with beautiful natural bokeh and minimal chromatic aberration.",
+        position: { top: "30%", right: "8%" },
     },
     {
         title: "Rangefinder Body",
-        description: "Classic silhouette built for comfort and precision.",
+        description: "The classic rangefinder silhouette is built for all-day comfort and precision handling, combining a sturdy metal shell with a leather-inspired textured grip.",
         position: { bottom: "26%", left: "10%" },
     },
     {
         title: "Stable Base",
-        description: "Engineered base for balance and secure handling.",
-        position: { bottom: "18%", right: "10%" },
+        description: "Engineered base plate provides exceptional balance and secure handling, with a standard tripod mount for studio and outdoor shooting versatility.",
+        position: { bottom: "18%", right: "8%" },
     },
 ];
 
@@ -109,6 +109,9 @@ const Details = () => {
 
                 <div className="details-overlay">
                     <h2>The Fun Filming</h2>
+                    <p className="details-intro">
+                        Experience the thrill of capturing every moment with our cutting-edge camera technology.
+                    </p>
 
                     <div className="details-boxes">
                         {features.map((feature, index) => (

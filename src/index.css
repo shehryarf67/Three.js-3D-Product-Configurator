@@ -191,6 +191,7 @@ body {
   justify-content: space-between;
   flex-direction: row;
   align-items: flex-start;
+  flex-wrap: wrap;
 
   min-height: 100vh;
   padding: 1rem 4rem;
@@ -230,6 +231,86 @@ body {
   animation: fadeSlideIn 0.9s ease forwards;
   animation-delay: 0.5s;
   opacity: 0;
+}
+
+.hero-marquee {
+  position: relative;
+  width: 100%;
+  padding: 1.25rem 0;
+  margin-top: 2rem;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+
+  white-space: nowrap;
+  overflow: hidden;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.01),
+    rgba(255, 255, 255, 0.02)
+  );
+  backdrop-filter: blur(4px);
+}
+
+.hero-marquee::before,
+.hero-marquee::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 90px;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.hero-marquee::before {
+  left: 0;
+  background: linear-gradient(to right, black 0%, transparent 100%);
+}
+
+.hero-marquee::after {
+  right: 0;
+  background: linear-gradient(to left, black 0%, transparent 100%);
+}
+
+.hero-marquee-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5rem;
+  min-width: max-content;
+  padding-left: 1rem;
+  animation: heroMarqueeScroll 22s linear infinite;
+}
+
+.hero-marquee-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.hero-marquee-separator {
+  color: rgba(255, 255, 255, 0.32);
+  font-size: 0.72rem;
+  letter-spacing: 0;
+}
+
+@keyframes heroMarqueeScroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.hero-marquee:hover .hero-marquee-track {
+  animation-play-state: paused;
 }
 
 @keyframes fadeSlideIn {

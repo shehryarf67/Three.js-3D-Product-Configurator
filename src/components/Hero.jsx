@@ -14,8 +14,8 @@ import { Cube } from "./index.js";
 
 function CameraModel(props) {
   const { scene, animations } = useGLTF('/models/pixel_polaroid_camera/scene.gltf');
-  const groupRef = useRef(); 
-  const { actions } = useAnimations(animations, groupRef); 
+  const groupRef = useRef();
+  const { actions } = useAnimations(animations, groupRef);
 
   const centeredScene = useMemo(() => {
     const model = scene.clone(true);
@@ -33,7 +33,7 @@ function CameraModel(props) {
 
   return (
     <group ref={groupRef} {...props}>
-      <primitive object={centeredScene} rotation={[Math.PI / -14, 0.2, 0]}/>
+      <primitive object={centeredScene} rotation={[Math.PI / -14, 0.2, 0]} />
     </group>
   );
 }
@@ -133,37 +133,32 @@ const Hero = () => {
           <OrbitControls enablePan={false} enableZoom={false} enableRotate={false} minDistance={2} maxDistance={3} />
         </Canvas>
       </div>
+      <div className="hero-marquee">
+        <div className="hero-marquee-track">
+          <div className="hero-marquee-text">
+            <span>Instax Mini 12</span>
+            <span className="hero-marquee-separator">•</span>
+            <span>Fill Your World With Joy</span>
+            <span className="hero-marquee-separator">•</span>
+            <span>Fujifilm</span>
+            <span className="hero-marquee-separator">•</span>
+            <span>Instant Photography</span>
+            <span className="hero-marquee-separator">•</span>
+          </div>
 
+          <div className="hero-marquee-text">
+            <span>Instax Mini 12</span>
+            <span className="hero-marquee-separator">•</span>
+            <span>Fill Your World With Joy</span>
+            <span className="hero-marquee-separator">•</span>
+            <span>Fujifilm</span>
+            <span className="hero-marquee-separator">•</span>
+            <span>Instant Photography</span>
+            <span className="hero-marquee-separator">•</span>
+          </div>
+        </div>
+      </div>
     </section>
   );
 };
 export default Hero;
-
-const Extra = () => {
-  const [cubeColor, setCubeColor] = useState("red");
-  const [cubeSize, setCubeSize] = useState([1, 1, 1]);
-  return (
-    <section>
-      <div className="hero-3d" id="canvas">
-        <Canvas camera={{ position: [2, 2, 2], fov: 80 }}>
-          <ambientLight intensity={0.6} />
-          <directionalLight position={[5, 5, 5]} intensity={1} />
-          {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} castShadow /> */}
-
-          <OrbitControls minDistance={2} maxDistance={4} />
-          <Cube position={[0, 0, 0]} size={cubeSize} color={cubeColor} />
-
-        </Canvas>
-      </div>
-
-      <div className="toggle-button">
-        <button id="Color-toggler" onClick={() => setCubeColor(cubeColor === "red" ? "limegreen" : "red")}>
-          Toggle Color
-        </button>
-        <button id="Size-toggler" onClick={() => setCubeSize(cubeSize[0] === 1 ? [2, 2, 2] : [1, 1, 1])}>
-          Change Size
-        </button>
-      </div>
-    </section>
-  );
-}

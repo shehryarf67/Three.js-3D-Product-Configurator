@@ -1,4 +1,5 @@
 import React from "react";
+import InstaxLogo from "./InstaxLogo";
 
 const Navbar = () => {
   const handleNavClick = (label, e) => {
@@ -31,6 +32,16 @@ const Navbar = () => {
 
   return (
     <header>
+      <a
+        className="app-logo"
+        href="#home"
+        onClick={(event) => {
+          event.preventDefault();
+          document.getElementById("home").scrollIntoView({ behavior: "smooth" });
+        }}
+      >
+        <InstaxLogo className="app-logo-svg" />
+      </a>
       <nav>
         <ul className="sidebar">
           <li onClick={handleSidebarToggle} className="crossburger">

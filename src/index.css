@@ -136,6 +136,7 @@ header {
   position: sticky;
   top: 0;
   z-index: 100;
+  position: relative;
 }
 
 
@@ -144,6 +145,32 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background-color: var(--secondary_color);
+}
+
+.app-shell {
+  position: relative;
+}
+
+.app-logo {
+  position: absolute;
+  top: 70%;
+  left: 1.5rem;
+  z-index: 120;
+  width: clamp(92px, 10vw, 140px);
+  color: black;
+  display: flex;
+  align-items: center;
+  transform: translateY(-50%);
+}
+
+.app-logo:hover {
+  color: #303030;
+}
+
+.app-logo-svg {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 
@@ -1267,6 +1294,11 @@ button:focus-visible {
 /* MAKING THE WEBSITE RESPONSIVE*/
 /* Tablet — 768px and below */
 @media (max-width: 768px) {
+  .app-logo {
+    left: 1rem;
+    width: 108px;
+  }
+
   .hamburger {
     display: block;
   }
@@ -1366,6 +1398,9 @@ button:focus-visible {
 
 /* Mobile — 480px and below */
 @media (max-width: 480px) {
+  .app-logo {
+    width: 92px;
+  }
 
   .hero {
     padding: 1rem;

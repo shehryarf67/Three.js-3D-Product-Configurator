@@ -1,4 +1,4 @@
-import { Navbar, Hero, About, Footer, CircleFloating, ModelCanvas, Details, Showcase } from "./components";
+import { Navbar, Hero, About, Footer, ModelCanvas, Details, Showcase } from "./components";
 import { useEffect } from "react";
 
 

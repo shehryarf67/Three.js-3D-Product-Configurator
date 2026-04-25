@@ -1,42 +1,12 @@
 import {
   Canvas,
   OrbitControls,
-  useState,
   useRef,
-  useGLTF,
   useFrame,
   useEffect,
-  useAnimations,
+  Center,
 } from "../imports.js";
-import { useMemo } from "react";
-import { Box3, Vector3 } from "three";
-import { Cube } from "./index.js";
-
-function CameraModel(props) {
-  const { scene, animations } = useGLTF('/models/pixel_polaroid_camera/scene.gltf');
-  const groupRef = useRef();
-  const { actions } = useAnimations(animations, groupRef);
-
-  const centeredScene = useMemo(() => {
-    const model = scene.clone(true);
-    const box = new Box3().setFromObject(model);
-    const center = new Vector3();
-    box.getCenter(center);
-    model.position.sub(center);
-    return model;
-  }, [scene]);
-
-  useEffect(() => {
-    const anim = Object.values(actions)[0]
-    if (anim) anim.play()
-  }, [actions])
-
-  return (
-    <group ref={groupRef} {...props}>
-      <primitive object={centeredScene} rotation={[Math.PI / -14, 0.2, 0]} />
-    </group>
-  );
-}
+import { Model as Instax12Model } from "./Instax12.jsx";
 
 
 function ScrollingModel({ rotationTarget, ...groupProps }) {
@@ -51,7 +21,9 @@ function ScrollingModel({ rotationTarget, ...groupProps }) {
 
   return (
     <group ref={ref} {...groupProps}>
-      <CameraModel />
+      <Center>
+        <Instax12Model rotation={[Math.PI / -14, 0.2, 0]} />
+      </Center>
     </group>
   );
 }
@@ -124,11 +96,11 @@ const Hero = () => {
           lastPointerX.current = event.clientX;
         }}
       >
-        <Canvas camera={{ position: [0, 1, 3], fov: 50 }}>
+        <Canvas camera={{ position: [0, 1, 0], fov: 50 }}>
           <ambientLight intensity={1} />
           <directionalLight position={[2, 2, 2]} />
 
-          <ScrollingModel position={[-0.4, 0.6, 0]} scale={1.3} rotationTarget={rotationTarget} />
+          <ScrollingModel position={[-0.15, 0.45, 0]} scale={0.4} rotationTarget={rotationTarget} />
 
           <OrbitControls enablePan={false} enableZoom={false} enableRotate={false} minDistance={2} maxDistance={3} />
         </Canvas>

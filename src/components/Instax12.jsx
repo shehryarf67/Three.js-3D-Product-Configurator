@@ -14,7 +14,7 @@ export function Model(props) {
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">
         <group name="NurbsPath" position={[0.397, 0, -1.01]} rotation={[0, 0, -Math.PI / 2]} />
-        <group name="Plane001" position={[0.397, 2.258, -1.01]}>
+        <group name="Plane001" visible={false} position={[0.397, 2.258, -1.01]}>
           <mesh name="Plane005" geometry={nodes.Plane005.geometry} material={materials['Material.004']} />
           <mesh name="Plane005_1" geometry={nodes.Plane005_1.geometry} material={materials['Material.005']} />
         </group>

@@ -84,7 +84,7 @@ const Hero = () => {
           </div>
         </div>
       </div>
-            <div className="hero-marquee">
+      <div className="hero-marquee">
         <div className="hero-marquee-track">
           <div className="hero-marquee-text">
             <span>Instax Mini 12</span>

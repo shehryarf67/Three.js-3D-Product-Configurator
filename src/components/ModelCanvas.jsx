@@ -10,9 +10,9 @@ import {
     Html,
     useProgress,
     Suspense,
-    useState,
 } from "../imports.js";
-import { Model as SampleModel } from "./SampleCamera.jsx";
+import { useState } from "react";
+import { Model as Model } from "./Instax12.jsx";
 
 function ModelLoader() {
     const { progress } = useProgress();
@@ -36,26 +36,25 @@ function CameraRig({ selectedPart }) {
 
         if (selectedPart === "lens") {
             controlsRef.current.setLookAt(
-                1, 1, 2,
+                1.2, 1.1, 4,
                 0, 0, 0,
                 true
             );
         } else if (selectedPart === "body") {
             controlsRef.current.setLookAt(
-                2, 0.5, 1,
+                2.8, 0.8, 4,
                 0, 0, 0,
                 true
             );
         } else if (selectedPart === "sockel") {
             controlsRef.current.setLookAt(
-                2, 0, 1,
+                2.4, 0.2, 4,
                 0, 0, 0,
                 true
             );
-        }
-        else {
+        } else {
             controlsRef.current.setLookAt(
-                0, 1, 3,
+                0, 0.9, 6.5,
                 0, 0, 0,
                 true
             );
@@ -65,6 +64,9 @@ function CameraRig({ selectedPart }) {
     return (
         <CameraControls
             ref={controlsRef}
+            minDistance={3}
+            maxDistance={9}
+            nearPlane={0.1}
             mouseButtons={{
                 left: CameraControlsImpl.ACTION.ROTATE,
                 middle: CameraControlsImpl.ACTION.NONE,
@@ -117,7 +119,7 @@ function ScrollingModel({
 
     return (
         <group ref={ref} rotation={[0, -Math.PI / 2, 0]} {...groupProps}>
-            <SampleModel
+            <Model
                 hoveredPart={hoveredPart}
                 setHoveredPart={setHoveredPart}
                 onSelect={onSelect}
@@ -132,7 +134,7 @@ const ModelCanvas = () => {
     const isPointerInside = useRef(false);
     const rotationTarget = useRef(-Math.PI / 2);
     const [modelColor, setModelColor] = useState(null);
-    const [modelSize, setModelSize] = useState([2, 2, 2]);
+    const modelSize = [0.55, 0.55, 0.55];
     const [hoveredPart, setHoveredPart] = useState(null);
     const [selectedPart, setSelectedPart] = useState(null);
     const colors = [
@@ -216,32 +218,29 @@ const ModelCanvas = () => {
                 }}
             >
                 <Canvas
-                    camera={{ position: [0, 1, 3], fov: 50 }}
+                    camera={{ position: [0, 0.5, 5], fov: 38, near: 0.1, far: 100 }}
                     onPointerMissed={() => setSelectedPart(null)}
                 >
-                    <color attach="background" args={['#0a0a0a']} />
-
-                    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.4, 0]}>
-                        <circleGeometry args={[2, 64]} />
-                        <meshBasicMaterial color="#ffffff" transparent opacity={0.1} />
-                    </mesh>
+                    <color attach="background" args={['#0d0d0d']} />
 
                     <ContactShadows
-                        position={[0, -0.5, 0]}
-                        opacity={1.5}
-                        scale={5}
-                        blur={1.5}
-                        far={2}
-                        color="#000000"
+                        position={[0, -0.85, 0]}
+                        opacity={0.5}
+                        scale={3}
+                        blur={1}
+                        far={1}
+                        color="#4444ff"    // ← slight blue tint looks premium
                     />
-                    <Environment preset="warehouse" />
-                    <ContactShadows opacity={0.4} scale={10} blur={2} far={10} />
-                    <ambientLight intensity={3} />
-                    <directionalLight position={[2, 2, 2]} intensity={10} />
+
+                    <Environment preset="studio" />   {/* ← studio > warehouse for product shots */}
+                    {/* <ambientLight intensity={1} />  ← reduce from 3, overkill */}
+                    {/* <directionalLight position={[-2, 4, 3]} intensity={2} />   ← reposition light */}
+                    {/* <directionalLight position={[3, 2, -2]} intensity={1} />   ← fill light from right */}
+
                     <Suspense fallback={<ModelLoader />}>
                         <ScrollingModel
                             scale={modelSize}
-                            position={[-0.1, 0, 0]}
+                            position={[0, -0.5, 0]}   // ← center it, was offset -0.1
                             rotationTarget={rotationTarget}
                             modelColor={modelColor}
                             hoveredPart={hoveredPart}

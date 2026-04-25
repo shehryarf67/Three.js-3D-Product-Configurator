@@ -153,10 +153,10 @@ body {
 
 .app-logo {
   position: absolute;
-  top: 70%;
+  top: 90%;
   left: 1.5rem;
   z-index: 120;
-  width: clamp(92px, 10vw, 140px);
+  width: clamp(110px, 12vw, 170px);
   color: black;
   display: flex;
   align-items: center;
@@ -251,13 +251,103 @@ body {
 }
 
 .hero-3d {
-  width: 50%;
-  height: 500px;
+  width: min(64%, 980px);
+  min-height: 640px;
   flex-shrink: 0;
-  margin-top: 8rem;
-  animation: fadeSlideIn 0.9s ease forwards;
-  animation-delay: 0.5s;
-  opacity: 0;
+  margin-top: 2.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-camera {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: 0;
+  filter: drop-shadow(0 28px 34px rgba(0, 0, 0, 0.45));
+
+  transition:
+    transform 1100ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 700ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  will-change: transform, width;
+}
+
+.hero-camera img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.hero-camera-stage {
+  position: relative;
+  width: 100%;
+  height: 580px;
+}
+
+.hero-camera--center {
+  width: clamp(420px, 48vw, 720px);
+  transform: translate(-50%, -48%) rotate(-3deg);
+  z-index: 4;
+}
+
+.hero-camera--left {
+  width: clamp(300px, 34vw, 520px);
+  transform: translate(-85%, -52%) rotate(-10deg);
+  z-index: 2;
+}
+
+.hero-camera--top {
+  width: clamp(270px, 30vw, 460px);
+  transform: translate(-48%, -85%) rotate(8deg);
+  z-index: 1;
+}
+
+.hero-camera--right {
+  width: clamp(300px, 34vw, 520px);
+  transform: translate(-10%, -52%) rotate(12deg);
+  z-index: 3;
+}
+
+.hero-camera-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-camera-pill {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  color: white;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  font-size: 0.9rem;
+}
+
+.hero-camera-pill button {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0 0.3rem;
+  transition: color 0.6s ease;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+}
+
+.hero-camera-pill button:hover {
+  color: white;
+  background: none;
+  border-color: transparent;
 }
 
 .hero-marquee {
@@ -1336,8 +1426,32 @@ button:focus-visible {
 
   .hero-3d {
     width: 100%;
-    height: 350px;
-    margin-top: 2rem;
+    min-height: 520px;
+    margin-top: 1rem;
+  }
+
+  .hero-camera-stage {
+    height: 420px;
+  }
+
+  .hero-camera--left {
+    left: -7%;
+    top: 44%;
+  }
+
+  .hero-camera--top {
+    left: 55%;
+    top: 0;
+  }
+
+  .hero-camera--center {
+    left: 48%;
+    top: 57%;
+  }
+
+  .hero-camera--right {
+    right: 10%;
+    top: 46%;
   }
 
   .model-canvas {
@@ -1439,7 +1553,47 @@ button:focus-visible {
   }
 
   .hero-3d {
-    height: 280px;
+    min-height: 390px;
+  }
+
+  .hero-camera-stage {
+    height: 325px;
+  }
+
+  .hero-camera figcaption {
+    font-size: 0.68rem;
+  }
+
+  .hero-camera--left {
+    left: -16%;
+  }
+
+  .hero-camera--top {
+    left: 58%;
+  }
+
+  .hero-camera--center {
+    left: 45%;
+  }
+
+  .hero-camera--right {
+    right: 4%;
+  }
+
+  .hero-camera-controls {
+    gap: 0.6rem;
+    margin-top: -0.45rem;
+  }
+
+  .hero-camera-controls button {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .hero-camera-current {
+    min-width: 125px;
+    font-size: 0.72rem;
   }
 
   .model-canvas {

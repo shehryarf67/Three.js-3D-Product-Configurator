@@ -84,6 +84,31 @@ const Hero = () => {
           </div>
         </div>
       </div>
+            <div className="hero-marquee">
+        <div className="hero-marquee-track">
+          <div className="hero-marquee-text">
+            <span>Instax Mini 12</span>
+            <span className="hero-marquee-separator">&bull;</span>
+            <span>Fill Your World With Joy</span>
+            <span className="hero-marquee-separator">&bull;</span>
+            <span>Fujifilm</span>
+            <span className="hero-marquee-separator">&bull;</span>
+            <span>Instant Photography</span>
+            <span className="hero-marquee-separator">&bull;</span>
+          </div>
+
+          <div className="hero-marquee-text">
+            <span>Instax Mini 12</span>
+            <span className="hero-marquee-separator">&bull;</span>
+            <span>Fill Your World With Joy</span>
+            <span className="hero-marquee-separator">&bull;</span>
+            <span>Fujifilm</span>
+            <span className="hero-marquee-separator">&bull;</span>
+            <span>Instant Photography</span>
+            <span className="hero-marquee-separator">&bull;</span>
+          </div>
+        </div>
+      </div>
     </section>
   );
 };

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { margin: 0; background: transparent; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+
+  <div style="position:fixed;top:10px;left:10px;z-index:999;">
+    <button onclick="rotateLeft()">← Rotate</button>
+    <button onclick="rotateRight()">→ Rotate</button>
+    <button onclick="saveImage()">💾 Save PNG</button>
+    <br/><br/>
+    <label>Color: 
+      <input type="color" value="#ffffff" onchange="changeColor(this.value)" />
+    </label>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three'
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+
+    const canvas = document.getElementById('c')
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
+    renderer.setSize(1200, 900)
+    renderer.setClearColor(0x000000, 0)
+
+    const scene = new THREE.Scene()
+
+    const camera = new THREE.PerspectiveCamera(45, 1200/900, 0.1, 100)
+    camera.position.set(0, 1, 4)
+
+    // Lighting
+    scene.add(new THREE.AmbientLight(0xffffff, 2))
+    const dir = new THREE.DirectionalLight(0xffffff, 3)
+    dir.position.set(2, 4, 3)
+    scene.add(dir)
+
+    const controls = new OrbitControls(camera, canvas)
+    controls.addEventListener('change', render)
+
+    let model = null
+
+    const loader = new GLTFLoader()
+    loader.load('./public/models/intaxmini12.glb', (gltf) => {
+      model = gltf.scene
+
+      // ❌ REMOVE FILM / PAPER
+      model.traverse((child) => {
+        if (
+          child.name === 'Plane001' ||
+          child.name === 'Plane005' ||
+          child.name === 'Plane005_1'
+        ) {
+          child.visible = false
+        }
+      })
+
+      scene.add(model)
+      render()
+    })
+
+    function render() {
+      renderer.render(scene, camera)
+    }
+
+    // Rotate
+    window.rotateLeft = () => {
+      if (model) {
+        model.rotation.y -= Math.PI / 4
+        render()
+      }
+    }
+
+    window.rotateRight = () => {
+      if (model) {
+        model.rotation.y += Math.PI / 4
+        render()
+      }
+    }
+
+    // 🎨 SMART COLOR CHANGER
+    window.changeColor = (hex) => {
+      if (!model) return
+
+      const skipMeshes = [
+        'lense2003',
+        'Cylinder003_2',
+        'flash',
+        'Object_7',
+        'Object_7001',
+        'Plane005',
+        'Plane005_1'
+      ]
+
+      const skipMaterials = [
+        'Glass',
+        'metal',
+        'screws',
+        'Material.001',
+        'Material.002',
+        'Material.003',
+        'Material.004',
+        'Material.005',
+        'Material.006',
+        'Ikae',
+        'Material'
+      ]
+
+      model.traverse((child) => {
+        if (!child.isMesh || !child.material) return
+
+        if (skipMeshes.includes(child.name)) return
+        if (skipMaterials.includes(child.material.name)) return
+
+        if (!child.userData.cloned) {
+          child.material = child.material.clone()
+          child.userData.cloned = true
+        }
+
+        child.material.color.set(hex)
+      })
+
+      render()
+    }
+
+    // Save PNG
+    window.saveImage = () => {
+      render()
+      const link = document.createElement('a')
+      link.download = `camera_${Date.now()}.png`
+      link.href = canvas.toDataURL('image/png')
+      link.click()
+    }
+
+    // Animate
+    function animate() {
+      requestAnimationFrame(animate)
+      controls.update()
+      render()
+    }
+
+    animate()
+  </script>
+</body>
+</html>

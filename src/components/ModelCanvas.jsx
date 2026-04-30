@@ -2,7 +2,9 @@ import {
     Canvas,
     useRef,
     useFrame,
+    useState,
     useEffect,
+    useGLTF,
     Environment,
     ContactShadows,
     CameraControls,
@@ -11,8 +13,18 @@ import {
     useProgress,
     Suspense,
 } from "../imports.js";
-import { useState } from "react";
 import { Model as Model } from "./Instax12.jsx";
+
+function Backdrop() {
+    const { scene } = useGLTF('/models/bg_dropoff-compressed.glb')
+    return (
+        <primitive
+            object={scene}
+            position={[0, -0.85, -1]}
+            scale={[2, 2, 2]}
+        />
+    )
+}
 
 function ModelLoader() {
     const { progress } = useProgress();
@@ -68,7 +80,7 @@ function CameraRig({ selectedPart }) {
             maxDistance={9}
             nearPlane={0.1}
             mouseButtons={{
-                left: CameraControlsImpl.ACTION.ROTATE,
+                left: CameraControlsImpl.ACTION.NONE,
                 middle: CameraControlsImpl.ACTION.NONE,
                 right: CameraControlsImpl.ACTION.NONE,
                 wheel: CameraControlsImpl.ACTION.NONE,
@@ -78,7 +90,8 @@ function CameraRig({ selectedPart }) {
 }
 
 function ScrollingModel({
-    rotationTarget,
+    rotationTargetX,
+    rotationTargetY,
     modelColor,
     hoveredPart,
     setHoveredPart,
@@ -114,7 +127,8 @@ function ScrollingModel({
     useFrame((_, delta) => {
         if (!ref.current) return;
         const smoothing = Math.min(1, delta * 8);
-        ref.current.rotation.y += (rotationTarget.current - ref.current.rotation.y) * smoothing;
+        ref.current.rotation.x += (rotationTargetX.current - ref.current.rotation.x) * smoothing;
+        ref.current.rotation.y += (rotationTargetY.current - ref.current.rotation.y) * smoothing;
     });
 
     return (
@@ -132,7 +146,11 @@ function ScrollingModel({
 const ModelCanvas = () => {
     const model3dRef = useRef(null);
     const isPointerInside = useRef(false);
-    const rotationTarget = useRef(-Math.PI / 2);
+    const isDragging = useRef(false);
+    const lastPointerX = useRef(0);
+    const lastPointerY = useRef(0);
+    const rotationTargetX = useRef(0);
+    const rotationTargetY = useRef(-Math.PI / 2);
     const [modelColor, setModelColor] = useState(null);
     const modelSize = [0.55, 0.55, 0.55];
     const [hoveredPart, setHoveredPart] = useState(null);
@@ -154,7 +172,7 @@ const ModelCanvas = () => {
             if (!isPointerInside.current) return;
             event.preventDefault();
             event.stopPropagation();
-            rotationTarget.current += event.deltaY * 0.003;
+            rotationTargetY.current += event.deltaY * 0.003;
         };
 
         node.addEventListener("wheel", handleWheel, { passive: false });
@@ -165,7 +183,7 @@ const ModelCanvas = () => {
         <section className="model-canvas" id="model-canvas">
             <div className="model-canvas-content reveal">
                 <h1 className="model-canvas-title">Capture The Moment</h1>
-                <p className="model-canvas-description">Scroll on the model panel to rotate the camera.</p>
+                <p className="model-canvas-description">Drag or scroll on the model panel to rotate the camera.</p>
                 <div className="color-palette">
                     {colors.map((color) => (
                         <button
@@ -216,32 +234,52 @@ const ModelCanvas = () => {
                 onPointerLeave={() => {
                     isPointerInside.current = false;
                 }}
+                onPointerDown={(event) => {
+                    isDragging.current = true;
+                    lastPointerX.current = event.clientX;
+                    lastPointerY.current = event.clientY;
+                    event.currentTarget.setPointerCapture(event.pointerId);
+                }}
+                onPointerMove={(event) => {
+                    if (!isDragging.current) return;
+
+                    const deltaX = event.clientX - lastPointerX.current;
+                    const deltaY = event.clientY - lastPointerY.current;
+                    lastPointerX.current = event.clientX;
+                    lastPointerY.current = event.clientY;
+                    rotationTargetY.current += deltaX * 0.01;
+                    rotationTargetX.current += deltaY * 0.01;
+                }}
+                onPointerUp={(event) => {
+                    isDragging.current = false;
+
+                    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+                        event.currentTarget.releasePointerCapture(event.pointerId);
+                    }
+                }}
+                onPointerCancel={(event) => {
+                    isDragging.current = false;
+
+                    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+                        event.currentTarget.releasePointerCapture(event.pointerId);
+                    }
+                }}
             >
                 <Canvas
                     camera={{ position: [0, 0.5, 5], fov: 38, near: 0.1, far: 100 }}
                     onPointerMissed={() => setSelectedPart(null)}
                 >
-                    <color attach="background" args={['#0d0d0d']} />
-
-                    <ContactShadows
-                        position={[0, -0.85, 0]}
-                        opacity={0.5}
-                        scale={3}
-                        blur={1}
-                        far={1}
-                        color="#4444ff"    // ← slight blue tint looks premium
-                    />
-
-                    <Environment preset="studio" />   {/* ← studio > warehouse for product shots */}
-                    {/* <ambientLight intensity={1} />  ← reduce from 3, overkill */}
-                    {/* <directionalLight position={[-2, 4, 3]} intensity={2} />   ← reposition light */}
-                    {/* <directionalLight position={[3, 2, -2]} intensity={1} />   ← fill light from right */}
-
                     <Suspense fallback={<ModelLoader />}>
+                        <Environment
+                            files="/kloofendal_48d_partly_cloudy_puresky_4k.exr"
+                            background={false}
+                        />
+                        <Backdrop />
                         <ScrollingModel
                             scale={modelSize}
-                            position={[0, -0.5, 0]}   // ← center it, was offset -0.1
-                            rotationTarget={rotationTarget}
+                            position={[0, 0, 0]}
+                            rotationTargetX={rotationTargetX}
+                            rotationTargetY={rotationTargetY}
                             modelColor={modelColor}
                             hoveredPart={hoveredPart}
                             setHoveredPart={setHoveredPart}

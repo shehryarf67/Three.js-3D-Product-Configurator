@@ -678,6 +678,12 @@ body {
   border-radius: 16px;
   overflow: hidden;
   background: transparent;
+  cursor: grab;
+  touch-action: none;
+}
+
+.model-3d:active {
+  cursor: grabbing;
 }
 
 #showcase {

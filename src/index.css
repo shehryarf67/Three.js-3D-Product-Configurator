@@ -10,7 +10,7 @@
   --secondary_color: #c49098;
 
   background-size: 200% 200%;
-  background-color: var(--secondary_color);
+  background-color: var(--main_bg_color);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -66,7 +66,7 @@ a:hover {
 
 nav {
   backdrop-filter: blur(10px);
-  background-color: var(--secondary_color);
+  background-color: var(--main_bg_color);
   left: 0;
   transition: none;
 
@@ -144,7 +144,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: var(--secondary_color);
+  background-color: var(--main_bg_color);
 }
 
 .app-shell {
@@ -192,7 +192,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--secondary_color);
+  background: var(--main_bg_color);
   border-radius: 16px;
   color: white;
   gap: 1rem;
@@ -677,8 +677,7 @@ body {
   margin-right: 4rem;
   border-radius: 16px;
   overflow: hidden;
-  background:
-    radial-gradient(ellipse 55% 45% at 52% 58%, var(--main_bg_color) 0%, var(--secondary_color) 70%);
+  background: transparent;
 }
 
 #showcase {
@@ -699,7 +698,7 @@ body {
   height: 85vh;
   border-radius: 20px;
   overflow: hidden;
-  background: var(--secondary_color);
+  background: transparent;
 }
 
 #showcase .base-video {
@@ -716,7 +715,7 @@ body {
   position: absolute;
   inset: 0;
   z-index: 2;
-  background: var(--secondary_color);
+  background: var(--main_bg_color);
   opacity: 0;
 }
 
@@ -934,7 +933,7 @@ body {
   min-height: calc(100vh - 2rem);
   border-radius: 28px;
   overflow: hidden;
-  background: radial-gradient(ellipse 90% 75% at 50% 45%, var(--main_bg_color) 0%, var(--secondary_color) 68%);
+  background: transparent;
 }
 
 #details-canvas {
@@ -1151,7 +1150,7 @@ body {
   /* display: flex; */
   min-width: 320px;
   min-height: 100vh;
-  background-color: var(--secondary_color);
+  background-color: var(--main_bg_color);
 }
 
 h1 {
@@ -1212,7 +1211,7 @@ button:focus-visible {
   position: relative;
   width: 100%;
   min-height: 400px;
-  background-color: var(--secondary_color);
+  background-color: var(--main_bg_color);
   color: rgb(0, 0, 0);
   overflow: hidden;
   display: flex;

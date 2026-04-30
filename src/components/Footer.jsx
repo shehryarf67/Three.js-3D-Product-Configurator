@@ -18,10 +18,10 @@ const Footer = () => {
           </defs>
 
           <g className="parallax">
-            <use href="#wave-path" x="48" y="0" fill="rgba(255, 235, 238, 0.72)" />
-            <use href="#wave-path" x="48" y="1" fill="rgba(244, 196, 205, 0.62)" />
-            <use href="#wave-path" x="48" y="3" fill="rgba(218, 151, 165, 0.48)" />
-            <use href="#wave-path" x="48" y="5" fill="#c49098" />
+            <use href="#wave-path" x="48" y="0" fill="rgba(255, 240, 244, 0.75)" />
+            <use href="#wave-path" x="48" y="1" fill="rgba(244, 200, 210, 0.6)" />
+            <use href="#wave-path" x="48" y="3" fill="rgba(222, 165, 178, 0.45)" />
+            <use href="#wave-path" x="48" y="5" fill="#c98f98" />
           </g>
         </svg>
       </div>

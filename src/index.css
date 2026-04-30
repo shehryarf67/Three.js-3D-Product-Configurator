@@ -55,7 +55,7 @@ body {
 
 a {
   font-weight: 500;
-  color: black;
+  color: white;
   text-decoration: inherit;
   font-size: 23px;
 }
@@ -158,14 +158,14 @@ body {
   left: 1.5rem;
   z-index: 120;
   width: clamp(110px, 12vw, 170px);
-  color: black;
+  color: white;
   display: flex;
   align-items: center;
   transform: translateY(-50%);
 }
 
 .app-logo:hover {
-  color: #303030;
+  color: rgba(255, 255, 255, 0.82);
 }
 
 .app-logo-svg {
@@ -1219,7 +1219,7 @@ button:focus-visible {
   width: 100%;
   min-height: 400px;
   background-color: var(--main_bg_color);
-  color: rgb(0, 0, 0);
+  color: white;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -1264,7 +1264,7 @@ button:focus-visible {
 .pill {
   background: rgba(255, 255, 255, 0.28);
   border: 1px solid rgba(0, 0, 0, 0.12);
-  color: rgb(0, 0, 0);
+  color: white;
   padding: 6px 14px;
   border-radius: 999px;
   font-size: 12px;
@@ -1283,7 +1283,7 @@ button:focus-visible {
 
 .footer_content_box2 a {
   display: block;
-  color: rgba(0, 0, 0, 0.473);
+  color: rgba(255, 255, 255, 0.72);
   font-size: 0.95rem;
   margin: 0;
   cursor: pointer;
@@ -1291,7 +1291,7 @@ button:focus-visible {
 }
 
 .footer_content_box2 a:hover {
-  color: black;
+  color: white;
 }
 
 .footer_content_box3 {
@@ -1314,12 +1314,12 @@ button:focus-visible {
 
 .footer_content_box3 a {
   display: block;
-  color: rgba(0, 0, 0, 0.473);
+  color: rgba(255, 255, 255, 0.72);
   font-size: 0.95rem;
 }
 
 .footer_content_box3 a:hover {
-  color: black;
+  color: white;
 }
 
 .footer-bottom {

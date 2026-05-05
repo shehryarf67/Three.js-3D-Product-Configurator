@@ -267,7 +267,6 @@ body {
   top: 37%;
   aspect-ratio: 16 / 9;
   margin: 0;
-  filter: drop-shadow(0 28px 34px rgba(0, 0, 0, 0.45));
   opacity: 1;
   pointer-events: none;
   transform-style: preserve-3d;

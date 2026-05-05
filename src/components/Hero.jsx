@@ -1,4 +1,4 @@
-import { useState } from "../imports.js";
+import { useEffect, useRef, useState } from "../imports.js";
 
 import camera1Front from "../assets/camera1/front.png";
 import camera1Rot1 from "../assets/camera1/rot_1.png";
@@ -39,14 +39,50 @@ const CAMERA_IMAGES = {
 };
 
 const COLORS = Object.keys(CAMERA_IMAGES);
+const CAMERA_FRAMES = Object.values(CAMERA_IMAGES).flatMap((camera) => Object.values(camera));
+const ROTATION_DURATION = 950;
+const POSITION_IMAGE_KEYS = {
+  center: "front",
+  left: "left",
+  right: "right",
+  "top-left": "topLeft",
+  "top-right": "topRight",
+};
 
 const Hero = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const rotationTimeoutRef = useRef(null);
+  const isRotatingRef = useRef(false);
 
-  const next = () => setActiveIndex((prev) => (prev + 1) % COLORS.length);
-  const prev = () => {
-    setActiveIndex((prev) => (prev - 1 + COLORS.length) % COLORS.length);
+  useEffect(() => {
+    const preloadedImages = CAMERA_FRAMES.map((src) => {
+      const image = new Image();
+      image.decoding = "async";
+      image.src = src;
+      image.decode?.().catch(() => {});
+      return image;
+    });
+
+    return () => {
+      window.clearTimeout(rotationTimeoutRef.current);
+      preloadedImages.length = 0;
+    };
+  }, []);
+
+  const switchCamera = (getNext) => {
+    if (isRotatingRef.current) return;
+
+    isRotatingRef.current = true;
+    setActiveIndex((prev) => getNext(prev));
+
+    window.clearTimeout(rotationTimeoutRef.current);
+    rotationTimeoutRef.current = window.setTimeout(() => {
+      isRotatingRef.current = false;
+    }, ROTATION_DURATION);
   };
+
+  const next = () => switchCamera((prev) => (prev + 1) % COLORS.length);
+  const prev = () => switchCamera((prev) => (prev - 1 + COLORS.length) % COLORS.length);
 
   const getPosition = (index) => {
     const offset = (index - activeIndex + COLORS.length) % COLORS.length;
@@ -58,12 +94,11 @@ const Hero = () => {
     return "left";
   };
 
-  const getImage = (color, position) => {
-    if (position === "center") return CAMERA_IMAGES[color].front;
-    if (position === "left") return CAMERA_IMAGES[color].left;
-    if (position === "right") return CAMERA_IMAGES[color].right;
-    if (position === "top-left") return CAMERA_IMAGES[color].topLeft;
-    return CAMERA_IMAGES[color].topRight;
+  const getZIndex = (position) => {
+    if (position === "center") return 4;
+    if (position === "right") return 3;
+    if (position === "left") return 2;
+    return 1;
   };
 
   return (
@@ -79,11 +114,24 @@ const Hero = () => {
         <div className="hero-camera-stage">
           {COLORS.map((color, index) => {
             const position = getPosition(index);
-            const image = getImage(color, position);
+            const activeImageKey = POSITION_IMAGE_KEYS[position];
 
             return (
-              <figure key={color} className={`hero-camera hero-camera--${position}`}>
-                <img src={image} alt={color} />
+              <figure
+                key={color}
+                className={`hero-camera hero-camera--${position}`}
+                aria-label={color}
+                style={{ zIndex: getZIndex(position) }}
+              >
+                {Object.entries(CAMERA_IMAGES[color]).map(([imageKey, image]) => (
+                  <span
+                    key={imageKey}
+                    className={`hero-camera-frame ${imageKey === activeImageKey ? "is-active" : ""}`}
+                    aria-hidden={imageKey !== activeImageKey}
+                  >
+                    <img src={image} alt="" loading="eager" decoding="async" />
+                  </span>
+                ))}
               </figure>
             );
           })}
@@ -91,9 +139,9 @@ const Hero = () => {
 
         <div className="hero-camera-controls">
           <div className="hero-camera-pill">
-            <button onClick={prev}>‹</button>
+            <button type="button" onClick={prev} aria-label="Previous camera color">{"<"}</button>
             <span>{COLORS[activeIndex].toUpperCase()}</span>
-            <button onClick={next}>›</button>
+            <button type="button" onClick={next} aria-label="Next camera color">{">"}</button>
           </div>
         </div>
       </div>

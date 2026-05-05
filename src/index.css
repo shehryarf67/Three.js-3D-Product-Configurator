@@ -265,20 +265,39 @@ body {
   position: absolute;
   left: 57%;
   top: 37%;
+  aspect-ratio: 16 / 9;
   margin: 0;
   filter: drop-shadow(0 28px 34px rgba(0, 0, 0, 0.45));
-
+  opacity: 1;
+  pointer-events: none;
+  transform-style: preserve-3d;
   transition:
-    transform 1100ms cubic-bezier(0.22, 1, 0.36, 1),
-    width 700ms cubic-bezier(0.22, 1, 0.36, 1);
-
-  will-change: transform, width;
+    left 950ms cubic-bezier(0.22, 1, 0.36, 1),
+    right 950ms cubic-bezier(0.22, 1, 0.36, 1),
+    top 950ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 950ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 950ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 450ms ease;
+  will-change: left, top, transform, width, opacity;
 }
 
-.hero-camera img {
+.hero-camera-frame {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 360ms ease;
+}
+
+.hero-camera-frame.is-active {
+  opacity: 1;
+}
+
+.hero-camera-frame img {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
+  object-fit: contain;
+  user-select: none;
 }
 
 .hero-camera-stage {
@@ -289,31 +308,33 @@ body {
 
 .hero-camera--center {
   width: clamp(760px, 74vw, 1080px);
-  transform: translate(-50%, -50%);
+  transform: translate3d(-50%, -50%, 0);
   z-index: 4;
 }
 
 .hero-camera--left {
   width: clamp(760px, 74vw, 1080px);
-  transform: translate(-55%, -55%);
+  transform: translate3d(-55%, -55%, 0);
   z-index: 2;
 }
 
 .hero-camera--top-left {
   width: clamp(760px, 74vw, 1080px);
-  transform: translate(-55%, -55%);
+  transform: translate3d(-55%, -55%, 0);
+  opacity: 1;
   z-index: 1;
 }
 
 .hero-camera--top-right {
   width: clamp(760px, 74vw, 1080px);
-  transform: translate(-50%, -50%);
+  transform: translate3d(-50%, -50%, 0);
+  opacity: 1;
   z-index: 1;
 }
 
 .hero-camera--right {
   width: clamp(760px, 74vw, 1080px);
-  transform: translate(-55%, -45%);
+  transform: translate3d(-55%, -45%, 0);
   z-index: 3;
 }
 
@@ -1417,7 +1438,8 @@ button:focus-visible {
   }
 
   .hero-camera--right {
-    right: 3%;
+    left: 97%;
+    right: auto;
     top: 46%;
   }
 
@@ -1548,7 +1570,8 @@ button:focus-visible {
   }
 
   .hero-camera--right {
-    right: 0%;
+    left: 100%;
+    right: auto;
   }
 
   .hero-camera-controls {

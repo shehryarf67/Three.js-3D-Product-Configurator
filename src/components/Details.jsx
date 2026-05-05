@@ -95,7 +95,7 @@ const Details = () => {
     return (
         <section className="details" id="details">
             <div className="details-stage">
-                <Canvas
+                {/* <Canvas
                     id="details-canvas"
                     shadows
                     camera={{ position: [0, 1, 3], fov: 50 }}
@@ -105,7 +105,7 @@ const Details = () => {
                     <ambientLight intensity={3} />
                     <directionalLight position={[2, 2, 2]} intensity={10} />
                     <ModelScroll />
-                </Canvas>
+                </Canvas> */}
 
                 <div className="details-overlay">
                     <h2>The Fun Filming</h2>

@@ -18,10 +18,10 @@ import { Model as Model } from "./Instax12.jsx";
 
 const INSTAX_COLORS = [
     { name: "Lilac Purple", value: "#C8A2C8" },
-    { name: "Clay White",   value: "#E2E1D3" },
-    { name: "Mint Green",   value: "#98FF98" },
+    { name: "Clay White", value: "#E2E1D3" },
+    { name: "Mint Green", value: "#98FF98" },
     { name: "Blossom Pink", value: "#F0AABA" },
-    { name: "Baby Blue",    value: "#89CFF0" },
+    { name: "Baby Blue", value: "#89CFF0" },
 ];
 
 function Backdrop() {
@@ -55,7 +55,7 @@ function CameraRig({ selectedPart }) {
     useEffect(() => {
         if (!controlsRef.current) return;
 
-        if (selectedPart === "lens") {
+        if (selectedPart === "lense") {
             controlsRef.current.setLookAt(
                 1.2, 1.1, 4,
                 0, 0, 0,
@@ -175,7 +175,7 @@ const ModelCanvas = () => {
     const lastPointerY = useRef(0);
     const rotationTargetX = useRef(0);
     const rotationTargetY = useRef(-Math.PI / 2);
-    const invalidateRef = useRef(() => {});
+    const invalidateRef = useRef(() => { });
     const [modelColor, setModelColor] = useState(INSTAX_COLORS[0].value);
     const modelSize = [0.55, 0.55, 0.55];
     const [hoveredPart, setHoveredPart] = useState(null);
@@ -288,7 +288,7 @@ const ModelCanvas = () => {
                     frameloop="demand"
                     camera={{ position: [0, 0.5, 5], fov: 38, near: 0.1, far: 100 }}
                     onPointerMissed={() => setSelectedPart(null)}
-                    gl={{alpha: true}}
+                    gl={{ alpha: true }}
                 >
                     <color attach="background" args={["#e8b4b8"]} />
                     <Suspense fallback={<ModelLoader />}>

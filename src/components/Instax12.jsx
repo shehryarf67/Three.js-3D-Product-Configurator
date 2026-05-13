@@ -6,7 +6,7 @@ Command: npx gltfjsx@6.5.3 public/models/intaxmini12.glb -o src/components/Insta
 import React from 'react'
 import { useGLTF } from '@react-three/drei'
 
-export function Model(hoveredPart, setHoveredPart, onSelect, modelColor, ...props) {
+export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...props }) {
   const group = React.useRef()
   const { nodes, materials } = useGLTF('/models/intaxmini12.glb')
   return (
@@ -21,7 +21,21 @@ export function Model(hoveredPart, setHoveredPart, onSelect, modelColor, ...prop
         <mesh name="Object_7001" geometry={nodes.Object_7001.geometry} material={materials.metal} position={[-1.685, -0.861, -0.407]} rotation={[0, 0.433, 0]} scale={[-0.558, -0.504, -0.558]} />
         <mesh name="Object_8" geometry={nodes.Object_8.geometry} material={materials.Ikae} position={[-1.685, -0.861, 0.18]} rotation={[0, 0.518, 0]} scale={[0.558, 0.504, 0.558]} />
         <mesh name="Object_8001" geometry={nodes.Object_8001.geometry} material={materials.Ikae} position={[-1.685, -0.861, -0.407]} rotation={[0, 0.433, 0]} scale={[-0.558, -0.504, -0.558]} />
-        <group name="MAIN_BODY">
+        <group
+          name="MAIN_BODY"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect("body");
+          }}
+          onPointerOver={(e) => {
+            e.stopPropagation();
+            setHoveredPart("body");
+          }}
+          onPointerLeave={(e) => {
+            e.stopPropagation();
+            setHoveredPart(null);
+          }}
+        >
           <mesh name="mesh005" geometry={nodes.mesh005.geometry} material={materials['pastel blue']} />
           <mesh name="mesh005_1" geometry={nodes.mesh005_1.geometry} material={materials['Material.001']} />
           <mesh name="mesh005_2" geometry={nodes.mesh005_2.geometry} material={materials['Material.003']} />

@@ -576,7 +576,7 @@ body {
 .model-canvas {
   display: flex;
   justify-content: space-between;
-  align-items: center;          /* ← center vertically */
+  align-items: center;          
   width: 100%;
   min-height: 100vh;
   padding: 2rem 4rem;

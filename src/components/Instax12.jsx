@@ -4,12 +4,11 @@ Command: npx gltfjsx@6.5.3 public/models/intaxmini12.glb -o src/components/Insta
 */
 
 import React from 'react'
-import { useGLTF, useAnimations } from '@react-three/drei'
+import { useGLTF } from '@react-three/drei'
 
 export function Model(props) {
   const group = React.useRef()
-  const { nodes, materials, animations } = useGLTF('/models/intaxmini12.glb')
-  const { actions } = useAnimations(animations, group)
+  const { nodes, materials } = useGLTF('/models/intaxmini12.glb')
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">

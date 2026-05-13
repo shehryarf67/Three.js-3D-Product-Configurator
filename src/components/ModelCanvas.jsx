@@ -2,6 +2,7 @@ import {
     Canvas,
     useRef,
     useFrame,
+    useThree,
     useState,
     useEffect,
     useGLTF,
@@ -96,9 +97,17 @@ function ScrollingModel({
     hoveredPart,
     setHoveredPart,
     onSelect,
+    invalidateRef,
     ...groupProps
 }) {
     const ref = useRef();
+    const { invalidate } = useThree();
+
+    // Expose R3F's invalidate to the DOM-level pointer/wheel handlers that live
+    // outside the Canvas and cannot call it directly.
+    useEffect(() => {
+        invalidateRef.current = invalidate;
+    }, [invalidate]);
 
     useEffect(() => {
         if (!ref.current) return;
@@ -122,13 +131,19 @@ function ScrollingModel({
                 }
             });
         });
+
+        invalidate();
     }, [modelColor]);
 
     useFrame((_, delta) => {
         if (!ref.current) return;
+        const dx = rotationTargetX.current - ref.current.rotation.x;
+        const dy = rotationTargetY.current - ref.current.rotation.y;
+        if (Math.abs(dx) < 0.0001 && Math.abs(dy) < 0.0001) return;
         const smoothing = Math.min(1, delta * 8);
-        ref.current.rotation.x += (rotationTargetX.current - ref.current.rotation.x) * smoothing;
-        ref.current.rotation.y += (rotationTargetY.current - ref.current.rotation.y) * smoothing;
+        ref.current.rotation.x += dx * smoothing;
+        ref.current.rotation.y += dy * smoothing;
+        invalidate();
     });
 
     return (
@@ -151,6 +166,7 @@ const ModelCanvas = () => {
     const lastPointerY = useRef(0);
     const rotationTargetX = useRef(0);
     const rotationTargetY = useRef(-Math.PI / 2);
+    const invalidateRef = useRef(() => {});
     const [modelColor, setModelColor] = useState(null);
     const modelSize = [0.55, 0.55, 0.55];
     const [hoveredPart, setHoveredPart] = useState(null);
@@ -173,6 +189,7 @@ const ModelCanvas = () => {
             event.preventDefault();
             event.stopPropagation();
             rotationTargetY.current += event.deltaY * 0.003;
+            invalidateRef.current();
         };
 
         node.addEventListener("wheel", handleWheel, { passive: false });
@@ -249,6 +266,7 @@ const ModelCanvas = () => {
                     lastPointerY.current = event.clientY;
                     rotationTargetY.current += deltaX * 0.01;
                     rotationTargetX.current += deltaY * 0.01;
+                    invalidateRef.current();
                 }}
                 onPointerUp={(event) => {
                     isDragging.current = false;
@@ -266,6 +284,7 @@ const ModelCanvas = () => {
                 }}
             >
                 <Canvas
+                    frameloop="demand"
                     camera={{ position: [0, 0.5, 5], fov: 38, near: 0.1, far: 100 }}
                     onPointerMissed={() => setSelectedPart(null)}
                 >
@@ -284,6 +303,7 @@ const ModelCanvas = () => {
                             hoveredPart={hoveredPart}
                             setHoveredPart={setHoveredPart}
                             onSelect={setSelectedPart}
+                            invalidateRef={invalidateRef}
                         />
                     </Suspense>
                     <CameraRig selectedPart={selectedPart} />
@@ -292,5 +312,7 @@ const ModelCanvas = () => {
         </section>
     );
 };
+
+useGLTF.preload('/models/bg_dropoff-compressed.glb');
 
 export default ModelCanvas;

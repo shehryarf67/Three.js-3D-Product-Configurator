@@ -26,42 +26,60 @@ export function Model({
     }
   }, [hoveredPart])
 
-  useFrame((_, delta) => {
-    if (bodyRef.current?.material?.emissive) {
-      bodyRef.current.material.emissive.set('#7fe8ff')
-      bodyRef.current.material.emissiveIntensity +=
-        ((hoveredPart === 'body' ? 0.5 : 0) - bodyRef.current.material.emissiveIntensity) * delta * 8
+  // Set emissive colour once — avoids re-parsing the hex string on every frame.
+  useEffect(() => {
+    bodyRef.current?.material?.emissive?.set('#7fe8ff')
+    lensRef.current?.material?.emissive?.set('#7fe8ff')
+    sockelRef.current?.material?.emissive?.set('#7fe8ff')
+  }, [])
+
+  useFrame((state, delta) => {
+    let dirty = false
+
+    if (bodyRef.current?.material) {
+      const target = hoveredPart === 'body' ? 0.5 : 0
+      const diff = target - bodyRef.current.material.emissiveIntensity
+      if (Math.abs(diff) > 0.001) {
+        bodyRef.current.material.emissiveIntensity += diff * delta * 8
+        dirty = true
+      }
     }
 
     if (lensRef.current) {
-      damp3(
-        lensRef.current.scale,
-        hoveredPart === 'lens' ? [0.16, 0.19, 0.16] : [0.128, 0.156, 0.128],
-        0.15,
-        delta
-      )
+      const targetScale = hoveredPart === 'lens' ? [0.16, 0.19, 0.16] : [0.128, 0.156, 0.128]
+      if (Math.abs(lensRef.current.scale.x - targetScale[0]) > 0.0001) {
+        damp3(lensRef.current.scale, targetScale, 0.15, delta)
+        dirty = true
+      }
     }
 
-    if (lensRef.current?.material?.emissive) {
-      lensRef.current.material.emissive.set('#7fe8ff')
-      lensRef.current.material.emissiveIntensity +=
-        ((hoveredPart === 'lens' ? 0.5 : 0) - lensRef.current.material.emissiveIntensity) * delta * 8
+    if (lensRef.current?.material) {
+      const target = hoveredPart === 'lens' ? 0.5 : 0
+      const diff = target - lensRef.current.material.emissiveIntensity
+      if (Math.abs(diff) > 0.001) {
+        lensRef.current.material.emissiveIntensity += diff * delta * 8
+        dirty = true
+      }
     }
 
     if (sockelRef.current) {
-      damp3(
-        sockelRef.current.scale,
-        hoveredPart === 'sockel' ? [0.3, 0.27, 0.27] : [0.277, 0.247, 0.247],
-        0.15,
-        delta
-      )
+      const targetScale = hoveredPart === 'sockel' ? [0.3, 0.27, 0.27] : [0.277, 0.247, 0.247]
+      if (Math.abs(sockelRef.current.scale.x - targetScale[0]) > 0.0001) {
+        damp3(sockelRef.current.scale, targetScale, 0.15, delta)
+        dirty = true
+      }
     }
 
-    if (sockelRef.current?.material?.emissive) {
-      sockelRef.current.material.emissive.set('#7fe8ff')
-      sockelRef.current.material.emissiveIntensity +=
-        ((hoveredPart === 'sockel' ? 0.5 : 0) - sockelRef.current.material.emissiveIntensity) * delta * 8
+    if (sockelRef.current?.material) {
+      const target = hoveredPart === 'sockel' ? 0.5 : 0
+      const diff = target - sockelRef.current.material.emissiveIntensity
+      if (Math.abs(diff) > 0.001) {
+        sockelRef.current.material.emissiveIntensity += diff * delta * 8
+        dirty = true
+      }
     }
+
+    if (dirty) state.invalidate()
   })
 
   return (

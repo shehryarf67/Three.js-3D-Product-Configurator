@@ -41,6 +41,11 @@ const CAMERA_IMAGES = {
 const COLORS = Object.keys(CAMERA_IMAGES);
 const CAMERA_FRAMES = Object.values(CAMERA_IMAGES).flatMap((camera) => Object.values(camera));
 const ROTATION_DURATION = 950;
+const CAMERA_FILTERS = {
+  "Lilac Purple": "hue-rotate(18deg) saturate(1.28) brightness(1.02)",
+  "Mint Green": "hue-rotate(-28deg) saturate(1.25) brightness(1.04)",
+  "Baby Blue": "hue-rotate(-8deg) saturate(1.2) brightness(1.03)",
+};
 const POSITION_IMAGE_KEYS = {
   center: "front",
   left: "left",
@@ -121,7 +126,7 @@ const Hero = () => {
                 key={color}
                 className={`hero-camera hero-camera--${position}`}
                 aria-label={color}
-                style={{ zIndex: getZIndex(position) }}
+                style={{ zIndex: getZIndex(position), "--camera-filter": CAMERA_FILTERS[color] ?? "none" }}
               >
                 {Object.entries(CAMERA_IMAGES[color]).map(([imageKey, image]) => (
                   <span

@@ -6,7 +6,7 @@ Command: npx gltfjsx@6.5.3 public/models/intaxmini12.glb -o src/components/Insta
 import React from 'react'
 import { useGLTF } from '@react-three/drei'
 
-export function Model(props) {
+export function Model(hoveredPart, setHoveredPart, onSelect, modelColor, ...props) {
   const group = React.useRef()
   const { nodes, materials } = useGLTF('/models/intaxmini12.glb')
   return (

@@ -161,6 +161,7 @@ function ScrollingModel({
                 setHoveredPart={setHoveredPart}
                 onSelect={onSelect}
                 modelColor={modelColor}
+                rotation={[0, 0, 0]}
             />
         </group>
     );
@@ -174,7 +175,7 @@ const ModelCanvas = () => {
     const lastPointerX = useRef(0);
     const lastPointerY = useRef(0);
     const rotationTargetX = useRef(0);
-    const rotationTargetY = useRef(-Math.PI / 2);
+    const rotationTargetY = useRef(0);
     const invalidateRef = useRef(() => { });
     const [modelColor, setModelColor] = useState(INSTAX_COLORS[0].value);
     const modelSize = [0.55, 0.55, 0.55];

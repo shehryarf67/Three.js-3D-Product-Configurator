@@ -296,7 +296,6 @@ const ModelCanvas = () => {
                     <color attach="background" args={["#e8b4b8"]} />
                     <Suspense fallback={<ModelLoader />}>
                         <Environment background={false} preset="warehouse" />
-                        <ambientLight intensity={3} />
                         <directionalLight position={[2, 2, 2]} intensity={1} />
                         {/* <Backdrop /> */}
                         <ScrollingModel

@@ -213,35 +213,37 @@ const ModelCanvas = () => {
                         />
                     ))}
                 </div>
-                {hoveredPart === "body" && (
-                    <div className="body-specs">
-                        <p className="body-specs-label">Body Specs</p>
-                        <h2 className="body-specs-title">Rangefinder Camera Body</h2>
-                        <p className="body-specs-text">
-                            The main shell houses the camera internals and defines the classic rangefinder silhouette,
-                            balancing portability with a sturdy metal-and-leather inspired profile.
-                        </p>
-                    </div>
-                )}
-                {hoveredPart === "lens" && (
-                    <div className="lens-specs">
-                        <p className="lens-specs-label">Lens Specs</p>
-                        <h2 className="lens-specs-title">Digital Rangefinder Lens</h2>
-                        <p className="lens-specs-text">
-                            Multi-element front optic with a compact barrel profile, styled for a classic
-                            rangefinder look and highlighted independently from the body.
-                        </p>
-                    </div>
-                )}
-                {hoveredPart === "sockel" && (
-                    <div className="sockel-specs">
-                        <p className="sockel-specs-label">Sockel Specs</p>
-                        <h2 className="sockel-specs-title">Camera Sockel</h2>
-                        <p className="sockel-specs-text">
-                            The camera's base, designed to provide stability and support for the entire structure, ensuring a secure grip and balance.
-                        </p>
-                    </div>
-                )}
+                <div className="specs-anchor">
+                    {hoveredPart === "body" && (
+                        <div className="body-specs">
+                            <p className="body-specs-label">Body Specs</p>
+                            <h2 className="body-specs-title">Rangefinder Camera Body</h2>
+                            <p className="body-specs-text">
+                                The main shell houses the camera internals and defines the classic rangefinder silhouette,
+                                balancing portability with a sturdy metal-and-leather inspired profile.
+                            </p>
+                        </div>
+                    )}
+                    {hoveredPart === "lens" && (
+                        <div className="lens-specs">
+                            <p className="lens-specs-label">Lens Specs</p>
+                            <h2 className="lens-specs-title">Digital Rangefinder Lens</h2>
+                            <p className="lens-specs-text">
+                                Multi-element front optic with a compact barrel profile, styled for a classic
+                                rangefinder look and highlighted independently from the body.
+                            </p>
+                        </div>
+                    )}
+                    {hoveredPart === "sockel" && (
+                        <div className="sockel-specs">
+                            <p className="sockel-specs-label">Sockel Specs</p>
+                            <h2 className="sockel-specs-title">Camera Sockel</h2>
+                            <p className="sockel-specs-text">
+                                The camera's base, designed to provide stability and support for the entire structure, ensuring a secure grip and balance.
+                            </p>
+                        </div>
+                    )}
+                </div>
             </div>
             <div
                 className="model-3d"

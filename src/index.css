@@ -576,9 +576,9 @@ body {
 .model-canvas {
   display: flex;
   justify-content: space-between;
-  align-items: center;          
+  align-items: flex-start;
   width: 100%;
-  min-height: 100vh;
+  min-height: auto;
   padding: 2rem 4rem;
   box-sizing: border-box;
   background-color: var(--main_bg_color);
@@ -587,7 +587,7 @@ body {
 .model-canvas-content {
   max-width: 340px;
   margin-left: 6rem;
-  margin-top: 0;               /* ← remove top margin since parent centers */
+  padding-top: 6rem;
 }
 
 .model-canvas-title {
@@ -603,8 +603,16 @@ body {
   margin: 0.5rem 0 1rem 0;
 }
 
+.specs-anchor {
+  position: relative;
+  height: 0;
+}
+
 .body-specs {
-  margin-top: 1.5rem;
+  position: absolute;
+  top: 1.5rem;
+  left: 0;
+  right: 0;
   padding: 1rem 1.1rem;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 14px;
@@ -636,7 +644,10 @@ body {
 }
 
 .lens-specs {
-  margin-top: 1.5rem;
+  position: absolute;
+  top: 1.5rem;
+  left: 0;
+  right: 0;
   padding: 1rem 1.1rem;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 14px;
@@ -668,7 +679,10 @@ body {
 }
 
 .sockel-specs {
-  margin-top: 1.5rem;
+  position: absolute;
+  top: 1.5rem;
+  left: 0;
+  right: 0;
   padding: 1rem 1.1rem;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 14px;
@@ -703,6 +717,7 @@ body {
   width: 50%;
   height: 560px;
   flex-shrink: 0;
+  align-self: center;
   margin-top: 0;
   margin-right: 4rem;
   border-radius: 16px;

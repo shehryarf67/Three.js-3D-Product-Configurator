@@ -34,7 +34,9 @@ export default function App() {
   return (
     <div className="app-shell">
       <Navbar />
-      <Hero />
+      <div className="hero-bg">
+        <Hero />
+      </div>
       <ModelCanvas />
       <Showcase />
       <Details />

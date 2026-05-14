@@ -152,6 +152,10 @@ body {
   background-color: var(--main_bg_color);
 }
 
+.hero-bg {
+  background-color: var(--secondary_color);
+}
+
 .app-logo {
   position: absolute;
   top: 90%;

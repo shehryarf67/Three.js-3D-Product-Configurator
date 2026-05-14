@@ -155,7 +155,7 @@ function ScrollingModel({
     });
 
     return (
-        <group ref={ref} rotation={[0, -Math.PI / 2, 0]} {...groupProps}>
+        <group ref={ref} rotation={[0, 0, 0]} {...groupProps}>
             <Model
                 hoveredPart={hoveredPart}
                 setHoveredPart={setHoveredPart}

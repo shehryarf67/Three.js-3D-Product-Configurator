@@ -1328,7 +1328,6 @@ button:focus-visible {
   font-size: 12px;
   position: relative;
   z-index: 2;
-  border-top: 2px solid black;
   width: 100%;
   margin: 0 auto;
   padding-top: 1rem;

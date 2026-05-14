@@ -22,10 +22,10 @@ const Showcase = () => {
                 trigger: "#showcase",
                 start: "top top",
                 end: "+=1500",
-                scrub: 1.5,
+                scrub: 0.8,
                 pin: true,
                 pinSpacing: true,
-                anticipatePin: 1,
+                invalidateOnRefresh: true,
             },
         });
 

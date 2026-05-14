@@ -737,7 +737,7 @@ body {
   min-height: 100vh;
   background: var(--main_bg_color);
   overflow: hidden;
-  padding: 1rem 2rem;
+  padding: 0 2rem 1rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;

@@ -1,7 +1,15 @@
-import { Model as SampleModel } from "./SampleCamera.jsx";
-import { Canvas, gsap, ScrollTrigger, useGSAP, Suspense, useRef, useState, clsx, Html, useProgress, Environment, ContactShadows } from "../imports.js";
+import { Model as Model } from "./Instax12.jsx";
+import { Canvas, gsap, ScrollTrigger, useGSAP, useThree, useEffect, Suspense, useRef, useState, clsx, Html, useProgress, Environment, ContactShadows } from "../imports.js";
 
 gsap.registerPlugin(ScrollTrigger);
+
+function InvalidateBridge({ invalidateRef }) {
+    const { invalidate } = useThree();
+    useEffect(() => {
+        invalidateRef.current = invalidate;
+    }, [invalidate]);
+    return null;
+}
 
 const features = [
     {
@@ -40,11 +48,13 @@ function ModelLoader() {
     );
 }
 
-const ModelScroll = () => {
+const ModelScroll = ({ invalidateRef }) => {
     const groupRef = useRef(null);
     const [hoveredPart, setHoveredPart] = useState(null);
 
     useGSAP(() => {
+        const onUpdate = () => invalidateRef.current();
+
         const modelTimeline = gsap.timeline({
             scrollTrigger: {
                 trigger: '#details-canvas',
@@ -52,6 +62,7 @@ const ModelScroll = () => {
                 end: "bottom top",
                 scrub: true,
                 pin: true,
+                onUpdate,
             }
         });
 
@@ -61,6 +72,7 @@ const ModelScroll = () => {
                 start: "top center",
                 end: "bottom top",
                 scrub: true,
+                onUpdate,
             }
         });
 
@@ -78,13 +90,13 @@ const ModelScroll = () => {
     return (
         <group ref={groupRef}>
             <Suspense fallback={<ModelLoader />}>
-                <SampleModel
+                <Model
                     hoveredPart={hoveredPart}
                     setHoveredPart={setHoveredPart}
                     onSelect={() => { }}
-                    position={[-0.5, 0, 0]}
+                    position={[0, 0, 0]}
                     rotation={[0, -Math.PI / 2, 0]}
-                    scale={[2, 2, 2]}
+                    scale={[0.55, 0.55, 0.55]}
                 />
             </Suspense>
         </group>
@@ -92,20 +104,23 @@ const ModelScroll = () => {
 }
 
 const Details = () => {
+    const invalidateRef = useRef(() => {});
+
     return (
         <section className="details" id="details">
             <div className="details-stage">
-                {/* <Canvas
+                <Canvas
                     id="details-canvas"
-                    shadows
-                    camera={{ position: [0, 1, 3], fov: 50 }}
+                    frameloop="demand"
+                    camera={{ position: [0, 0.5, 7], fov: 38 }}
                 >
-                    <Environment preset="warehouse" />
+                    <InvalidateBridge invalidateRef={invalidateRef} />
+                    <Environment background={false} preset="warehouse" />
                     <ContactShadows opacity={0.4} scale={10} blur={2} far={10} />
                     <ambientLight intensity={3} />
                     <directionalLight position={[2, 2, 2]} intensity={10} />
-                    <ModelScroll />
-                </Canvas> */}
+                    <ModelScroll invalidateRef={invalidateRef} />
+                </Canvas>
 
                 <div className="details-overlay">
                     <h2>The Fun Filming</h2>

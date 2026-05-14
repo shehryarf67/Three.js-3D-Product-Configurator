@@ -149,7 +149,7 @@ body {
 
 .app-shell {
   position: relative;
-  background-color: var(--secondary_color);
+  background-color: var(--main_bg_color);
 }
 
 .app-logo {

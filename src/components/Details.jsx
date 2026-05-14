@@ -119,7 +119,7 @@ const Details = () => {
                     <InvalidateBridge invalidateRef={invalidateRef} />
                     <Environment background={false} preset="warehouse" />
                     <ambientLight intensity={3} />
-                    <directionalLight position={[2, 2, 2]} intensity={5} />
+                    <directionalLight position={[2, 2, 2]} intensity={1} />
                     <ModelScroll invalidateRef={invalidateRef} />
                 </Canvas>
 

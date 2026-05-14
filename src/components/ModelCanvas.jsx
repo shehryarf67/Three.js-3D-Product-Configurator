@@ -295,13 +295,9 @@ const ModelCanvas = () => {
                 >
                     <color attach="background" args={["#e8b4b8"]} />
                     <Suspense fallback={<ModelLoader />}>
-                        <Environment
-                            files="/kloofendal_48d_partly_cloudy_puresky_4k.exr"
-                            background={false}
-                            environmentIntensity={0.4}
-                        />
-                        <ambientLight intensity={1.2} color="#fff8f0" />
-                        <directionalLight position={[3, 4, 3]} intensity={1.8} color="#fffaf5" />
+                        <Environment background={false} preset="warehouse" />
+                        <ambientLight intensity={3} />
+                        <directionalLight position={[2, 2, 2]} intensity={1} />
                         {/* <Backdrop /> */}
                         <ScrollingModel
                             scale={modelSize}

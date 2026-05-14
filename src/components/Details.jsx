@@ -88,17 +88,19 @@ const ModelScroll = ({ invalidateRef }) => {
     }, []);
 
     return (
-        <group ref={groupRef}>
-            <Suspense fallback={<ModelLoader />}>
-                <Model
-                    hoveredPart={hoveredPart}
-                    setHoveredPart={setHoveredPart}
-                    onSelect={() => { }}
-                    position={[0, 0, 0]}
-                    rotation={[0, -Math.PI / 2, 0]}
-                    scale={[0.55, 0.55, 0.55]}
-                />
-            </Suspense>
+        <group position={[-0.7, 0, 0]}>
+            <group ref={groupRef}>
+                <Suspense fallback={<ModelLoader />}>
+                    <Model
+                        hoveredPart={hoveredPart}
+                        setHoveredPart={setHoveredPart}
+                        onSelect={() => { }}
+                        position={[0, 0, 0]}
+                        rotation={[0, 0, 0]}
+                        scale={[0.55, 0.55, 0.55]}
+                    />
+                </Suspense>
+            </group>
         </group>
     )
 }
@@ -116,9 +118,8 @@ const Details = () => {
                 >
                     <InvalidateBridge invalidateRef={invalidateRef} />
                     <Environment background={false} preset="warehouse" />
-                    <ContactShadows opacity={0.4} scale={10} blur={2} far={10} />
                     <ambientLight intensity={3} />
-                    <directionalLight position={[2, 2, 2]} intensity={10} />
+                    <directionalLight position={[2, 2, 2]} intensity={5} />
                     <ModelScroll invalidateRef={invalidateRef} />
                 </Canvas>
 

@@ -124,7 +124,7 @@ const ModelCanvas = () => {
     const rotationTargetY = useRef(0);
     const invalidateRef = useRef(() => { });
     const [modelColor, setModelColor] = useState(INSTAX_COLORS[0].value);
-    const modelSize = [0.42, 0.42, 0.42];
+    const modelSize = [0.48, 0.48, 0.48];
     const [hoveredPart, setHoveredPart] = useState(null);
 
     useEffect(() => {
@@ -274,7 +274,7 @@ const ModelCanvas = () => {
             >
                 <Canvas
                     frameloop="demand"
-                    camera={{ position: [0, 0.5, 6.2], fov: 38, near: 0.1, far: 100 }}
+                    camera={{ position: [0, 0.5, 5.8], fov: 38, near: 0.1, far: 100 }}
                     gl={{ alpha: true }}
                 >
                     <color attach="background" args={["#e8b4b8"]} />

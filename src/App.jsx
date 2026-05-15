@@ -16,17 +16,23 @@ export default function App() {
 
     const elements = document.querySelectorAll(".reveal");
     elements.forEach((el) => observer.observe(el));
+    const heroBg = document.querySelector(".hero-bg");
+    let rafId;
+    const sizeObserver = heroBg
+      ? new ResizeObserver(() => {
+          cancelAnimationFrame(rafId);
+          rafId = requestAnimationFrame(() => ScrollTrigger.refresh());
+        })
+      : null;
+    if (sizeObserver) sizeObserver.observe(heroBg);
 
-    // Recalculate all ScrollTrigger positions after the full page has settled.
-    // Sections above Showcase (Hero images, ModelCanvas GLTF) load async and
-    // expand after the initial render, making cached trigger positions stale.
-    const rafId = requestAnimationFrame(() => {
-      ScrollTrigger.refresh();
-    });
+    const initialRafId = requestAnimationFrame(() => ScrollTrigger.refresh());
 
     return () => {
       observer.disconnect();
+      sizeObserver?.disconnect();
       cancelAnimationFrame(rafId);
+      cancelAnimationFrame(initialRafId);
     };
   }, []);
 

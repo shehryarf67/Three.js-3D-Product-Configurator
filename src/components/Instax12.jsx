@@ -4,16 +4,203 @@ Command: npx gltfjsx@6.5.3 public/models/intaxmini12.glb -o src/components/Insta
 */
 
 import React from 'react'
-import { useGLTF } from '@react-three/drei'
+import { useFrame } from '@react-three/fiber'
+import { useAnimations, useGLTF } from '@react-three/drei'
+import { AdditiveBlending, LoopOnce, LoopRepeat } from 'three'
 
 export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...props }) {
   const group = React.useRef()
-  const { nodes, materials } = useGLTF('/models/intaxmini12.glb')
+  const shutterButtonRef = React.useRef()
+  const flashRef = React.useRef()
+  const flashGlowLightRef = React.useRef()
+  const flashGlowMaterialRef = React.useRef()
+  const batteryCoverRef = React.useRef()
+  const wasLensHovered = React.useRef(false)
+  const [photoVisible, setPhotoVisible] = React.useState(false)
+  const { nodes, materials, animations } = useGLTF('/models/intaxmini12.glb')
+  const { actions, mixer } = useAnimations(animations, group)
+  const flashMaterial = React.useMemo(() => materials['Material.006'].clone(), [materials])
+
+  const setPartHover = (part) => (e) => {
+    e.stopPropagation()
+    setHoveredPart(part)
+  }
+
+  const clearPartHover = (e) => {
+    e.stopPropagation()
+    setHoveredPart(null)
+  }
+
+  const selectPart = (part) => (e) => {
+    e.stopPropagation()
+    onSelect(part)
+  }
+
+  const playPhotoAnimation = () => {
+    const action = actions['Plane.001Action.001']
+    if (!action) return
+
+    setPhotoVisible(true)
+    action.stop()
+    action.reset()
+    action.paused = false
+    action.enabled = true
+    action.clampWhenFinished = true
+    action.setLoop(LoopOnce, 1)
+    action.timeScale = 1
+    action.setEffectiveWeight(1)
+    action.play()
+  }
+
+  const pressShutter = (e) => {
+    e.stopPropagation()
+    onSelect('shutter-button')
+    setHoveredPart('polaroid-image')
+    playPhotoAnimation()
+  }
+
+  const playClip = (name, reversed = false, repeat = false) => {
+    const action = actions[name]
+    if (!action) return
+
+    action.paused = false
+    action.enabled = true
+    action.clampWhenFinished = !repeat
+    action.setLoop(repeat ? LoopRepeat : LoopOnce, repeat ? Infinity : 1)
+    action.timeScale = reversed ? -1 : 1
+
+    if (reversed) {
+      if (action.time <= 0) {
+        action.time = action.getClip().duration
+      }
+      action.play()
+    } else {
+      if (action.time >= action.getClip().duration) {
+        action.time = 0
+      }
+      action.play()
+    }
+  }
+
+  React.useEffect(() => {
+    const isLensHovered = hoveredPart === 'lens'
+    if (wasLensHovered.current === isLensHovered) return
+
+    const lensClips = ['lenseAction', 'lesne1Action', 'lense2Action', 'lense2Action.001', 'lense2Action.002']
+    lensClips.forEach((clip) => playClip(clip, !isLensHovered, isLensHovered))
+    wasLensHovered.current = isLensHovered
+  }, [hoveredPart, actions])
+
+  React.useEffect(() => {
+    const handleFinished = (e) => {
+      if (e.action.getClip().name === 'Plane.001Action.001') {
+        setPhotoVisible(false)
+      }
+    }
+
+    mixer.addEventListener('finished', handleFinished)
+    return () => mixer.removeEventListener('finished', handleFinished)
+  }, [mixer])
+
+  React.useEffect(() => {
+    if (!flashMaterial.emissive) return
+
+    flashMaterial.emissive.set('#fff4c7')
+    flashMaterial.emissiveIntensity = 0
+  }, [flashMaterial])
+
+  useFrame((state, delta) => {
+    let dirty = false
+
+    if (shutterButtonRef.current) {
+      const targetZ = hoveredPart === 'shutter-button' ? 0.9 : 0.944
+      const diff = targetZ - shutterButtonRef.current.position.z
+
+      if (Math.abs(diff) > 0.001) {
+        shutterButtonRef.current.position.z += diff * delta * 12
+        dirty = true
+      }
+    }
+
+    if (batteryCoverRef.current) {
+      const targetX = hoveredPart === 'battery-cover' ? -2.08 : -1.989
+      const diff = targetX - batteryCoverRef.current.position.x
+
+      if (Math.abs(diff) > 0.001) {
+        batteryCoverRef.current.position.x += diff * delta * 8
+        dirty = true
+      }
+    }
+
+    if (flashRef.current) {
+      const targetScale = hoveredPart === 'flashlight' ? 1.16 : 1
+      const diff = targetScale - flashRef.current.scale.x
+
+      if (Math.abs(diff) > 0.001) {
+        flashRef.current.scale.x += diff * delta * 8
+        flashRef.current.scale.y += diff * delta * 8
+        flashRef.current.scale.z += diff * delta * 8
+        dirty = true
+      }
+
+      const targetRotation = hoveredPart === 'flashlight' ? 0.4 : 0
+      const rotationDiff = targetRotation - flashRef.current.rotation.z
+
+      if (Math.abs(rotationDiff) > 0.001) {
+        flashRef.current.rotation.z += rotationDiff * delta * 4
+        dirty = true
+      }
+    }
+
+    if (flashGlowLightRef.current) {
+      const targetIntensity = hoveredPart === 'flashlight' ? 2.4 : 0
+      const diff = targetIntensity - flashGlowLightRef.current.intensity
+
+      if (Math.abs(diff) > 0.01) {
+        flashGlowLightRef.current.intensity += diff * delta * 8
+        dirty = true
+      }
+    }
+
+    if (flashGlowMaterialRef.current) {
+      const targetOpacity = hoveredPart === 'flashlight' ? 0.35 : 0
+      const diff = targetOpacity - flashGlowMaterialRef.current.opacity
+
+      if (Math.abs(diff) > 0.001) {
+        flashGlowMaterialRef.current.opacity += diff * delta * 8
+        dirty = true
+      }
+    }
+
+    if (flashMaterial.emissive) {
+      const targetIntensity = hoveredPart === 'flashlight' ? 1.6 : 0
+      const diff = targetIntensity - flashMaterial.emissiveIntensity
+
+      if (Math.abs(diff) > 0.01) {
+        flashMaterial.emissiveIntensity += diff * delta * 8
+        dirty = true
+      }
+    }
+
+    Object.values(actions).forEach((action) => {
+      if (action.isRunning()) dirty = true
+    })
+
+    if (dirty) state.invalidate()
+  })
+
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">
         <group name="NurbsPath" position={[0.397, 0, -1.01]} rotation={[0, 0, -Math.PI / 2]} />
-        <group name="Plane001" visible={false} position={[0.397, 2.258, -1.01]}>
+        <group
+          name="Plane.001"
+          visible={photoVisible}
+          position={[0.397, 2.258, -1.01]}
+          onClick={selectPart("polaroid-image")}
+          onPointerOver={setPartHover("polaroid-image")}
+          onPointerLeave={clearPartHover}
+        >
           <mesh name="Plane005" geometry={nodes.Plane005.geometry} material={materials['Material.004']} />
           <mesh name="Plane005_1" geometry={nodes.Plane005_1.geometry} material={materials['Material.005']} />
         </group>
@@ -27,44 +214,86 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...pr
             e.stopPropagation();
             onSelect("body");
           }}
-          onPointerOver={(e) => {
-            e.stopPropagation();
-            setHoveredPart("body");
-          }}
-          onPointerLeave={(e) => {
-            e.stopPropagation();
-            setHoveredPart(null);
-          }}
+          onPointerOver={setPartHover("body")}
+          onPointerLeave={clearPartHover}
         >
           <mesh name="mesh005" geometry={nodes.mesh005.geometry} material={materials['pastel blue']} />
           <mesh name="mesh005_1" geometry={nodes.mesh005_1.geometry} material={materials['Material.001']} />
           <mesh name="mesh005_2" geometry={nodes.mesh005_2.geometry} material={materials['Material.003']} />
           <mesh name="mesh005_3" geometry={nodes.mesh005_3.geometry} material={materials.screws} />
         </group>
-        <mesh name="button_2" geometry={nodes.button_2.geometry} material={materials['pastel blue']} position={[-1.524, 0.341, 0.944]} />
-        <mesh name="flash" geometry={nodes.flash.geometry} material={materials['Material.006']} position={[-0.649, 1.55, 0.693]} />
-        <mesh name="lense" geometry={nodes.lense.geometry} material={materials['pastel blue']} position={[0.502, -0.475, 1.319]} />
-        <mesh name="lesne1" geometry={nodes.lesne1.geometry} material={materials['pastel blue']} position={[0.502, -0.475, 1.319]} />
-        <group name="lense2" position={[0.502, -0.475, 1.319]}>
-          <mesh name="Cylinder003" geometry={nodes.Cylinder003.geometry} material={materials['pastel blue']} />
-          <mesh name="Cylinder003_1" geometry={nodes.Cylinder003_1.geometry} material={materials['Material.001']} />
-          <mesh name="Cylinder003_2" geometry={nodes.Cylinder003_2.geometry} material={materials['Material.002']} />
-          <mesh name="lense2001" geometry={nodes.lense2001.geometry} material={materials['Material.001']} position={[0, 0, 0.094]} />
-          <mesh name="lense2002" geometry={nodes.lense2002.geometry} material={materials['Material.001']} position={[0, 0, 0.094]} />
-          <mesh name="lense2003" geometry={nodes.lense2003.geometry} material={materials.Glass} position={[0, 0, -0.22]} />
+        <mesh
+          ref={shutterButtonRef}
+          name="button_2"
+          geometry={nodes.button_2.geometry}
+          material={materials['pastel blue']}
+          position={[-1.524, 0.341, 0.944]}
+          onPointerDown={pressShutter}
+          onPointerOver={setPartHover("shutter-button")}
+          onPointerLeave={clearPartHover}
+        />
+        <group
+          ref={flashRef}
+          name="FLASHLIGHT"
+          position={[-0.649, 1.55, 0.693]}
+          onClick={selectPart("flashlight")}
+          onPointerOver={setPartHover("flashlight")}
+          onPointerLeave={clearPartHover}
+        >
+          <mesh name="flash" geometry={nodes.flash.geometry} material={flashMaterial} />
+          <pointLight ref={flashGlowLightRef} color="#fff4c7" intensity={0} distance={2.2} decay={2} />
+          <mesh position={[0, 0, 0.08]} scale={[0.55, 0.82, 0.12]}>
+            <sphereGeometry args={[0.45, 24, 12]} />
+            <meshBasicMaterial ref={flashGlowMaterialRef} color="#fff4c7" transparent opacity={0} depthWrite={false} blending={AdditiveBlending} />
+          </mesh>
+        </group>
+        <group
+          name="LENS"
+          onClick={selectPart("lens")}
+          onPointerOver={setPartHover("lens")}
+          onPointerLeave={clearPartHover}
+        >
+          <mesh name="lense" geometry={nodes.lense.geometry} material={materials['pastel blue']} position={[0.502, -0.475, 1.319]} />
+          <mesh name="lesne1" geometry={nodes.lesne1.geometry} material={materials['pastel blue']} position={[0.502, -0.475, 1.319]} />
+          <group name="lense2" position={[0.502, -0.475, 1.319]}>
+            <group name="lense2.001" position={[0, 0, 0.094]}>
+              <mesh name="Cylinder003" geometry={nodes.Cylinder003.geometry} material={materials['pastel blue']} />
+              <mesh name="Cylinder003_1" geometry={nodes.Cylinder003_1.geometry} material={materials['Material.001']} />
+              <mesh name="Cylinder003_2" geometry={nodes.Cylinder003_2.geometry} material={materials['Material.002']} />
+            </group>
+            <group name="lense2.002" position={[0, 0, 0.094]}>
+              <mesh name="lense2001" geometry={nodes.lense2001.geometry} material={materials['Material.001']} />
+              <mesh name="lense2002" geometry={nodes.lense2002.geometry} material={materials['Material.001']} />
+            </group>
+            <group name="lense2.003" position={[0, 0, -0.22]}>
+              <mesh name="lense2003" geometry={nodes.lense2003.geometry} material={materials.Glass} />
+            </group>
+          </group>
+          <group name="lense.001" position={[0.502, -0.475, 1.319]}>
+            <mesh name="Cylinder004" geometry={nodes.Cylinder004.geometry} material={materials['pastel blue']} />
+            <mesh name="Cylinder004_1" geometry={nodes.Cylinder004_1.geometry} material={materials.Material} />
+          </group>
         </group>
         <group name="Retopo_MAIN_BODY001">
           <mesh name="mesh011" geometry={nodes.mesh011.geometry} material={materials['pastel blue']} />
           <mesh name="mesh011_1" geometry={nodes.mesh011_1.geometry} material={materials['Material.003']} />
         </group>
         <mesh name="Cube001" geometry={nodes.Cube001.geometry} material={materials['pastel blue']} position={[0.639, 1.899, -0.639]} />
-        <mesh name="BATTERY_COVER" geometry={nodes.BATTERY_COVER.geometry} material={materials['pastel blue']} position={[-1.989, -1.081, -0.151]} />
-        <mesh name="BATTERY_COVER001" geometry={nodes.BATTERY_COVER001.geometry} material={materials['Material.001']} position={[-2.003, -1.081, -0.151]} />
-        <mesh name="Cube004" geometry={nodes.Cube004.geometry} material={materials['pastel blue']} position={[0.387, 2.397, 0]} />
-        <group name="lense001" position={[0.502, -0.475, 1.319]}>
-          <mesh name="Cylinder004" geometry={nodes.Cylinder004.geometry} material={materials['pastel blue']} />
-          <mesh name="Cylinder004_1" geometry={nodes.Cylinder004_1.geometry} material={materials.Material} />
+        <group
+          name="BATTERY_COVER_GROUP"
+          onClick={selectPart("battery-cover")}
+          onPointerOver={setPartHover("battery-cover")}
+          onPointerLeave={clearPartHover}
+        >
+          <mesh name="BATTERY_COVER_HITAREA" geometry={nodes.BATTERY_COVER.geometry} position={[-1.989, -1.081, -0.151]}>
+            <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+          </mesh>
+          <group ref={batteryCoverRef} name="BATTERY_COVER" position={[-1.989, -1.081, -0.151]}>
+            <mesh name="BATTERY_COVER" geometry={nodes.BATTERY_COVER.geometry} material={materials['pastel blue']} />
+            <mesh name="BATTERY_COVER001" geometry={nodes.BATTERY_COVER001.geometry} material={materials['Material.001']} position={[-0.014, 0, 0]} />
+          </group>
         </group>
+        <mesh name="Cube004" geometry={nodes.Cube004.geometry} material={materials['pastel blue']} position={[0.387, 2.397, 0]} />
       </group>
     </group>
   )

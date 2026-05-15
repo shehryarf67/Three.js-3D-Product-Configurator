@@ -55,7 +55,7 @@ function CameraRig({ selectedPart }) {
     useEffect(() => {
         if (!controlsRef.current) return;
 
-        if (selectedPart === "lense") {
+        if (selectedPart === "lens") {
             controlsRef.current.setLookAt(
                 1.2, 1.1, 4,
                 0, 0, 0,
@@ -65,6 +65,30 @@ function CameraRig({ selectedPart }) {
             controlsRef.current.setLookAt(
                 2.8, 0.8, 4,
                 0, 0, 0,
+                true
+            );
+        } else if (selectedPart === "battery-cover") {
+            controlsRef.current.setLookAt(
+                -3.1, 0.1, 3.8,
+                -0.7, -0.45, 0,
+                true
+            );
+        } else if (selectedPart === "flashlight") {
+            controlsRef.current.setLookAt(
+                -1.6, 2.1, 4.1,
+                -0.35, 0.75, 0,
+                true
+            );
+        } else if (selectedPart === "shutter-button") {
+            controlsRef.current.setLookAt(
+                -2.1, 1.1, 4,
+                -0.8, 0.25, 0.6,
+                true
+            );
+        } else if (selectedPart === "polaroid-image") {
+            controlsRef.current.setLookAt(
+                0.8, 2.7, 4.5,
+                0.35, 1.25, -0.65,
                 true
             );
         } else if (selectedPart === "sockel") {
@@ -110,9 +134,6 @@ function ScrollingModel({
 }) {
     const ref = useRef();
     const { invalidate } = useThree();
-
-    // Expose R3F's invalidate to the DOM-level pointer/wheel handlers that live
-    // outside the Canvas and cannot call it directly.
     useEffect(() => {
         invalidateRef.current = invalidate;
     }, [invalidate]);
@@ -244,6 +265,46 @@ const ModelCanvas = () => {
                             </p>
                         </div>
                     )}
+                    {hoveredPart === "battery-cover" && (
+                        <div className="battery-cover-specs">
+                            <p className="battery-cover-specs-label">Battery Cover</p>
+                            <h2 className="battery-cover-specs-title">Sliding Battery Door</h2>
+                            <p className="battery-cover-specs-text">
+                                Rear-access cover for the camera's power compartment, separated from the shell so it
+                                can slide out on hover and show the removable panel detail.
+                            </p>
+                        </div>
+                    )}
+                    {hoveredPart === "flashlight" && (
+                        <div className="flashlight-specs">
+                            <p className="flashlight-specs-label">Flashlight Specs</p>
+                            <h2 className="flashlight-specs-title">Auto Flash Window</h2>
+                            <p className="flashlight-specs-text">
+                                Compact front flash with a subtle pulse animation, calling attention to the automatic
+                                exposure support built into the camera face.
+                            </p>
+                        </div>
+                    )}
+                    {hoveredPart === "shutter-button" && (
+                        <div className="shutter-button-specs">
+                            <p className="shutter-button-specs-label">Shutter Button</p>
+                            <h2 className="shutter-button-specs-title">Press To Print</h2>
+                            <p className="shutter-button-specs-text">
+                                The raised top button triggers the instant-photo animation, giving the model a tactile
+                                camera moment instead of staying as a static product view.
+                            </p>
+                        </div>
+                    )}
+                    {hoveredPart === "polaroid-image" && (
+                        <div className="polaroid-image-specs">
+                            <p className="polaroid-image-specs-label">Instant Print</p>
+                            <h2 className="polaroid-image-specs-title">Polaroid-Style Photo</h2>
+                            <p className="polaroid-image-specs-text">
+                                A small print plane slides out from the camera body after the shutter press, echoing
+                                the instant film reveal that defines the Instax experience.
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
             <div
@@ -300,7 +361,7 @@ const ModelCanvas = () => {
                         {/* <Backdrop /> */}
                         <ScrollingModel
                             scale={modelSize}
-                            position={[0, 0, 0]}
+                            position={[0, 0.25, 0]}
                             rotationTargetX={rotationTargetX}
                             rotationTargetY={rotationTargetY}
                             modelColor={modelColor}

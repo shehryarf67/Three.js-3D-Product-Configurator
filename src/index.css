@@ -591,7 +591,7 @@ body {
 .model-canvas-content {
   max-width: 340px;
   margin-left: 6rem;
-  padding-top: 6rem;
+  padding-top: 2rem;
 }
 
 .model-canvas-title {
@@ -612,108 +612,65 @@ body {
   height: 0;
 }
 
-.body-specs {
-  position: absolute;
-  top: 1.5rem;
-  left: 0;
-  right: 0;
-  padding: 1rem 1.1rem;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(12px);
-}
-
-.body-specs-label {
-  margin: 0 0 0.35rem 0;
-  color: rgba(255, 255, 255, 0.68);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.8rem;
-}
-
-.body-specs-title {
-  margin: 0 0 0.55rem 0;
-  color: rgba(255, 255, 255, 0.97);
-  font-size: 1.4rem;
-  line-height: 1.15;
-  padding: 0;
-}
-
-.body-specs-text {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.82);
-  font-size: 0.98rem;
-  line-height: 1.55;
-}
-
-.lens-specs {
-  position: absolute;
-  top: 1.5rem;
-  left: 0;
-  right: 0;
-  padding: 1rem 1.1rem;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(12px);
-}
-
-.lens-specs-label {
-  margin: 0 0 0.35rem 0;
-  color: rgba(255, 255, 255, 0.68);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.8rem;
-}
-
-.lens-specs-title {
-  margin: 0 0 0.55rem 0;
-  color: rgba(255, 255, 255, 0.97);
-  font-size: 1.4rem;
-  line-height: 1.15;
-  padding: 0;
-}
-
-.lens-specs-text {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.82);
-  font-size: 0.98rem;
-  line-height: 1.55;
-}
-
+.body-specs,
+.battery-cover-specs,
+.flashlight-specs,
+.shutter-button-specs,
+.polaroid-image-specs,
+.lens-specs,
 .sockel-specs {
   position: absolute;
   top: 1.5rem;
   left: 0;
   right: 0;
-  padding: 1rem 1.1rem;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(12px);
+  padding: 1.1rem 1.3rem;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.38);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 4px 20px rgba(180, 100, 120, 0.12);
 }
 
+.body-specs-label,
+.battery-cover-specs-label,
+.flashlight-specs-label,
+.shutter-button-specs-label,
+.polaroid-image-specs-label,
+.lens-specs-label,
 .sockel-specs-label {
   margin: 0 0 0.35rem 0;
-  color: rgba(255, 255, 255, 0.68);
+  color: rgba(100, 45, 65, 0.75);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
+.body-specs-title,
+.battery-cover-specs-title,
+.flashlight-specs-title,
+.shutter-button-specs-title,
+.polaroid-image-specs-title,
+.lens-specs-title,
 .sockel-specs-title {
-  margin: 0 0 0.55rem 0;
-  color: rgba(255, 255, 255, 0.97);
-  font-size: 1.4rem;
+  margin: 0 0 0.5rem 0;
+  color: rgba(40, 15, 28, 0.92);
+  font-size: 1.35rem;
   line-height: 1.15;
   padding: 0;
 }
 
+.body-specs-text,
+.battery-cover-specs-text,
+.flashlight-specs-text,
+.shutter-button-specs-text,
+.polaroid-image-specs-text,
+.lens-specs-text,
 .sockel-specs-text {
   margin: 0;
-  color: rgba(255, 255, 255, 0.82);
-  font-size: 0.98rem;
+  color: rgba(55, 25, 40, 0.78);
+  font-size: 0.95rem;
   line-height: 1.55;
 }
 
@@ -1696,13 +1653,21 @@ button:focus-visible {
 
   .body-specs,
   .lens-specs,
-  .sockel-specs {
+  .sockel-specs,
+  .battery-cover-specs,
+  .flashlight-specs,
+  .shutter-button-specs,
+  .polaroid-image-specs {
     padding: 0.8rem 0.9rem;
   }
 
   .body-specs-title,
   .lens-specs-title,
-  .sockel-specs-title {
+  .sockel-specs-title,
+  .battery-cover-specs-title,
+  .flashlight-specs-title,
+  .shutter-button-specs-title,
+  .polaroid-image-specs-title {
     font-size: 1.1rem;
   }
 }

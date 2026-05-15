@@ -49,8 +49,8 @@ const Navbar = () => {
           </li>
           {[
             { label: "Home" },
-            { label: "About" },
             { label: "Details" },
+            { label: "About" },
             { label: "Contact" },
           ].map((item) => (
             <li key={item.label}>
@@ -61,8 +61,8 @@ const Navbar = () => {
         <ul>
           {[
             { label: "Home" },
-            { label: "About" },
             { label: "Details" },
+            { label: "About" },
             { label: "Contact" }
           ].map((item) => (
             <li className="hideOnMobile" key={item.label}>

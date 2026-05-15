@@ -117,6 +117,7 @@ function ScrollingModel({
 const ModelCanvas = () => {
     const model3dRef = useRef(null);
     const isPointerInside = useRef(false);
+    const isPointerDown = useRef(false);
     const isDragging = useRef(false);
     const lastPointerX = useRef(0);
     const lastPointerY = useRef(0);
@@ -241,16 +242,26 @@ const ModelCanvas = () => {
                     isPointerInside.current = false;
                 }}
                 onPointerDown={(event) => {
-                    isDragging.current = true;
+                    isPointerDown.current = true;
                     lastPointerX.current = event.clientX;
                     lastPointerY.current = event.clientY;
-                    event.currentTarget.setPointerCapture(event.pointerId);
                 }}
                 onPointerMove={(event) => {
-                    if (!isDragging.current) return;
+                    if (!isPointerDown.current) return;
 
                     const deltaX = event.clientX - lastPointerX.current;
                     const deltaY = event.clientY - lastPointerY.current;
+
+                    if (!isDragging.current) {
+                        if (Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4) {
+                            isDragging.current = true;
+                            event.currentTarget.setPointerCapture(event.pointerId);
+                            lastPointerX.current = event.clientX;
+                            lastPointerY.current = event.clientY;
+                        }
+                        return;
+                    }
+
                     lastPointerX.current = event.clientX;
                     lastPointerY.current = event.clientY;
                     rotationTargetY.current += deltaX * 0.01;
@@ -258,6 +269,7 @@ const ModelCanvas = () => {
                     invalidateRef.current();
                 }}
                 onPointerUp={(event) => {
+                    isPointerDown.current = false;
                     isDragging.current = false;
 
                     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
@@ -265,6 +277,7 @@ const ModelCanvas = () => {
                     }
                 }}
                 onPointerCancel={(event) => {
+                    isPointerDown.current = false;
                     isDragging.current = false;
 
                     if (event.currentTarget.hasPointerCapture(event.pointerId)) {

@@ -58,7 +58,7 @@ const Footer = () => {
             linkedin.com/in/shehryar-faisal
           </a>
           <h2>Hussain Asif</h2>
-          <p>3D Artist & Blender</p>
+          <p>3D Animator & Blender Artist</p>
           <a href="https://www.instagram.com/sibro___?igsh=aGpqMWh0dnNuNmVh" target="_blank" rel="noopener noreferrer">
             instagram.com/sibro___
           </a>

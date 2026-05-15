@@ -8,8 +8,6 @@ import {
     useGLTF,
     Environment,
     ContactShadows,
-    CameraControls,
-    CameraControlsImpl,
     Html,
     useProgress,
     Suspense,
@@ -46,79 +44,6 @@ function ModelLoader() {
                 <span className="model-loader__progress">{Math.round(progress)}%</span>
             </div>
         </Html>
-    );
-}
-
-function CameraRig({ selectedPart }) {
-    const controlsRef = useRef();
-
-    useEffect(() => {
-        if (!controlsRef.current) return;
-
-        if (selectedPart === "lens") {
-            controlsRef.current.setLookAt(
-                1.2, 1.1, 4,
-                0, 0, 0,
-                true
-            );
-        } else if (selectedPart === "body") {
-            controlsRef.current.setLookAt(
-                2.8, 0.8, 4,
-                0, 0, 0,
-                true
-            );
-        } else if (selectedPart === "battery-cover") {
-            controlsRef.current.setLookAt(
-                -3.1, 0.1, 3.8,
-                -0.7, -0.45, 0,
-                true
-            );
-        } else if (selectedPart === "flashlight") {
-            controlsRef.current.setLookAt(
-                -1.6, 2.1, 4.1,
-                -0.35, 0.75, 0,
-                true
-            );
-        } else if (selectedPart === "shutter-button") {
-            controlsRef.current.setLookAt(
-                -2.1, 1.1, 4,
-                -0.8, 0.25, 0.6,
-                true
-            );
-        } else if (selectedPart === "polaroid-image") {
-            controlsRef.current.setLookAt(
-                0.8, 2.7, 4.5,
-                0.35, 1.25, -0.65,
-                true
-            );
-        } else if (selectedPart === "sockel") {
-            controlsRef.current.setLookAt(
-                2.4, 0.2, 4,
-                0, 0, 0,
-                true
-            );
-        } else {
-            controlsRef.current.setLookAt(
-                0, 0.9, 6.5,
-                0, 0, 0,
-                true
-            );
-        }
-    }, [selectedPart]);
-
-    return (
-        <CameraControls
-            ref={controlsRef}
-            minDistance={3}
-            maxDistance={9}
-            nearPlane={0.1}
-            mouseButtons={{
-                left: CameraControlsImpl.ACTION.NONE,
-                middle: CameraControlsImpl.ACTION.NONE,
-                right: CameraControlsImpl.ACTION.NONE,
-                wheel: CameraControlsImpl.ACTION.NONE,
-            }}
-        />
     );
 }
 
@@ -199,9 +124,8 @@ const ModelCanvas = () => {
     const rotationTargetY = useRef(0);
     const invalidateRef = useRef(() => { });
     const [modelColor, setModelColor] = useState(INSTAX_COLORS[0].value);
-    const modelSize = [0.55, 0.55, 0.55];
+    const modelSize = [0.42, 0.42, 0.42];
     const [hoveredPart, setHoveredPart] = useState(null);
-    const [selectedPart, setSelectedPart] = useState(null);
 
     useEffect(() => {
         const node = model3dRef.current;
@@ -350,8 +274,7 @@ const ModelCanvas = () => {
             >
                 <Canvas
                     frameloop="demand"
-                    camera={{ position: [0, 0.5, 5], fov: 38, near: 0.1, far: 100 }}
-                    onPointerMissed={() => setSelectedPart(null)}
+                    camera={{ position: [0, 0.5, 6.2], fov: 38, near: 0.1, far: 100 }}
                     gl={{ alpha: true }}
                 >
                     <color attach="background" args={["#e8b4b8"]} />
@@ -367,11 +290,10 @@ const ModelCanvas = () => {
                             modelColor={modelColor}
                             hoveredPart={hoveredPart}
                             setHoveredPart={setHoveredPart}
-                            onSelect={setSelectedPart}
+                            onSelect={() => { }}
                             invalidateRef={invalidateRef}
                         />
                     </Suspense>
-                    <CameraRig selectedPart={selectedPart} />
                 </Canvas>
             </div>
         </section>

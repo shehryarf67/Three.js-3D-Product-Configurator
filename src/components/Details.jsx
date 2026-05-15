@@ -15,22 +15,22 @@ const features = [
     {
         title: "High-Resolution Sensor",
         description: "Capture stunning details with our advanced high-resolution sensor, engineered to deliver crisp, vibrant images even in challenging lighting conditions.",
-        position: { top: "18%", left: "10%" },
+        position: { top: "18%", left: "4%" },
     },
     {
         title: "Premium Lens",
-                description: "Multi-element front optic with precision-ground glass delivers razor-sharp imagery with beautiful natural bokeh and minimal chromatic aberration.",
-        position: { top: "30%", right: "8%" },
+        description: "Multi-element front optic with precision-ground glass delivers razor-sharp imagery with beautiful natural bokeh and minimal chromatic aberration.",
+        position: { top: "30%", right: "4%" },
     },
     {
         title: "Rangefinder Body",
         description: "The classic rangefinder silhouette is built for all-day comfort and precision handling, combining a sturdy metal shell with a leather-inspired textured grip.",
-        position: { bottom: "26%", left: "10%" },
+        position: { bottom: "26%", left: "4%" },
     },
     {
         title: "Stable Base",
         description: "Engineered base plate provides exceptional balance and secure handling, with a standard tripod mount for studio and outdoor shooting versatility.",
-        position: { bottom: "18%", right: "8%" },
+        position: { bottom: "18%", right: "4%" },
     },
 ];
 
@@ -123,8 +123,8 @@ const Details = () => {
                 </Canvas>
 
                 <div className="details-overlay">
-                    <h2>The Fun Filming</h2>
-                    <p className="details-intro">
+                    <h2 className="reveal">The Fun Filming</h2>
+                    <p className="details-intro reveal">
                         Experience the thrill of capturing every moment with our cutting-edge camera technology.
                     </p>
 
@@ -133,7 +133,7 @@ const Details = () => {
                             <div
                                 key={index}
                                 className={clsx("box", `box${index + 1}`)}
-                                style={feature.position} 
+                                style={feature.position}
                             >
                                 <h3>{feature.title}</h3>
                                 <p>{feature.description}</p>

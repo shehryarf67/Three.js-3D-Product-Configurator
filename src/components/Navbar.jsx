@@ -32,6 +32,7 @@ const Navbar = () => {
 
   return (
     <header>
+      <div className="logo-blob" />
       <a
         className="app-logo"
         href="#home"

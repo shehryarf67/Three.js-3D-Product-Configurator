@@ -14,7 +14,7 @@ function InvalidateBridge({ invalidateRef }) {
 const features = [
     {
         title: "Auto Exposure System",
-        description: "Measures ambient brightness and automatically sets shutter speed from 1/250 s in bright daylight down to 1/30 s in dim interiors. A dedicated Selfie Mode engages close-up exposure compensation the moment the selfie mirror slides out, keeping skin tones warm and consistent across every shot — no dials, no guesswork.",
+        description: "Measures ambient brightness and automatically sets shutter speed from 1/250 s in bright daylight down to 1/30 s in dim interiors. A dedicated Selfie Mode engages close-up exposure compensation the moment the selfie mirror slides out, keeping skin tones warm and consistent across every shot - no dials, no guesswork.",
         position: { top: "18%", left: "4%" },
         icon: (
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -48,7 +48,7 @@ const features = [
     },
     {
         title: "Instax Mini Film",
-        description: "Produces 54 × 86 mm credit-card-sized prints on ISO 800 Instax Mini film, developing in natural light within 90 seconds. Two AA alkaline batteries power up to 100 shots per charge. The built-in auto flash (guide number 5.1) fires in every mode and recycles in as little as 0.2 s — so you never miss the moment.",
+        description: "Produces 54 × 86 mm credit-card-sized prints on ISO 800 Instax Mini film, developing in natural light within 90 seconds. Two AA alkaline batteries power up to 100 shots per charge. The built-in auto flash (guide number 5.1) fires in every mode and recycles in as little as 0.2 s - so you never miss the moment.",
         position: { bottom: "18%", right: "4%" },
         icon: (
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">

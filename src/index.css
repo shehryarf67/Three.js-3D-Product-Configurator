@@ -96,17 +96,44 @@ nav ul {
   cursor: pointer;
   right: 0px;
   display: none;
+
+  /* Visual pill container */
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(6px);
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .crossburger {
   position: relative;
-  top: 10px;
+  top: 0;
   cursor: pointer;
   right: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(6px);
+  transition: background 0.2s ease;
+  margin-bottom: 0.5rem;
 }
 
-.hamburger:hover, .crossburger:hover{
-  color: grey;
+.hamburger:hover {
+  background: rgba(255, 255, 255, 0.38);
+  border-color: rgba(255, 255, 255, 0.55);
+}
+
+.crossburger:hover {
+  background: rgba(255, 255, 255, 0.38);
 }
 
 .sidebar {
@@ -124,12 +151,20 @@ nav ul {
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
+  padding: 1rem 0;
+  list-style: none;
+  margin: 0;
 }
 
 
 .sidebar li,
 a {
   width: 100%;
+}
+
+.sidebar > li {
+  padding: 0.5rem 1.5rem;
+  box-sizing: border-box;
 }
 
 header {
@@ -172,10 +207,10 @@ body {
   position: absolute;
   top: calc(100% - 1px);
   left: 0;
-  width: 300px;
-  height: 300px;
+  width: 400px;
+  height: 400px;
   background: var(--secondary_color);
-  clip-path: path('M0,300 V0 H300 C134.31,0 0,134.31 0,300 Z');
+  clip-path: path('M0,400 V0 H400 C134.31,0 0,134.31 0,400 Z');
   z-index: 110;
   pointer-events: none;
 }
@@ -1375,7 +1410,7 @@ button:focus-visible {
   }
 
   .hamburger {
-    display: block;
+    display: flex;
   }
 
   .hideOnMobile{
@@ -1398,38 +1433,54 @@ button:focus-visible {
 
   .hero-3d {
     width: 100%;
-    min-height: 520px;
+    min-height: 300px;
     margin-top: 1rem;
   }
 
   .hero-camera-stage {
-    height: 420px;
+    height: 240px;
   }
 
+  /* Keep positions so transitions animate correctly, but hide non-center cameras */
   .hero-camera--left {
     left: 3%;
-    top: 34%;
+    top: 50%;
+    opacity: 0;
+    pointer-events: none;
   }
 
   .hero-camera--top-left {
     left: 34%;
-    top: 2%;
+    top: 50%;
+    opacity: 0;
+    pointer-events: none;
   }
 
   .hero-camera--top-right {
     left: 62%;
-    top: 0;
+    top: 50%;
+    opacity: 0;
+    pointer-events: none;
   }
 
+  /* Center the active camera cleanly in the stage */
   .hero-camera--center {
-    left: 48%;
-    top: 57%;
+    left: 50%;
+    top: 50%;
+    opacity: 1;
   }
 
   .hero-camera--right {
     left: 97%;
     right: auto;
-    top: 46%;
+    top: 50%;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Controls sit below the camera instead of overlapping */
+  .hero-camera-controls {
+    margin-top: 1rem;
   }
 
   .model-canvas {
@@ -1463,7 +1514,7 @@ button:focus-visible {
   .details .box {
     width: 220px;
     font-size: 0.95rem;
-    padding: 0;
+    padding: 0.7rem 0.9rem;
   }
 
   .details .box h3 {
@@ -1494,23 +1545,51 @@ button:focus-visible {
 
   nav {
     padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
   }
 
   a {
     font-size: 18px;
   }
+
+  /* Fix hero camera widths — base clamp has a 760px minimum which breaks mobile */
+  .hero-camera--center,
+  .hero-camera--left,
+  .hero-camera--top-left,
+  .hero-camera--top-right,
+  .hero-camera--right {
+    width: clamp(260px, 68vw, 440px);
+  }
+
+  /* Scale blob with proportionally correct clip-path for mobile */
+  .logo-blob {
+    width: 160px;
+    height: 160px;
+    clip-path: path('M0,160 V0 H160 C53.72,0 0,53.72 0,160 Z');
+  }
+
+  /* Ensure sidebar renders above the dimmer overlay */
+  .sidebar {
+    z-index: 999;
+    padding: 0.75rem 0;
+  }
+
+  /* Showcase: single-column layout */
+  #showcase .content-inner {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Mobile — 480px and below */
 @media (max-width: 480px) {
-  .app-logo {
-    width: 92px;
-  }
-
   .hero {
     padding: 1rem;
-    border-top-left-radius: 15% 25%;
-    /* ← reduce bulge on mobile */
+  }
+
+  .logo-blob {
+    width: 120px;
+    height: 120px;
+    clip-path: path('M0,120 V0 H120 C40.29,0 0,40.29 0,120 Z');
   }
 
   .hero-content {
@@ -1531,11 +1610,11 @@ button:focus-visible {
   }
 
   .hero-3d {
-    min-height: 390px;
+    min-height: 260px;
   }
 
   .hero-camera-stage {
-    height: 325px;
+    height: 200px;
   }
 
   .hero-camera figcaption {
@@ -1543,29 +1622,39 @@ button:focus-visible {
   }
 
   .hero-camera--left {
-    left: -4%;
+    left: 50%;
+    opacity: 0;
+    pointer-events: none;
   }
 
   .hero-camera--top-left {
-    left: 30%;
+    left: 50%;
+    opacity: 0;
+    pointer-events: none;
   }
 
   .hero-camera--top-right {
-    left: 60%;
+    left: 50%;
+    opacity: 0;
+    pointer-events: none;
   }
 
   .hero-camera--center {
-    left: 45%;
+    left: 50%;
+    top: 50%;
+    opacity: 1;
   }
 
   .hero-camera--right {
-    left: 100%;
+    left: 50%;
     right: auto;
+    opacity: 0;
+    pointer-events: none;
   }
 
   .hero-camera-controls {
     gap: 0.6rem;
-    margin-top: -0.45rem;
+    margin-top: 0.75rem;
   }
 
   .hero-camera-controls button {
@@ -1609,20 +1698,20 @@ button:focus-visible {
   }
 
   .details .box {
-    width: 170px;
+    width: 160px;
     font-size: 0.82rem;
-    padding: 0;
+    padding: 0.6rem 0.8rem;
   }
 
   #details-canvas {
     padding: 2rem;
     margin-top: 4rem;
     height: 70vh;
+    min-height: 480px;
   }
 
   .card-grid {
     grid-template-columns: 1fr;
-    /* ← single column on mobile */
   }
 
   .footer-content {
@@ -1683,6 +1772,25 @@ button:focus-visible {
   .shutter-button-specs-title,
   .polaroid-image-specs-title {
     font-size: 1.1rem;
+  }
+
+  /* Fix hero camera widths for small phones */
+  .hero-camera--center,
+  .hero-camera--left,
+  .hero-camera--top-left,
+  .hero-camera--top-right,
+  .hero-camera--right {
+    width: clamp(200px, 65vw, 280px);
+  }
+
+  .app-logo {
+    width: 84px;
+  }
+
+  /* Showcase: stack content on small phones */
+  #showcase .content-inner {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 }
 

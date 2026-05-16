@@ -13,24 +13,52 @@ function InvalidateBridge({ invalidateRef }) {
 
 const features = [
     {
-        title: "High-Resolution Sensor",
-        description: "Capture stunning details with our advanced high-resolution sensor, engineered to deliver crisp, vibrant images even in challenging lighting conditions.",
+        title: "Auto Exposure System",
+        description: "Measures ambient brightness and automatically sets shutter speed from 1/250 s in bright daylight down to 1/30 s in dim interiors. A dedicated Selfie Mode engages close-up exposure compensation the moment the selfie mirror slides out, keeping skin tones warm and consistent across every shot — no dials, no guesswork.",
         position: { top: "18%", left: "4%" },
+        icon: (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="4.5" />
+                <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" />
+            </svg>
+        ),
     },
     {
-        title: "Premium Lens",
-        description: "Multi-element front optic with precision-ground glass delivers razor-sharp imagery with beautiful natural bokeh and minimal chromatic aberration.",
+        title: "60 mm f/12.7 Lens",
+        description: "Fixed-focus 60 mm glass element at f/12.7 renders ISO 800 Instax Mini film with consistent sharpness from 0.6 m to infinity in standard mode. Slide the built-in selfie mirror out and the optics reconfigure to lock focus between 30–50 cm, giving you a perfectly framed, pin-sharp self-portrait every time.",
         position: { top: "30%", right: "4%" },
+        icon: (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="9.5" />
+                <circle cx="12" cy="12" r="3.5" />
+                <path d="M12 2.5V8M12 16v5.5M2.5 12H8M16 12h5.5" />
+            </svg>
+        ),
     },
     {
-        title: "Rangefinder Body",
-        description: "The classic rangefinder silhouette is built for all-day comfort and precision handling, combining a sturdy metal shell with a leather-inspired textured grip.",
+        title: "Compact Rangefinder Body",
+        description: "Iconic rounded shell at 106.8 × 121.7 × 67.3 mm and just 293 g fully loaded. The real-image optical viewfinder offers 0.37× magnification and approximately 82% field coverage for accurate, parallax-minimised framing. Ships in five signature pastel colorways: Blossom Pink, Mint Green, Lilac Purple, Clay White, and Baby Blue.",
         position: { bottom: "26%", left: "4%" },
+        icon: (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                <circle cx="12" cy="13" r="4" />
+            </svg>
+        ),
     },
     {
-        title: "Stable Base",
-        description: "Engineered base plate provides exceptional balance and secure handling, with a standard tripod mount for studio and outdoor shooting versatility.",
+        title: "Instax Mini Film",
+        description: "Produces 54 × 86 mm credit-card-sized prints on ISO 800 Instax Mini film, developing in natural light within 90 seconds. Two AA alkaline batteries power up to 100 shots per charge. The built-in auto flash (guide number 5.1) fires in every mode and recycles in as little as 0.2 s — so you never miss the moment.",
         position: { bottom: "18%", right: "4%" },
+        icon: (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="2" width="18" height="20" rx="2.5" />
+                <rect x="5.5" y="4.5" width="13" height="9" rx="1" />
+                <circle cx="8.5" cy="17.5" r="1" fill="currentColor" stroke="none" />
+                <circle cx="12" cy="17.5" r="1" fill="currentColor" stroke="none" />
+                <circle cx="15.5" cy="17.5" r="1" fill="currentColor" stroke="none" />
+            </svg>
+        ),
     },
 ];
 
@@ -135,7 +163,10 @@ const Details = () => {
                                 className={clsx("box", `box${index + 1}`)}
                                 style={feature.position}
                             >
-                                <h3>{feature.title}</h3>
+                                <div className="box-header">
+                                    <span className="box-icon">{feature.icon}</span>
+                                    <h3>{feature.title}</h3>
+                                </div>
                                 <p>{feature.description}</p>
                             </div>
                         ))}

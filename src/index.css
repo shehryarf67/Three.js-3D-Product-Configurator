@@ -366,13 +366,13 @@ body {
 
 .hero-camera--left {
   width: clamp(760px, 74vw, 1080px);
-  transform: translate3d(-55%, -55%, 0);
+  transform: translate3d(-50%, -55%, 0);
   z-index: 2;
 }
 
 .hero-camera--top-left {
   width: clamp(760px, 74vw, 1080px);
-  transform: translate3d(-55%, -55%, 0);
+  transform: translate3d(-50%, -55%, 0);
   opacity: 1;
   z-index: 1;
 }
@@ -386,7 +386,7 @@ body {
 
 .hero-camera--right {
   width: clamp(760px, 74vw, 1080px);
-  transform: translate3d(-55%, -45%, 0);
+  transform: translate3d(-55%, -50%, 0);
   z-index: 3;
 }
 
@@ -1443,41 +1443,36 @@ button:focus-visible {
     height: 240px;
   }
 
-  /* Keep positions so transitions animate correctly, but hide non-center cameras */
+  /* Match desktop scattered layout on tablet */
+  .hero-camera--center {
+    left: 56%;
+    top: 40%;
+    transform: translate3d(-50%, -50%, 0);
+  }
+
   .hero-camera--left {
-    left: 3%;
-    top: 50%;
-    opacity: 0;
-    pointer-events: none;
+    left: 57%;
+    top: 37%;
+    transform: translate3d(-50%, -55%, 0);
   }
 
   .hero-camera--top-left {
-    left: 34%;
-    top: 50%;
-    opacity: 0;
-    pointer-events: none;
+    left: 57%;
+    top: 37%;
+    transform: translate3d(-50%, -55%, 0);
   }
 
   .hero-camera--top-right {
-    left: 62%;
-    top: 50%;
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  /* Center the active camera cleanly in the stage */
-  .hero-camera--center {
-    left: 50%;
-    top: 50%;
-    opacity: 1;
+    left: 57%;
+    top: 37%;
+    transform: translate3d(-50%, -50%, 0);
   }
 
   .hero-camera--right {
-    left: 97%;
+    left: 57%;
     right: auto;
-    top: 50%;
-    opacity: 0;
-    pointer-events: none;
+    top: 37%;
+    transform: translate3d(-55%, -50%, 0);
   }
 
   /* Controls sit below the camera instead of overlapping */
@@ -1782,7 +1777,7 @@ button:focus-visible {
   .hero-camera--top-left,
   .hero-camera--top-right,
   .hero-camera--right {
-    width: clamp(200px, 65vw, 280px);
+    width: clamp(280px, 80vw, 380px);
   }
 
   .app-logo {

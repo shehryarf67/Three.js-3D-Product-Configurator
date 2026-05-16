@@ -638,7 +638,7 @@ body {
 
 .model-canvas-content {
   max-width: 340px;
-  margin-left: 6rem;
+  margin-left: 10rem;
   padding-top: 2rem;
 }
 
@@ -728,7 +728,7 @@ body {
   flex-shrink: 0;
   align-self: center;
   margin-top: 0;
-  margin-right: 4rem;
+  margin-right: 1rem;
   border-radius: 16px;
   overflow: hidden;
   background: transparent;

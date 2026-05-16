@@ -634,12 +634,42 @@ body {
   padding: 2rem 4rem;
   box-sizing: border-box;
   background-color: var(--main_bg_color);
+  position: relative;
+}
+
+.model-canvas-bg {
+  position: absolute;
+  top: 1.5rem;
+  left: 4%;
+  right: 4%;
+  bottom: 1.5rem;
+  background: #7bbad9;
+  border-radius: 28px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.93);
+  transition: opacity 0.7s ease, transform 0.65s ease;
+}
+
+.reveal-scale.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.model-canvas .reveal {
+  transition-delay: 0.3s;
 }
 
 .model-canvas-content {
   max-width: 340px;
   margin-left: 10rem;
   padding-top: 2rem;
+  position: relative;
+  z-index: 1;
 }
 
 .model-canvas-title {
@@ -730,6 +760,8 @@ body {
   margin-top: 0;
   margin-right: 1rem;
   border-radius: 16px;
+  position: relative;
+  z-index: 1;
   overflow: hidden;
   background: transparent;
   cursor: grab;

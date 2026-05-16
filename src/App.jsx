@@ -14,7 +14,7 @@ export default function App() {
       });
     }, { threshold: 0, rootMargin: "0px" });
 
-    const elements = document.querySelectorAll(".reveal");
+    const elements = document.querySelectorAll(".reveal, .reveal-scale");
     elements.forEach((el) => observer.observe(el));
     const heroBg = document.querySelector(".hero-bg");
     let rafId;

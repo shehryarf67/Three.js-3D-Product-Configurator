@@ -146,6 +146,7 @@ const ModelCanvas = () => {
 
     return (
         <section className="model-canvas" id="model-canvas">
+            <div className="model-canvas-bg reveal-scale" />
             <div className="model-canvas-content reveal">
                 <h1 className="model-canvas-title">Capture The Moment</h1>
                 <p className="model-canvas-description">Drag or scroll on the model panel to rotate the camera.</p>
@@ -233,7 +234,7 @@ const ModelCanvas = () => {
                 </div>
             </div>
             <div
-                className="model-3d"
+                className="model-3d reveal"
                 ref={model3dRef}
                 onPointerEnter={() => {
                     isPointerInside.current = true;
@@ -290,7 +291,6 @@ const ModelCanvas = () => {
                     camera={{ position: [0, 0.5, 5.8], fov: 38, near: 0.1, far: 100 }}
                     gl={{ alpha: true }}
                 >
-                    <color attach="background" args={["#e8b4b8"]} />
                     <Suspense fallback={<ModelLoader />}>
                         <Environment background={false} preset="warehouse" intensity={2} />
                         <directionalLight position={[2, 2, 2]} intensity={1} />

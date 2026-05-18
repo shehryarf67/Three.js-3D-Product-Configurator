@@ -124,7 +124,7 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...pr
     }
 
     if (batteryCoverRef.current) {
-      const targetX = hoveredPart === 'battery-cover' ? -2.08 : -1.989
+      const targetX = hoveredPart === 'battery-cover' ? -0.12 : 0
       const diff = targetX - batteryCoverRef.current.position.x
 
       if (Math.abs(diff) > 0.001) {
@@ -257,9 +257,11 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...pr
           <mesh name="BATTERY_COVER_HITAREA" geometry={nodes.BATTERY_COVER.geometry} position={[-1.989, -1.081, -0.151]}>
             <meshBasicMaterial transparent opacity={0} depthWrite={false} />
           </mesh>
-          <group ref={batteryCoverRef} name="BATTERY_COVER" position={[-1.989, -1.081, -0.151]}>
-            <mesh name="BATTERY_COVER" geometry={nodes.BATTERY_COVER.geometry} material={materials['pastel blue']} />
-            <mesh name="BATTERY_COVER001" geometry={nodes.BATTERY_COVER001.geometry} material={materials['Material.001']} position={[-0.014, 0, 0]} />
+          <group position={[-1.989, -1.081, -0.151]}>
+            <group ref={batteryCoverRef} name="BATTERY_COVER">
+              <mesh name="BATTERY_COVER_MESH" geometry={nodes.BATTERY_COVER.geometry} material={materials['pastel blue']} />
+              <mesh name="BATTERY_COVER001" geometry={nodes.BATTERY_COVER001.geometry} material={materials['Material.001']} position={[-0.014, 0, 0]} />
+            </group>
           </group>
         </group>
         <mesh name="Cube004" geometry={nodes.Cube004.geometry} material={materials['pastel blue']} position={[0.387, 2.397, 0]} />

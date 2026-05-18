@@ -166,6 +166,11 @@ const ModelCanvas = () => {
             <div className="model-canvas-bg reveal-scale" />
             <div className="model-canvas-content reveal">
                 <div className="specs-anchor">
+                    {!activePart && (
+                        <div className="default-specs">
+                            <p className="default-specs-text">Hover over any part of the camera to explore its specs</p>
+                        </div>
+                    )}
                     {activePart === "body" && (
                         <div className="body-specs">
                             <p className="body-specs-label">Body Specs</p>

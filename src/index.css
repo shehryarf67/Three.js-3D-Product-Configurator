@@ -359,33 +359,33 @@ body {
 }
 
 .hero-camera--center {
-  width: clamp(760px, 74vw, 1080px);
+  width: clamp(1500px, 135vw, 2160px);
   transform: translate3d(-50%, -50%, 0);
   z-index: 4;
 }
 
 .hero-camera--left {
-  width: clamp(760px, 74vw, 1080px);
+  width: clamp(1500px, 135vw, 2160px);
   transform: translate3d(-50%, -55%, 0);
   z-index: 2;
 }
 
 .hero-camera--top-left {
-  width: clamp(760px, 74vw, 1080px);
+  width: clamp(1500px, 135vw, 2160px);
   transform: translate3d(-50%, -55%, 0);
   opacity: 1;
   z-index: 1;
 }
 
 .hero-camera--top-right {
-  width: clamp(760px, 74vw, 1080px);
+  width: clamp(1500px, 135vw, 2160px);
   transform: translate3d(-50%, -50%, 0);
   opacity: 1;
   z-index: 1;
 }
 
 .hero-camera--right {
-  width: clamp(760px, 74vw, 1080px);
+  width: clamp(1500px, 135vw, 2160px);
   transform: translate3d(-55%, -50%, 0);
   z-index: 3;
 }
@@ -1625,7 +1625,7 @@ button:focus-visible {
   .hero-camera--top-left,
   .hero-camera--top-right,
   .hero-camera--right {
-    width: clamp(260px, 68vw, 440px);
+    width: clamp(540px, 135vw, 930px);
   }
 
   /* Scale blob with proportionally correct clip-path for mobile */
@@ -1863,7 +1863,7 @@ button:focus-visible {
   .hero-camera--top-left,
   .hero-camera--top-right,
   .hero-camera--right {
-    width: clamp(280px, 80vw, 380px);
+    width: clamp(540px, 144vw, 780px);
   }
 
   .app-logo {

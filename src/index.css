@@ -562,13 +562,15 @@ body {
 }
 
 .hero-ball--purple {
-  left: 45%;
-  top: 22%;
+  left: 18%;
+  top: 2%;
+  width: clamp(285px, 34vw, 525px);
 }
 
 .hero-ball--mint {
-  right: 6%;
+  right: -5%;
   top: 8%;
+  width: clamp(285px, 34vw, 525px);
 }
 
 .hero-ball--white {
@@ -896,33 +898,33 @@ body {
 }
 
 .model-ball--blue {
-  left: 1.5%;
-  bottom: -2rem;
+  left: -12%;
+  bottom: 2rem;
   width: clamp(300px, 37vw, 585px);
 }
 
 .model-ball--pink {
-  right: 3%;
+  right: -10%;
   bottom: 0.5rem;
   width: clamp(293px, 34vw, 533px);
 }
 
 .model-ball--purple {
-  right: 3%;
+  right: -8%;
   top: 2rem;
   width: clamp(240px, 30vw, 443px);
 }
 
 .model-ball--mint {
-  left: 2%;
-  top: 17%;
+  left: -8%;
+  top: 1%;
   width: clamp(248px, 31vw, 480px);
 }
 
 .model-ball--white {
   left: 44%;
-  top: 0.5rem;
-  width: clamp(240px, 28vw, 428px);
+  top: -18%;
+  width: clamp(248px, 31vw, 480px);
 }
 
 #showcase {

@@ -1,13 +1,13 @@
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
-  font-weight: 400;
+  font-weight: 500;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
 
-  --main_bg_color: #e8b4b8;
-  --secondary_color: #c49098;
+  --main_bg_color: #bff4ea;
+  --secondary_color: #c85a87;
 
   background-size: 200% 200%;
   background-color: var(--main_bg_color);
@@ -61,12 +61,11 @@ a {
 }
 
 a:hover {
-  color: grey;
+  color: rgba(255, 255, 255, 0.45);
 }
 
 nav {
-  backdrop-filter: blur(10px);
-  background-color: rgba(196, 144, 152, 0.75);
+  background-color: transparent;
   left: 0;
   transition: none;
 
@@ -89,6 +88,7 @@ nav ul {
   margin-left: auto;
   padding-left: 2rem;
 }
+
 
 .hamburger {
   position: relative;
@@ -172,6 +172,7 @@ header {
   top: 0;
   z-index: 100;
   overflow: visible;
+  background-color: rgb(191, 244, 234);
 }
 
 
@@ -188,7 +189,7 @@ body {
 }
 
 .hero-bg {
-  background-color: var(--secondary_color);
+  background-color: var(--main_bg_color);
 }
 
 .app-logo {
@@ -209,16 +210,14 @@ body {
   left: 0;
   width: 400px;
   height: 400px;
-  background: rgba(196, 144, 152, 0.75);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgb(191, 244, 234);
   clip-path: path('M0,400 V0 H400 C134.31,0 0,134.31 0,400 Z');
   z-index: 110;
   pointer-events: none;
 }
 
 .app-logo:hover {
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .app-logo-svg {
@@ -273,19 +272,17 @@ body {
   flex-direction: row;
   align-items: flex-start;
   flex-wrap: wrap;
-
   min-height: 100vh;
   padding: 1rem 4rem;
-
-  background-color: var(--main_bg_color);
-
+  background-color: var(--secondary_color);
   overflow: hidden;
   position: relative;
+  border-top-left-radius: 12vw;
 }
 
 .hero-content {
   max-width: 300px;
-  z-index: 0;
+  z-index: 5;
   margin-left: 8rem;
   margin-top: 6rem;
   align-items: flex-start;
@@ -296,6 +293,7 @@ body {
   font-size: 3rem;
   margin-bottom: 0.5rem;
   margin-left: 1rem;
+  letter-spacing: 0;
 }
 
 .hero-content p {
@@ -311,6 +309,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+  z-index: 4;
 }
 
 .hero-camera {
@@ -359,34 +359,34 @@ body {
 }
 
 .hero-camera--center {
-  width: clamp(1500px, 135vw, 2160px);
+  width: clamp(1800px, 120vw, 2550px);
   transform: translate3d(-50%, -50%, 0);
   z-index: 4;
 }
 
 .hero-camera--left {
-  width: clamp(1500px, 135vw, 2160px);
+  width: clamp(1800px, 120vw, 2550px);
   transform: translate3d(-50%, -55%, 0);
   z-index: 2;
 }
 
 .hero-camera--top-left {
-  width: clamp(1500px, 135vw, 2160px);
+  width: clamp(1800px, 120vw, 2550px);
   transform: translate3d(-50%, -55%, 0);
   opacity: 1;
   z-index: 1;
 }
 
 .hero-camera--top-right {
-  width: clamp(1500px, 135vw, 2160px);
+  width: clamp(1800px, 120vw, 2550px);
   transform: translate3d(-50%, -50%, 0);
   opacity: 1;
   z-index: 1;
 }
 
 .hero-camera--right {
-  width: clamp(1500px, 135vw, 2160px);
-  transform: translate3d(-55%, -50%, 0);
+  width: clamp(1800px, 120vw, 2550px);
+  transform: translate3d(-52%, -50%, 0);
   z-index: 3;
 }
 
@@ -395,6 +395,8 @@ body {
   justify-content: center;
   align-items: center;
   margin-top: -9rem;
+  position: relative;
+  z-index: 6;
 }
 
 .hero-camera-pill {
@@ -403,9 +405,9 @@ body {
   gap: 1rem;
   padding: 0.6rem 1.4rem;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
+  border: 0;
+  background: transparent;
+  backdrop-filter: none;
   color: white;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -433,6 +435,7 @@ body {
 }
 
 .hero-marquee {
+  display: none;
   position: relative;
   width: 100%;
   padding: 1.25rem 0;
@@ -534,6 +537,46 @@ body {
   font-size: 2rem;
 }
 
+.hero-ball,
+.model-ball {
+  position: absolute;
+  display: block;
+  width: clamp(225px, 25vw, 390px);
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  z-index: 2;
+}
+
+.hero-ball--blue {
+  left: 3%;
+  bottom: -2.5rem;
+  width: clamp(285px, 34vw, 525px);
+}
+
+.hero-ball--pink {
+  left: 26%;
+  bottom: 2rem;
+  width: clamp(248px, 30vw, 465px);
+}
+
+.hero-ball--purple {
+  left: 45%;
+  top: 22%;
+}
+
+.hero-ball--mint {
+  right: 6%;
+  top: 8%;
+}
+
+.hero-ball--white {
+  right: 5%;
+  bottom: 7%;
+  width: clamp(218px, 24vw, 360px);
+}
+
 .card-grid {
   margin: 0 auto;
   display: grid;
@@ -626,25 +669,27 @@ body {
 }
 
 .model-canvas {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: minmax(230px, 0.58fr) minmax(360px, 1fr) minmax(92px, 0.24fr);
+  align-items: center;
   width: 100%;
-  min-height: auto;
-  padding: 2rem 4rem;
+  min-height: 720px;
+  padding: clamp(4rem, 7vw, 6rem) clamp(2rem, 9vw, 8rem);
   box-sizing: border-box;
   background-color: var(--main_bg_color);
   position: relative;
+  overflow: hidden;
+  isolation: isolate;
 }
 
 .model-canvas-bg {
   position: absolute;
-  top: 1.5rem;
-  left: 4%;
-  right: 4%;
-  bottom: 1.5rem;
-  background: #7bbad9;
-  border-radius: 28px;
+  top: 4.2rem;
+  left: clamp(2rem, 9vw, 8rem);
+  right: clamp(2rem, 9vw, 8rem);
+  bottom: 4.2rem;
+  background: var(--secondary_color);
+  border-radius: 13rem;
   z-index: 0;
   pointer-events: none;
 }
@@ -665,11 +710,14 @@ body {
 }
 
 .model-canvas-content {
-  max-width: 340px;
-  margin-left: 10rem;
-  padding-top: 2rem;
+  max-width: 300px;
+  margin-left: clamp(2rem, 6vw, 7rem);
+  padding-top: 0;
   position: relative;
-  z-index: 1;
+  z-index: 3;
+  align-self: center;
+  grid-column: 1;
+  grid-row: 1;
 }
 
 .model-canvas-title {
@@ -687,7 +735,7 @@ body {
 
 .specs-anchor {
   position: relative;
-  height: 0;
+  min-height: 180px;
 }
 
 .body-specs,
@@ -698,16 +746,18 @@ body {
 .lens-specs,
 .sockel-specs {
   position: absolute;
-  top: 1.5rem;
+  top: 50%;
   left: 0;
-  right: 0;
-  padding: 1.1rem 1.3rem;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.38);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 4px 20px rgba(180, 100, 120, 0.12);
+  right: auto;
+  width: 280px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  transform: translateY(-50%);
 }
 
 .body-specs-label,
@@ -717,12 +767,7 @@ body {
 .polaroid-image-specs-label,
 .lens-specs-label,
 .sockel-specs-label {
-  margin: 0 0 0.35rem 0;
-  color: rgba(100, 45, 65, 0.75);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-size: 0.75rem;
-  font-weight: 600;
+  display: none;
 }
 
 .body-specs-title,
@@ -733,10 +778,11 @@ body {
 .lens-specs-title,
 .sockel-specs-title {
   margin: 0 0 0.5rem 0;
-  color: rgba(40, 15, 28, 0.92);
-  font-size: 1.35rem;
+  color: white;
+  font-size: 1rem;
   line-height: 1.15;
   padding: 0;
+  display: block;
 }
 
 .body-specs-text,
@@ -747,29 +793,120 @@ body {
 .lens-specs-text,
 .sockel-specs-text {
   margin: 0;
-  color: rgba(55, 25, 40, 0.78);
+  color: rgba(255, 255, 255, 0.94);
   font-size: 0.95rem;
-  line-height: 1.55;
+  line-height: 1.65;
 }
 
 .model-3d {
-  width: 50%;
-  height: 560px;
+  width: 100%;
+  height: 600px;
   flex-shrink: 0;
   align-self: center;
   margin-top: 0;
-  margin-right: 1rem;
+  margin-right: 0;
   border-radius: 16px;
   position: relative;
-  z-index: 1;
+  z-index: 2;
   overflow: hidden;
   background: transparent;
   cursor: grab;
   touch-action: none;
+  grid-column: 2;
+  grid-row: 1;
 }
 
-.model-3d:active {
-  cursor: grabbing;
+.model-color-picker {
+  position: relative;
+  z-index: 3;
+  grid-column: 3;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  justify-self: center;
+}
+
+.model-color-picker .color-palette {
+  flex-direction: column;
+  margin-top: 0;
+  gap: 1rem;
+}
+
+.model-color-picker span {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  color: white;
+  font-size: clamp(1.5rem, 2vw, 2.15rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.model-color-picker .swatch {
+  width: 44px;
+  height: 44px;
+  border: 4px solid rgba(255, 255, 255, 0.82);
+  box-shadow: 0 5px 14px rgba(100, 28, 64, 0.18);
+}
+
+.model-color-picker .swatch.active {
+  border-color: white;
+  outline: 3px solid rgba(255, 255, 255, 0.42);
+  transform: scale(1.08);
+}
+
+.model-canvas-instruction {
+  position: absolute;
+  left: 50%;
+  bottom: 5.7rem;
+  z-index: 4;
+  margin: 0;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.specs-anchor::after,
+.specs-anchor::before {
+  display: none;
+}
+
+.model-ball {
+  z-index: -1;
+  opacity: 0.88;
+}
+
+.model-ball--blue {
+  left: 1.5%;
+  bottom: -2rem;
+  width: clamp(300px, 37vw, 585px);
+}
+
+.model-ball--pink {
+  right: 3%;
+  bottom: 0.5rem;
+  width: clamp(293px, 34vw, 533px);
+}
+
+.model-ball--purple {
+  right: 3%;
+  top: 2rem;
+  width: clamp(240px, 30vw, 443px);
+}
+
+.model-ball--mint {
+  left: 2%;
+  top: 17%;
+  width: clamp(248px, 31vw, 480px);
+}
+
+.model-ball--white {
+  left: 44%;
+  top: 0.5rem;
+  width: clamp(240px, 28vw, 428px);
 }
 
 #showcase {
@@ -1877,19 +2014,213 @@ button:focus-visible {
   }
 }
 
+@media (max-width: 768px) {
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 5rem 1.5rem 2rem;
+    border-top-left-radius: 0;
+    min-height: auto;
+  }
+
+  .hero-content {
+    margin-top: 0;
+    margin-left: 0;
+    justify-self: start;
+    max-width: 260px;
+  }
+
+  .hero-3d {
+    width: 100%;
+    min-height: 380px;
+    margin-top: -1.5rem;
+  }
+
+  .hero-camera-stage {
+    height: 380px;
+  }
+
+  .hero-camera-controls {
+    margin-top: -4.2rem;
+  }
+
+  .hero-camera--center,
+  .hero-camera--left,
+  .hero-camera--top-left,
+  .hero-camera--top-right,
+  .hero-camera--right {
+    width: clamp(720px, 148vw, 980px);
+  }
+
+  .hero-ball {
+    width: 110px;
+  }
+
+  .model-canvas {
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: 760px;
+    padding: 3rem 1.25rem;
+  }
+
+  .model-canvas-bg {
+    inset: 2rem 1.25rem;
+    border-radius: 4rem;
+  }
+
+  .model-canvas-content {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    max-width: 280px;
+    margin-top: 2.5rem;
+    margin-left: 1.5rem;
+  }
+
+  .model-3d {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    height: 460px;
+    margin-top: 8rem;
+  }
+
+  .model-color-picker {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: end;
+    margin-right: 2rem;
+  }
+
+  .model-canvas-instruction {
+    bottom: 3.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: 4.5rem 1rem 1.5rem;
+  }
+
+  .hero-content h1 {
+    font-size: 2.35rem;
+  }
+
+  .hero-description {
+    font-size: 1.25rem;
+  }
+
+  .hero-3d {
+    min-height: 300px;
+  }
+
+  .hero-camera-stage {
+    height: 300px;
+  }
+
+  .hero-camera--center,
+  .hero-camera--left,
+  .hero-camera--top-left,
+  .hero-camera--top-right,
+  .hero-camera--right {
+    width: clamp(560px, 160vw, 760px);
+  }
+
+  .hero-ball--mint,
+  .hero-ball--white,
+  .hero-ball--pink {
+    display: none;
+  }
+
+  .model-canvas {
+    min-height: 700px;
+    padding: 2.5rem 0.8rem;
+  }
+
+  .model-canvas-bg {
+    inset: 1.4rem 0.8rem;
+    border-radius: 3rem;
+  }
+
+  .model-canvas-content {
+    max-width: 210px;
+    margin-left: 1rem;
+  }
+
+  .body-specs,
+  .lens-specs,
+  .sockel-specs,
+  .battery-cover-specs,
+  .flashlight-specs,
+  .shutter-button-specs,
+  .polaroid-image-specs {
+    width: 205px;
+    padding: 0;
+  }
+
+  .body-specs-label,
+  .lens-specs-label,
+  .sockel-specs-label,
+  .battery-cover-specs-label,
+  .flashlight-specs-label,
+  .shutter-button-specs-label,
+  .polaroid-image-specs-label {
+    font-size: 0.82rem;
+  }
+
+  .body-specs-text,
+  .lens-specs-text,
+  .sockel-specs-text,
+  .battery-cover-specs-text,
+  .flashlight-specs-text,
+  .shutter-button-specs-text,
+  .polaroid-image-specs-text {
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+
+  .specs-anchor::after,
+  .specs-anchor::before {
+    display: none;
+  }
+
+  .model-3d {
+    height: 390px;
+    margin-top: 8.5rem;
+  }
+
+  .model-color-picker {
+    margin-right: 1rem;
+  }
+
+  .model-color-picker .swatch {
+    width: 34px;
+    height: 34px;
+    border-width: 3px;
+  }
+
+  .model-color-picker span {
+    font-size: 1.25rem;
+  }
+
+  .model-ball {
+    opacity: 0.65;
+  }
+}
+
 /* Large screens — 1400px and above */
 @media (min-width: 1400px) {
 
   .hero-content {
-    margin-left: 12rem;
+    margin-left: 0;
   }
 
   .model-canvas-content {
-    margin-left: 12rem;
+    margin-left: 0;
   }
 
   .model-3d {
-    margin-right: 6rem;
+    margin-right: 0;
   }
 
   .footer-content {

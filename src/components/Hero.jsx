@@ -30,6 +30,12 @@ import camera5Rot2 from "../assets/camera5/rot_2.png";
 import camera5Rot3 from "../assets/camera5/rot_3.png";
 import camera5Rot4 from "../assets/camera5/rot_4.png";
 
+import ballBlue from "../assets/balls/balls/1.png";
+import ballPink from "../assets/balls/balls/2.png";
+import ballPurple from "../assets/balls/balls/3.png";
+import ballMint from "../assets/balls/balls/4.png";
+import ballWhite from "../assets/balls/balls/5.png";
+
 const CAMERA_IMAGES = {
   "Lilac Purple": { front: camera1Front, left: camera1Rot1, topLeft: camera1Rot2, topRight: camera1Rot3, right: camera1Rot4 },
   "Clay White": { front: camera2Front, left: camera2Rot1, topLeft: camera2Rot2, topRight: camera2Rot3, right: camera2Rot4 },
@@ -53,6 +59,14 @@ const POSITION_IMAGE_KEYS = {
   "top-left": "topLeft",
   "top-right": "topRight",
 };
+
+const HERO_BALLS = [
+  { src: ballBlue, className: "hero-ball hero-ball--blue" },
+  { src: ballPink, className: "hero-ball hero-ball--pink" },
+  { src: ballPurple, className: "hero-ball hero-ball--purple" },
+  { src: ballMint, className: "hero-ball hero-ball--mint" },
+  { src: ballWhite, className: "hero-ball hero-ball--white" },
+];
 
 const Hero = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -108,11 +122,14 @@ const Hero = () => {
 
   return (
     <section className="hero" id="home">
+      {HERO_BALLS.map((ball) => (
+        <img key={ball.className} className={ball.className} src={ball.src} alt="" aria-hidden="true" />
+      ))}
       <div className="hero-content reveal">
         <h1 className="hero-title">
           Fill Your<br />World<br />With Joy
         </h1>
-        <p className="hero-description">3D Camera Models</p>
+        <p className="hero-description">Instax Mini 12</p>
       </div>
 
       <div className="hero-3d">
@@ -147,31 +164,6 @@ const Hero = () => {
             <button type="button" onClick={prev} aria-label="Previous camera color">{"<"}</button>
             <span>{COLORS[activeIndex].toUpperCase()}</span>
             <button type="button" onClick={next} aria-label="Next camera color">{">"}</button>
-          </div>
-        </div>
-      </div>
-      <div className="hero-marquee">
-        <div className="hero-marquee-track">
-          <div className="hero-marquee-text">
-            <span>Instax Mini 12</span>
-            <span className="hero-marquee-separator">&bull;</span>
-            <span>Fill Your World With Joy</span>
-            <span className="hero-marquee-separator">&bull;</span>
-            <span>Fujifilm</span>
-            <span className="hero-marquee-separator">&bull;</span>
-            <span>Instant Photography</span>
-            <span className="hero-marquee-separator">&bull;</span>
-          </div>
-
-          <div className="hero-marquee-text">
-            <span>Instax Mini 12</span>
-            <span className="hero-marquee-separator">&bull;</span>
-            <span>Fill Your World With Joy</span>
-            <span className="hero-marquee-separator">&bull;</span>
-            <span>Fujifilm</span>
-            <span className="hero-marquee-separator">&bull;</span>
-            <span>Instant Photography</span>
-            <span className="hero-marquee-separator">&bull;</span>
           </div>
         </div>
       </div>

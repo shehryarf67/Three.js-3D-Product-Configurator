@@ -173,6 +173,7 @@ header {
   z-index: 100;
   overflow: visible;
   background-color: rgb(191, 244, 234);
+  filter: drop-shadow(0px 4px 18px rgba(0, 50, 40, 0.22)) drop-shadow(0px 1px 6px rgba(0, 0, 0, 0.12));
 }
 
 
@@ -198,7 +199,7 @@ body {
   left: 1.5rem;
   z-index: 120;
   width: clamp(110px, 12vw, 170px);
-  color: white;
+  color: var(--secondary_color);
   display: flex;
   align-items: center;
   transform: translateY(-50%);
@@ -217,7 +218,15 @@ body {
 }
 
 .app-logo:hover {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(200, 90, 135, 0.5);
+}
+
+header nav .hideOnMobile a {
+  color: var(--secondary_color);
+}
+
+header nav .hideOnMobile a:hover {
+  color: rgba(200, 90, 135, 0.5);
 }
 
 .app-logo-svg {
@@ -2223,6 +2232,19 @@ button:focus-visible {
 
   .model-ball {
     opacity: 0.65;
+  }
+}
+
+/* Mid-range laptops — 1024px to 1399px
+   Without this, the default margin-left: 8rem on hero-content causes the flex
+   items to overflow and wrap at these viewport sizes. */
+@media (min-width: 1024px) and (max-width: 1399px) {
+  .hero-content {
+    margin-left: 2rem;
+  }
+
+  .hero-3d {
+    width: min(54%, 860px);
   }
 }
 

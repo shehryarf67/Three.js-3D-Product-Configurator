@@ -124,11 +124,11 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...pr
     }
 
     if (batteryCoverRef.current) {
-      const targetX = hoveredPart === 'battery-cover' ? -0.12 : 0
-      const diff = targetX - batteryCoverRef.current.position.x
+      const targetY = hoveredPart === 'battery-cover' ? -0.18 : 0
+      const diff = targetY - batteryCoverRef.current.position.y
 
       if (Math.abs(diff) > 0.001) {
-        batteryCoverRef.current.position.x += diff * delta * 8
+        batteryCoverRef.current.position.y += diff * delta * 8
         dirty = true
       }
     }

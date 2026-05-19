@@ -6,8 +6,8 @@
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
 
-  --main_bg_color: #bff4ea;
-  --secondary_color: #c85a87;
+  --main_bg_color: #c85a87;
+  --secondary_color: #bff4ea;
 
   background-size: 200% 200%;
   background-color: var(--main_bg_color);
@@ -172,7 +172,7 @@ header {
   top: 0;
   z-index: 100;
   overflow: visible;
-  background-color: rgb(191, 244, 234);
+  background-color: var(--secondary_color);
   filter: drop-shadow(0px 4px 18px rgba(0, 50, 40, 0.22)) drop-shadow(0px 1px 6px rgba(0, 0, 0, 0.12));
 }
 
@@ -199,7 +199,7 @@ body {
   left: 1.5rem;
   z-index: 120;
   width: clamp(110px, 12vw, 170px);
-  color: var(--secondary_color);
+  color: var(--main_bg_color);
   display: flex;
   align-items: center;
   transform: translateY(-50%);
@@ -211,7 +211,7 @@ body {
   left: 0;
   width: 400px;
   height: 400px;
-  background: rgb(191, 244, 234);
+  background: var(--secondary_color);
   clip-path: path('M0,400 V0 H400 C134.31,0 0,134.31 0,400 Z');
   z-index: 110;
   pointer-events: none;
@@ -222,7 +222,7 @@ body {
 }
 
 header nav .hideOnMobile a {
-  color: var(--secondary_color);
+  color: var(--main_bg_color);
 }
 
 header nav .hideOnMobile a:hover {
@@ -283,7 +283,7 @@ header nav .hideOnMobile a:hover {
   flex-wrap: wrap;
   min-height: 100vh;
   padding: 1rem 4rem;
-  background-color: var(--secondary_color);
+  background-color: var(--main_bg_color);
   overflow: hidden;
   position: relative;
   border-top-left-radius: 12vw;
@@ -324,7 +324,7 @@ header nav .hideOnMobile a:hover {
 
 .hero-camera {
   position: absolute;
-  left: 57%;
+  left: 50%;
   top: 37%;
   aspect-ratio: 16 / 9;
   margin: 0;
@@ -687,7 +687,7 @@ header nav .hideOnMobile a:hover {
   min-height: 720px;
   padding: clamp(4rem, 7vw, 6rem) clamp(2rem, 9vw, 8rem);
   box-sizing: border-box;
-  background-color: var(--main_bg_color);
+  background-color: var(--secondary_color);
   position: relative;
   overflow: hidden;
   isolation: isolate;
@@ -699,7 +699,7 @@ header nav .hideOnMobile a:hover {
   left: clamp(2rem, 9vw, 8rem);
   right: clamp(2rem, 9vw, 8rem);
   bottom: 4.2rem;
-  background: var(--secondary_color);
+  background: var(--main_bg_color);
   border-radius: 13rem;
   z-index: 0;
   pointer-events: none;
@@ -1173,6 +1173,96 @@ header nav .hideOnMobile a:hover {
     font-size: 2rem;
   }
 }
+
+/* ============================
+   Features Pipe
+   ============================ */
+
+.features-pipe-section {
+  overflow: hidden;
+  background-color: var(--main_bg_color);
+  padding: 4.5rem 0;
+}
+
+.features-pipe {
+  position: relative;
+  height: 460px;
+  width: calc(75% + 200px);
+  margin-left: -200px;
+  background: var(--secondary_color);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.features-layer {
+  position: absolute;
+  inset: 0;
+  background-size: auto 100%;
+  background-repeat: repeat-x;
+  background-position: center center;
+  pointer-events: none;
+  user-select: none;
+}
+
+.features-layer--3rd { z-index: 1; }
+.features-layer--2nd { z-index: 2; }
+.features-layer--top { z-index: 3; }
+
+.features-pipe-heading-wrap {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: var(--main_bg_color);
+  padding: 1.4rem 4rem 1.4rem calc(200px + 4rem);
+  border-radius: 999px;
+}
+
+.features-pipe-heading {
+  margin: 0;
+  font-size: clamp(2rem, 4.2vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--secondary_color);
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+@media (max-width: 1024px) {
+  .features-pipe-heading-wrap {
+    padding: 1.1rem 3rem 1.1rem calc(200px + 3rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .features-pipe {
+    height: 320px;
+    width: calc(85% + 150px);
+    margin-left: -150px;
+  }
+
+  .features-pipe-heading-wrap {
+    padding: 0.9rem 2.25rem 0.9rem calc(150px + 2rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .features-pipe {
+    height: 220px;
+    width: calc(90% + 90px);
+    margin-left: -90px;
+  }
+
+  .features-pipe-heading-wrap {
+    padding: 0.65rem 1.6rem 0.65rem calc(90px + 1.4rem);
+  }
+}
+
+/* ============================
+   End Features Pipe
+   ============================ */
 
 .details {
   width: 100%;
@@ -2252,7 +2342,7 @@ button:focus-visible {
 @media (min-width: 1400px) {
 
   .hero-content {
-    margin-left: 0;
+    margin-left: 8rem;
   }
 
   .model-canvas-content {

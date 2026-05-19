@@ -7,3 +7,4 @@ export { default as ModelCanvas } from './ModelCanvas';
 export { default as Details } from './Details';
 export { default as Showcase } from './Showcase'
 export { default as InstaxLogo } from './InstaxLogo';
+export { default as FeaturesPipe } from './FeaturesPipe';

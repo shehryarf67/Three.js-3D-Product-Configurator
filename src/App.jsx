@@ -1,4 +1,4 @@
-import { Navbar, Hero, About, Footer, ModelCanvas, Details, Showcase } from "./components";
+import { Navbar, Hero, About, Footer, ModelCanvas, Details, Showcase, FeaturesPipe } from "./components";
 import { useEffect } from "react";
 import { ScrollTrigger } from "./imports.js";
 
@@ -45,6 +45,7 @@ export default function App() {
       </div>
       <ModelCanvas />
       <Showcase />
+      <FeaturesPipe />
       <Details />
       <About />
       <Footer />

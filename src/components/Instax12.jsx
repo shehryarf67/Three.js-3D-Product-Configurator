@@ -21,6 +21,7 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...pr
   const { nodes, materials, animations } = useGLTF('/models/instaxmini12.glb')
   const { actions, mixer } = useAnimations(animations, group)
   const flashGlassMaterial = React.useMemo(() => materials['eevee glass 1'].clone(), [materials])
+  const flashDoorMaterial = React.useMemo(() => materials['Material.007'].clone(), [materials])
 
   const setPartHover = (part) => (e) => {
     e.stopPropagation()
@@ -105,10 +106,15 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...pr
 
   React.useEffect(() => {
     if (!flashGlassMaterial.emissive) return
-
     flashGlassMaterial.emissive.set('#fff4c7')
     flashGlassMaterial.emissiveIntensity = 0
   }, [flashGlassMaterial])
+
+  React.useEffect(() => {
+    if (!flashDoorMaterial.emissive) return
+    flashDoorMaterial.emissive.set('#fff4c7')
+    flashDoorMaterial.emissiveIntensity = 0
+  }, [flashDoorMaterial])
 
   useFrame((state, delta) => {
     let dirty = false
@@ -143,12 +149,14 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...pr
         flashRef.current.scale.z += diff * delta * 8
         dirty = true
       }
+    }
 
-      const targetRotation = hoveredPart === 'flashlight' ? 0.4 : 0
-      const rotationDiff = targetRotation - flashRef.current.rotation.z
+    if (flashDoorMaterial.emissive) {
+      const targetIntensity = hoveredPart === 'flashlight' ? 1.2 : 0
+      const diff = targetIntensity - flashDoorMaterial.emissiveIntensity
 
-      if (Math.abs(rotationDiff) > 0.001) {
-        flashRef.current.rotation.z += rotationDiff * delta * 4
+      if (Math.abs(diff) > 0.01) {
+        flashDoorMaterial.emissiveIntensity += diff * delta * 8
         dirty = true
       }
     }
@@ -274,7 +282,7 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...pr
           onPointerOver={setPartHover('flashlight')}
           onPointerLeave={clearPartHover}
         >
-          <mesh name="Cube010" geometry={nodes.Cube010.geometry} material={materials['Material.007']} />
+          <mesh name="Cube010" geometry={nodes.Cube010.geometry} material={flashDoorMaterial} />
           <mesh name="Cube010_1" geometry={nodes.Cube010_1.geometry} material={materials['Material.002']} />
           <mesh name="Cube010_2" geometry={nodes.Cube010_2.geometry} material={flashGlassMaterial} />
           <mesh name="flash_rod" geometry={nodes.flash_rod.geometry} material={flashGlassMaterial} scale={[1, 1.155, 1]} />

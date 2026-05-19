@@ -26,7 +26,8 @@
   --text-light: rgba(255, 255, 255, 0.75);
   --text-lighter: rgba(255, 255, 255, 0.9);
 
-  --width-container: 1000px;
+  --width-container: 1400px;
+  --width-content: 1600px;
 }
 
 @keyframes gradientShift {
@@ -368,33 +369,33 @@ header nav .hideOnMobile a:hover {
 }
 
 .hero-camera--center {
-  width: clamp(1800px, 120vw, 2550px);
+  width: clamp(1100px, 100vw, 1700px);
   transform: translate3d(-50%, -50%, 0);
   z-index: 4;
 }
 
 .hero-camera--left {
-  width: clamp(1800px, 120vw, 2550px);
+  width: clamp(1100px, 100vw, 1700px);
   transform: translate3d(-50%, -55%, 0);
   z-index: 2;
 }
 
 .hero-camera--top-left {
-  width: clamp(1800px, 120vw, 2550px);
+  width: clamp(1100px, 100vw, 1700px);
   transform: translate3d(-50%, -55%, 0);
   opacity: 1;
   z-index: 1;
 }
 
 .hero-camera--top-right {
-  width: clamp(1800px, 120vw, 2550px);
+  width: clamp(1100px, 100vw, 1700px);
   transform: translate3d(-50%, -50%, 0);
   opacity: 1;
   z-index: 1;
 }
 
 .hero-camera--right {
-  width: clamp(1800px, 120vw, 2550px);
+  width: clamp(1100px, 100vw, 1700px);
   transform: translate3d(-52%, -50%, 0);
   z-index: 3;
 }
@@ -2342,7 +2343,7 @@ button:focus-visible {
 @media (min-width: 1400px) {
 
   .hero-content {
-    margin-left: 8rem;
+    margin-left: 4rem;
   }
 
   .model-canvas-content {
@@ -2354,8 +2355,54 @@ button:focus-visible {
   }
 
   .footer-content {
-    max-width: 1200px;
+    max-width: 1400px;
     margin-left: auto;
     margin-right: auto;
+  }
+}
+
+/* Ultra-wide screens — 1600px and above.
+   Constrain content to a ~1600px column using dynamic horizontal padding so
+   full-width backgrounds (model-canvas mint, etc.) still bleed to the viewport
+   edges while the inner content stays readable. */
+@media (min-width: 1600px) {
+  .hero,
+  .model-canvas,
+  .details,
+  .about,
+  #showcase {
+    padding-left: max(4rem, calc((100vw - var(--width-content)) / 2));
+    padding-right: max(4rem, calc((100vw - var(--width-content)) / 2));
+  }
+
+  .model-canvas-bg {
+    left: max(2rem, calc((100vw - var(--width-content)) / 2 + 1rem));
+    right: max(2rem, calc((100vw - var(--width-content)) / 2 + 1rem));
+  }
+
+  .hero-content {
+    margin-left: 0;
+  }
+
+  .hero-3d {
+    width: min(58%, 920px);
+  }
+
+  .hero-camera--center,
+  .hero-camera--left,
+  .hero-camera--top-left,
+  .hero-camera--top-right,
+  .hero-camera--right {
+    width: clamp(1100px, 80vw, 1500px);
+  }
+
+  #showcase .media {
+    max-width: var(--width-content);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .footer-content {
+    max-width: var(--width-content);
   }
 }

@@ -595,7 +595,7 @@ header nav .hideOnMobile a:hover {
   grid-template-columns: repeat(1, 1fr);
   grid-column-gap: var(--spacing-l);
   grid-row-gap: var(--spacing-l);
-  max-width: var(--width-container);
+  max-width: 1100px;
   width: 100%;
   z-index: 2;
 }
@@ -1307,7 +1307,7 @@ header nav .hideOnMobile a:hover {
 
 .details h2 {
   color: rgba(255, 255, 255, 0.945);
-  font-size: 4rem;
+  font-size: clamp(4rem, 3vw + 2rem, 6rem);
   max-width: 720px;
   margin: 0 0 1rem 0;
   padding: 0;
@@ -1453,12 +1453,14 @@ header nav .hideOnMobile a:hover {
 .about h1 {
   font-size: 3rem;
   margin-bottom: 0.5rem;
+  max-width: 20ch;
 }
 
 .about p {
   margin: 0.5rem 0 1rem 0;
   font-size: 1.2rem;
   margin-right: 1rem;
+  max-width: 65ch;
 }
 
 @keyframes appear {
@@ -1471,14 +1473,6 @@ header nav .hideOnMobile a:hover {
     opacity: 1;
     clip-path: inset(0 0 0 0);
   }
-}
-
-body {
-  margin: 0;
-  /* display: flex; */
-  min-width: 320px;
-  min-height: 100vh;
-  background-color: var(--main_bg_color);
 }
 
 h1 {
@@ -2346,8 +2340,13 @@ button:focus-visible {
     margin-left: 4rem;
   }
 
+  .hero-3d {
+    width: min(58%, 920px);
+  }
+
   .model-canvas-content {
-    margin-left: 0;
+    max-width: 460px;
+    margin-left: 3rem;
   }
 
   .model-3d {
@@ -2364,10 +2363,15 @@ button:focus-visible {
 /* Ultra-wide screens — 1600px and above.
    Constrain content to a ~1600px column using dynamic horizontal padding so
    full-width backgrounds (model-canvas mint, etc.) still bleed to the viewport
-   edges while the inner content stays readable. */
+   edges while the inner content stays readable.
+
+   Note: .model-canvas uses an 8rem minimum (vs 4rem elsewhere) because its base
+   padding clamp already maxes at 8rem at ≥1400px — using 4rem here would cause
+   a visible 64px jump at the 1600px boundary. The bg-left formula matches the
+   padding formula exactly so the pink rounded rectangle's left edge aligns with
+   the grid's content edge. */
 @media (min-width: 1600px) {
   .hero,
-  .model-canvas,
   .details,
   .about,
   #showcase {
@@ -2375,17 +2379,19 @@ button:focus-visible {
     padding-right: max(4rem, calc((100vw - var(--width-content)) / 2));
   }
 
+  .model-canvas {
+    padding-left: max(8rem, calc((100vw - var(--width-content)) / 2));
+    padding-right: max(8rem, calc((100vw - var(--width-content)) / 2));
+  }
+
   .model-canvas-bg {
-    left: max(2rem, calc((100vw - var(--width-content)) / 2 + 1rem));
-    right: max(2rem, calc((100vw - var(--width-content)) / 2 + 1rem));
+    left: max(8rem, calc((100vw - var(--width-content)) / 2));
+    right: max(8rem, calc((100vw - var(--width-content)) / 2));
   }
 
-  .hero-content {
-    margin-left: 0;
-  }
-
-  .hero-3d {
-    width: min(58%, 920px);
+  .model-3d {
+    max-width: 720px;
+    justify-self: start;
   }
 
   .hero-camera--center,

@@ -54,18 +54,25 @@ function ModelLoader() {
     );
 }
 
+const MODEL_BASE_Y = 0.1;
+
 const SpinningModel = () => {
+    const floatRef = useRef(null);
     const spinRef = useRef(null);
     const [hoveredPart, setHoveredPart] = useState(null);
 
-    useFrame((_, delta) => {
+    useFrame((state, delta) => {
         if (spinRef.current) {
             spinRef.current.rotation.y += delta * 0.35;
+        }
+        if (floatRef.current) {
+            floatRef.current.position.y =
+                MODEL_BASE_Y + Math.sin(state.clock.elapsedTime * 0.6) * 0.1;
         }
     });
 
     return (
-        <group position={[1.5, 0.1, 0]} rotation={[0.22, 0, -0.14]}>
+        <group ref={floatRef} position={[1.5, MODEL_BASE_Y, 0]} rotation={[0.22, 0, -0.14]}>
             <group ref={spinRef}>
                 <Suspense fallback={<ModelLoader />}>
                     <Model
@@ -87,13 +94,12 @@ const Details = () => {
 
     useGSAP(() => {
         gsap.set(".feature-card", { xPercent: -115 });
-        gsap.set(".feature-card-1", { xPercent: 0 });
 
         const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: sectionRef.current,
                 start: "top top",
-                end: `+=${features.length * 500}`,
+                end: `+=${features.length * 550}`,
                 scrub: 0.5,
                 pin: true,
                 pinSpacing: true,
@@ -101,6 +107,22 @@ const Details = () => {
                 invalidateOnRefresh: true,
             },
         });
+
+        tl.from(
+            "#details-canvas",
+            { opacity: 0, scale: 0.85, ease: "power2.out", duration: 0.7 },
+            0
+        );
+        tl.from(
+            ".scroll-indicator",
+            { opacity: 0, y: -24, ease: "power2.out", duration: 0.5 },
+            0.15
+        );
+        tl.to(
+            ".feature-card-1",
+            { xPercent: 0, ease: "power2.out", duration: 0.55 },
+            0.2
+        );
 
         for (let i = 1; i < features.length; i++) {
             tl.to(

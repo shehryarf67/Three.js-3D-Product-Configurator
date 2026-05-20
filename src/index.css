@@ -1188,27 +1188,27 @@ header nav .hideOnMobile a:hover {
 
 .features-pipe {
   position: relative;
-  height: 460px;
-  width: calc(75% + 200px);
-  margin-left: -200px;
+  height: 560px;
+  width: calc(100% + 200px);
+  margin-left: -100px;
   background: var(--secondary_color);
-  border-radius: 999px;
+  border-radius: 0 999px 999px 0;
   overflow: hidden;
 }
 
 .features-layer {
   position: absolute;
   inset: 0;
-  background-size: auto 100%;
-  background-repeat: repeat-x;
+  background-size: cover;
+  background-repeat: no-repeat;
   background-position: center center;
   pointer-events: none;
   user-select: none;
 }
 
-.features-layer--3rd { z-index: 1; }
-.features-layer--2nd { z-index: 2; }
-.features-layer--top { z-index: 3; }
+.features-layer--3rd { z-index: 1; background-position: top center; }
+.features-layer--2nd { z-index: 2; background-position: bottom center; }
+.features-layer--top  { z-index: 3; background-position: center center; }
 
 .features-pipe-heading-wrap {
   position: absolute;
@@ -1217,7 +1217,7 @@ header nav .hideOnMobile a:hover {
   transform: translateY(-50%);
   z-index: 10;
   background: var(--main_bg_color);
-  padding: 1.4rem 4rem 1.4rem calc(200px + 4rem);
+  padding: 1.4rem 4rem 1.4rem calc(100px + 4rem);
   border-radius: 999px;
 }
 
@@ -1234,31 +1234,31 @@ header nav .hideOnMobile a:hover {
 
 @media (max-width: 1024px) {
   .features-pipe-heading-wrap {
-    padding: 1.1rem 3rem 1.1rem calc(200px + 3rem);
+    padding: 1.1rem 3rem 1.1rem calc(100px + 3rem);
   }
 }
 
 @media (max-width: 768px) {
   .features-pipe {
-    height: 320px;
-    width: calc(85% + 150px);
-    margin-left: -150px;
+    height: 390px;
+    width: calc(100% + 150px);
+    margin-left: -75px;
   }
 
   .features-pipe-heading-wrap {
-    padding: 0.9rem 2.25rem 0.9rem calc(150px + 2rem);
+    padding: 0.9rem 2.25rem 0.9rem calc(75px + 2rem);
   }
 }
 
 @media (max-width: 480px) {
   .features-pipe {
-    height: 220px;
-    width: calc(90% + 90px);
-    margin-left: -90px;
+    height: 265px;
+    width: calc(100% + 90px);
+    margin-left: -45px;
   }
 
   .features-pipe-heading-wrap {
-    padding: 0.65rem 1.6rem 0.65rem calc(90px + 1.4rem);
+    padding: 0.65rem 1.6rem 0.65rem calc(45px + 1.4rem);
   }
 }
 

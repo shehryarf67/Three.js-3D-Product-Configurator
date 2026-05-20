@@ -625,11 +625,11 @@ header nav .hideOnMobile a:hover {
 }
 
 .card__background {
+  background-color: #89CFF0;
   background-size: cover;
   background-position: center;
   border-radius: var(--spacing-l);
   bottom: 0;
-  filter: brightness(0.75) saturate(1.2) contrast(0.85);
   left: 0;
   position: absolute;
   right: 0;
@@ -1369,6 +1369,18 @@ header nav .hideOnMobile a:hover {
   border-right: 1px solid rgba(255, 255, 255, 0.6);
   border-bottom: 1px solid rgba(255, 255, 255, 0.6);
   transform: translate(-50%, 50%) rotate(45deg);
+  animation: scrollArrowBob 1.8s ease-in-out infinite;
+}
+
+@keyframes scrollArrowBob {
+  0%, 100% {
+    transform: translate(-50%, 50%) rotate(45deg);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-50%, 130%) rotate(45deg);
+    opacity: 1;
+  }
 }
 
 .model-loader {

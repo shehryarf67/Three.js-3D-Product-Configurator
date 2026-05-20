@@ -12,7 +12,7 @@ export default function App() {
           obs.unobserve(entry.target);
         }
       });
-    }, { threshold: 0, rootMargin: "0px" });
+    }, { threshold: 0, rootMargin: "0px 0px 300px 0px" });
 
     const elements = document.querySelectorAll(".reveal, .reveal-scale");
     elements.forEach((el) => observer.observe(el));

@@ -43,8 +43,8 @@ const Footer = () => {
         <div className="footer_content_box2">
           <h3>NAVIGATE</h3>
           <a href="#home">Home</a>
-          <a href="#about">About</a>
           <a href="#details">Details</a>
+          <a href="#about">About</a>
           <a href="#contact">Contact</a>
         </div>
         <div className="footer_content_box3">

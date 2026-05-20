@@ -191,7 +191,7 @@ body {
 }
 
 .hero-bg {
-  background-color: var(--main_bg_color);
+  background-color: var(--secondary_color);
 }
 
 .app-logo {
@@ -282,12 +282,13 @@ header nav .hideOnMobile a:hover {
   flex-direction: row;
   align-items: flex-start;
   flex-wrap: wrap;
-  min-height: 100vh;
+  min-height: clamp(560px, 72vh, 760px);
   padding: 1rem 4rem;
   background-color: var(--main_bg_color);
   overflow: hidden;
   position: relative;
-  border-top-left-radius: 12vw;
+  border-bottom-left-radius: clamp(150px, 24vw, 360px);
+  border-bottom-right-radius: 0;
 }
 
 .hero-content {
@@ -689,10 +690,22 @@ header nav .hideOnMobile a:hover {
   min-height: 720px;
   padding: clamp(4rem, 7vw, 6rem) clamp(2rem, 9vw, 8rem);
   box-sizing: border-box;
-  background-color: var(--secondary_color);
+  background-color: var(--main_bg_color);
   position: relative;
   overflow: hidden;
   isolation: isolate;
+  margin-top: -1px;
+}
+
+.model-canvas::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--secondary_color);
+  border-top-right-radius: clamp(150px, 19vw, 320px);
+  border-bottom-right-radius: clamp(150px, 19vw, 320px);
+  pointer-events: none;
 }
 
 .model-canvas-bg {
@@ -703,7 +716,7 @@ header nav .hideOnMobile a:hover {
   bottom: 4.2rem;
   background: var(--main_bg_color);
   border-radius: 13rem;
-  z-index: 0;
+  z-index: 2;
   pointer-events: none;
 }
 
@@ -727,7 +740,7 @@ header nav .hideOnMobile a:hover {
   margin-left: clamp(2rem, 6vw, 7rem);
   padding-top: 0;
   position: relative;
-  z-index: 3;
+  z-index: 4;
   align-self: center;
   grid-column: 1;
   grid-row: 1;
@@ -836,7 +849,7 @@ header nav .hideOnMobile a:hover {
   margin-right: 0;
   border-radius: 16px;
   position: relative;
-  z-index: 2;
+  z-index: 3;
   overflow: hidden;
   background: transparent;
   cursor: grab;
@@ -847,7 +860,7 @@ header nav .hideOnMobile a:hover {
 
 .model-color-picker {
   position: relative;
-  z-index: 3;
+  z-index: 4;
   grid-column: 3;
   grid-row: 1;
   display: flex;
@@ -904,7 +917,7 @@ header nav .hideOnMobile a:hover {
 }
 
 .model-ball {
-  z-index: -1;
+  z-index: 1;
   opacity: 0.88;
 }
 
@@ -2102,6 +2115,7 @@ button:focus-visible {
     grid-template-columns: 1fr;
     padding: 5rem 1.5rem 2rem;
     border-top-left-radius: 0;
+    border-bottom-right-radius: 0;
     min-height: auto;
   }
 
@@ -2182,6 +2196,7 @@ button:focus-visible {
 @media (max-width: 480px) {
   .hero {
     padding: 4.5rem 1rem 1.5rem;
+    border-bottom-right-radius: 0;
   }
 
   .hero-content h1 {

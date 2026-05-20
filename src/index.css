@@ -293,7 +293,7 @@ header nav .hideOnMobile a:hover {
 .hero-content {
   max-width: 300px;
   z-index: 5;
-  margin-left: 8rem;
+  margin-left: 12rem;
   margin-top: 6rem;
   align-items: flex-start;
   justify-content: space-between;
@@ -1739,7 +1739,7 @@ button:focus-visible {
   }
 
   .hero-content {
-    margin-left: 0;
+    margin-left: 2rem;
     margin-top: 3rem;
     max-width: 100%;
     text-align: left;
@@ -2141,7 +2141,7 @@ button:focus-visible {
 
   .hero-content {
     margin-top: 0;
-    margin-left: 0;
+    margin-left: 2rem;
     justify-self: start;
     max-width: 260px;
   }
@@ -2329,7 +2329,7 @@ button:focus-visible {
    items to overflow and wrap at these viewport sizes. */
 @media (min-width: 1024px) and (max-width: 1399px) {
   .hero-content {
-    margin-left: 2rem;
+    margin-left: 6rem;
   }
 
   .hero-3d {
@@ -2341,11 +2341,20 @@ button:focus-visible {
 @media (min-width: 1400px) {
 
   .hero-content {
-    margin-left: clamp(4rem, 7vw, 14rem);
+    margin-left: clamp(8rem, 12vw, 22rem);
   }
 
   .hero-3d {
     width: min(58%, 920px);
+  }
+
+  /* Scale up hero camera PNGs on larger screens */
+  .hero-camera--center,
+  .hero-camera--left,
+  .hero-camera--top-left,
+  .hero-camera--top-right,
+  .hero-camera--right {
+    width: clamp(1500px, 125vw, 2400px);
   }
 
   .model-canvas-content {
@@ -2381,6 +2390,15 @@ button:focus-visible {
   #showcase {
     padding-left: max(4rem, calc((100vw - var(--width-content)) / 2));
     padding-right: max(4rem, calc((100vw - var(--width-content)) / 2));
+  }
+
+  /* Even larger hero camera PNGs on ultra-wide displays */
+  .hero-camera--center,
+  .hero-camera--left,
+  .hero-camera--top-left,
+  .hero-camera--top-right,
+  .hero-camera--right {
+    width: clamp(1800px, 140vw, 2900px);
   }
 
   .model-canvas {

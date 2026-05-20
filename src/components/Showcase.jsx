@@ -22,9 +22,10 @@ const Showcase = () => {
                 trigger: "#showcase",
                 start: "top 4%",
                 end: "+=800",
-                scrub: 0.8,
+                scrub: 0.5,
                 pin: true,
                 pinSpacing: true,
+                fastScrollEnd: true,
                 invalidateOnRefresh: true,
             },
         });
@@ -49,6 +50,8 @@ const Showcase = () => {
                 },
                 0.08
             );
+
+        ScrollTrigger.refresh();
     }, [isTablet]);
 
     return (

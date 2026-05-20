@@ -1,24 +1,22 @@
 import React, { useState } from "react";
 import InstaxLogo from "./InstaxLogo";
 
+const NAV_ITEMS = [
+  { label: "Home", id: "home" },
+  { label: "Model", id: "model-canvas" },
+  { label: "Showcase", id: "showcase" },
+  { label: "Details", id: "details" },
+  { label: "About", id: "about" },
+  { label: "Contact", id: "contact" },
+];
+
 const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const handleNavClick = (label, e) => {
+  const handleNavClick = (id, e) => {
     setSidebarOpen(false);
-    if (label === "About") {
-      e.preventDefault();
-      document.getElementById("about").scrollIntoView({ behavior: "smooth" });
-    } else if (label === "Home") {
-      e.preventDefault();
-      document.getElementById("home").scrollIntoView({ behavior: "smooth" });
-    } else if (label === "Details") {
-      e.preventDefault();
-      document.getElementById("details").scrollIntoView({ behavior: "smooth" });
-    } else if (label === "Contact") {
-      e.preventDefault();
-      document.getElementById("contact").scrollIntoView({ behavior: "smooth" });
-    }
+    e.preventDefault();
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleSidebarToggle = () => {
@@ -48,14 +46,9 @@ const Navbar = () => {
             <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
           </svg>
         </li>
-        {[
-          { label: "Home" },
-          { label: "Details" },
-          { label: "About" },
-          { label: "Contact" },
-        ].map((item) => (
+        {NAV_ITEMS.map((item) => (
           <li key={item.label}>
-            <a href="#" onClick={(e) => handleNavClick(item.label, e)}>{item.label}</a>
+            <a href={`#${item.id}`} onClick={(e) => handleNavClick(item.id, e)}>{item.label}</a>
           </li>
         ))}
       </ul>
@@ -74,14 +67,9 @@ const Navbar = () => {
         </a>
         <nav>
           <ul>
-            {[
-              { label: "Home" },
-              { label: "Details" },
-              { label: "About" },
-              { label: "Contact" },
-            ].map((item) => (
+            {NAV_ITEMS.map((item) => (
               <li className="hideOnMobile" key={item.label}>
-                <a href="#" onClick={(e) => handleNavClick(item.label, e)}>{item.label}</a>
+                <a href={`#${item.id}`} onClick={(e) => handleNavClick(item.id, e)}>{item.label}</a>
               </li>
             ))}
             <li onClick={handleSidebarToggle} className="hamburger">

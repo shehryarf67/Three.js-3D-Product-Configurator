@@ -8,6 +8,7 @@ import React from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useAnimations, useGLTF } from '@react-three/drei'
 import { AdditiveBlending, LoopOnce, LoopRepeat } from 'three'
+import { useMediaQuery } from 'react-responsive'
 
 export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...props }) {
   const group = React.useRef()
@@ -22,6 +23,7 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...pr
   const { actions, mixer } = useAnimations(animations, group)
   const flashGlassMaterial = React.useMemo(() => materials['eevee glass 1'].clone(), [materials])
   const flashDoorMaterial = React.useMemo(() => materials['Material.007'].clone(), [materials])
+  const isTouch = useMediaQuery({ query: '(hover: none)' })
 
   const setPartHover = (part) => (e) => {
     e.stopPropagation()
@@ -33,10 +35,24 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...pr
     setHoveredPart(null)
   }
 
+  const togglePart = (part) => (e) => {
+    e.stopPropagation()
+    setHoveredPart((prev) => (prev === part ? null : part))
+  }
+
   const selectPart = (part) => (e) => {
     e.stopPropagation()
     onSelect(part)
   }
+
+  const partHandlers = (part) =>
+    isTouch
+      ? { onClick: togglePart(part) }
+      : {
+          onClick: selectPart(part),
+          onPointerOver: setPartHover(part),
+          onPointerLeave: clearPartHover,
+        }
 
   const playPhotoAnimation = () => {
     const action = actions['Plane.001Action.001']
@@ -205,12 +221,7 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...pr
         <mesh name="Object_7001" geometry={nodes.Object_7001.geometry} material={materials.metal} position={[-1.685, -0.861, -0.407]} rotation={[0, 0.433, 0]} scale={[-0.558, -0.504, -0.558]} />
         <mesh name="Object_8" geometry={nodes.Object_8.geometry} material={materials.Ikae} position={[-1.685, -0.861, 0.18]} rotation={[0, 0.518, 0]} scale={[0.558, 0.504, 0.558]} />
         <mesh name="Object_8001" geometry={nodes.Object_8001.geometry} material={materials.Ikae} position={[-1.685, -0.861, -0.407]} rotation={[0, 0.433, 0]} scale={[-0.558, -0.504, -0.558]} />
-        <group
-          name="MAIN_BODY"
-          onClick={selectPart('body')}
-          onPointerOver={setPartHover('body')}
-          onPointerLeave={clearPartHover}
-        >
+        <group name="MAIN_BODY" {...partHandlers('body')}>
           <mesh name="mesh005" geometry={nodes.mesh005.geometry} material={materials['pastel blue']} />
           <mesh name="mesh005_1" geometry={nodes.mesh005_1.geometry} material={materials['Material.001']} />
           <mesh name="mesh005_2" geometry={nodes.mesh005_2.geometry} material={materials['Material.003']} />
@@ -222,20 +233,19 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...pr
           geometry={nodes.button_2.geometry}
           material={materials['pastel blue']}
           position={[-1.524, 0.341, 0.944]}
-          onPointerDown={pressShutter}
-          onPointerOver={setPartHover('shutter-button')}
-          onPointerLeave={clearPartHover}
+          {...(isTouch
+            ? { onClick: pressShutter }
+            : {
+                onPointerDown: pressShutter,
+                onPointerOver: setPartHover('shutter-button'),
+                onPointerLeave: clearPartHover,
+              })}
         />
         <group name="flash">
           <mesh name="Cube003" geometry={nodes.Cube003.geometry} material={flashGlassMaterial} />
           <mesh name="Cube003_1" geometry={nodes.Cube003_1.geometry} material={materials['eevee glass 1.001']} />
         </group>
-        <group
-          name="LENS"
-          onClick={selectPart('lens')}
-          onPointerOver={setPartHover('lens')}
-          onPointerLeave={clearPartHover}
-        >
+        <group name="LENS" {...partHandlers('lens')}>
           <mesh name="lense" geometry={nodes.lense.geometry} material={materials['pastel blue']} position={[0.502, -0.475, 1.319]} />
           <mesh name="lesne1" geometry={nodes.lesne1.geometry} material={materials['pastel blue']} position={[0.502, -0.475, 1.319]} />
           <group name="lense2" position={[0.502, -0.475, 1.319]}>
@@ -256,12 +266,7 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...pr
           <mesh name="mesh011_1" geometry={nodes.mesh011_1.geometry} material={materials['Material.003']} />
         </group>
         <mesh name="Cube001" geometry={nodes.Cube001.geometry} material={materials['pastel blue']} position={[0.639, 1.899, -0.639]} />
-        <group
-          name="BATTERY_COVER_GROUP"
-          onClick={selectPart('battery-cover')}
-          onPointerOver={setPartHover('battery-cover')}
-          onPointerLeave={clearPartHover}
-        >
+        <group name="BATTERY_COVER_GROUP" {...partHandlers('battery-cover')}>
           <mesh name="BATTERY_COVER_HITAREA" geometry={nodes.BATTERY_COVER.geometry} position={[-1.989, -1.081, -0.151]}>
             <meshBasicMaterial transparent opacity={0} depthWrite={false} />
           </mesh>
@@ -278,9 +283,7 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...pr
           name="FLASHLIGHT"
           position={[-0.649, 1.546, 0.806]}
           scale={0.924}
-          onClick={selectPart('flashlight')}
-          onPointerOver={setPartHover('flashlight')}
-          onPointerLeave={clearPartHover}
+          {...partHandlers('flashlight')}
         >
           <mesh name="Cube010" geometry={nodes.Cube010.geometry} material={flashDoorMaterial} />
           <mesh name="Cube010_1" geometry={nodes.Cube010_1.geometry} material={materials['Material.002']} />
@@ -295,9 +298,7 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...pr
         <group
           name="Polaroid"
           visible={photoVisible}
-          onClick={selectPart('polaroid-image')}
-          onPointerOver={setPartHover('polaroid-image')}
-          onPointerLeave={clearPartHover}
+          {...partHandlers('polaroid-image')}
         >
           <mesh name="Plane005" geometry={nodes.Plane005.geometry} material={materials['Material.004']} />
           <mesh name="Plane005_1" geometry={nodes.Plane005_1.geometry} material={materials['Material.005']} />

@@ -11,6 +11,7 @@ import {
     Html,
     useProgress,
     Suspense,
+    useMediaQuery,
 } from "../imports.js";
 import { Model as Model } from "./Instax12.jsx";
 import ballBlue from "../assets/balls/balls/1.png";
@@ -141,6 +142,7 @@ const ModelCanvas = () => {
     const modelSize = [0.45, 0.45, 0.45];
     const [hoveredPart, setHoveredPart] = useState(null);
     const activePart = hoveredPart;
+    const isTouch = useMediaQuery({ query: '(hover: none)' });
 
     useEffect(() => {
         const node = model3dRef.current;
@@ -168,7 +170,11 @@ const ModelCanvas = () => {
                 <div className="specs-anchor">
                     {!activePart && (
                         <div className="default-specs">
-                            <p className="default-specs-text">Hover over any part of the camera to explore its specs</p>
+                            <p className="default-specs-text">
+                                {isTouch
+                                    ? "Tap any part of the camera to explore its specs"
+                                    : "Hover over any part of the camera to explore its specs"}
+                            </p>
                         </div>
                     )}
                     {activePart === "body" && (
@@ -332,7 +338,9 @@ const ModelCanvas = () => {
                     </Suspense>
                 </Canvas>
             </div>
-            <p className="model-canvas-instruction reveal">Drag or scroll to rotate camera</p>
+            <p className="model-canvas-instruction reveal">
+                {isTouch ? "Drag the camera to rotate" : "Drag or scroll to rotate camera"}
+            </p>
         </section>
     );
 };

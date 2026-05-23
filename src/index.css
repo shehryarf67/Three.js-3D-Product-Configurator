@@ -2264,9 +2264,58 @@ button:focus-visible {
     grid-column: 1;
     grid-row: 1;
     align-self: start;
-    max-width: min(330px, calc(100% - 9rem));
+    justify-self: center;
+    max-width: min(360px, calc(100% - 6rem));
     margin-top: 2.5rem;
-    margin-left: clamp(4.2rem, 12vw, 5rem);
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .specs-anchor {
+    min-height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .default-specs,
+  .body-specs,
+  .lens-specs,
+  .sockel-specs,
+  .battery-cover-specs,
+  .flashlight-specs,
+  .shutter-button-specs,
+  .polaroid-image-specs {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    width: 100%;
+    max-width: 100%;
+    transform: none;
+    margin: 0 auto;
+  }
+
+  .default-specs-text,
+  .body-specs-text,
+  .lens-specs-text,
+  .sockel-specs-text,
+  .battery-cover-specs-text,
+  .flashlight-specs-text,
+  .shutter-button-specs-text,
+  .polaroid-image-specs-text {
+    font-size: clamp(0.78rem, 2.4vw, 1.05rem);
+    line-height: 1.55;
+  }
+
+  .body-specs-title,
+  .lens-specs-title,
+  .sockel-specs-title,
+  .battery-cover-specs-title,
+  .flashlight-specs-title,
+  .shutter-button-specs-title,
+  .polaroid-image-specs-title {
+    font-size: clamp(1rem, 3.2vw, 1.35rem);
   }
 
   .model-3d {
@@ -2287,6 +2336,12 @@ button:focus-visible {
 
   .model-canvas-instruction {
     bottom: 4rem;
+    left: 0;
+    right: 0;
+    width: max-content;
+    max-width: calc(100% - 4rem);
+    margin: 0 auto;
+    text-align: center;
   }
 }
 
@@ -2358,7 +2413,8 @@ button:focus-visible {
 
   .model-canvas {
     min-height: 700px;
-    padding: 2.5rem 0.8rem;
+    padding: 2.5rem 0.8rem 4.5rem;
+    grid-template-rows: auto auto auto;
   }
 
   .model-canvas-bg {
@@ -2367,8 +2423,9 @@ button:focus-visible {
   }
 
   .model-canvas-content {
-    max-width: min(230px, calc(100% - 6.2rem));
-    margin-left: 3rem;
+    max-width: min(260px, calc(100% - 4rem));
+    margin-left: 0;
+    padding: 0 0.5rem;
   }
 
   .body-specs,
@@ -2378,7 +2435,7 @@ button:focus-visible {
   .flashlight-specs,
   .shutter-button-specs,
   .polaroid-image-specs {
-    width: 205px;
+    width: 100%;
     padding: 0;
   }
 
@@ -2392,40 +2449,45 @@ button:focus-visible {
     font-size: 0.82rem;
   }
 
-  .body-specs-text,
-  .lens-specs-text,
-  .sockel-specs-text,
-  .battery-cover-specs-text,
-  .flashlight-specs-text,
-  .shutter-button-specs-text,
-  .polaroid-image-specs-text {
-    font-size: 0.78rem;
-    line-height: 1.5;
-  }
-
   .specs-anchor::after,
   .specs-anchor::before {
     display: none;
   }
 
   .model-3d {
+    grid-row: 2;
     width: calc(100% - 4.8rem);
     height: 360px;
-    margin-top: 8.5rem;
+    margin-top: 1.5rem;
   }
 
   .model-color-picker {
-    margin-right: 2.8rem;
+    grid-row: 3;
+    justify-self: center;
+    margin-right: 0;
+    margin-top: 0.75rem;
+    flex-direction: row;
+    gap: 0;
+  }
+
+  .model-color-picker .color-palette {
+    flex-direction: row;
+    margin-top: 0;
+    gap: 0.6rem;
   }
 
   .model-color-picker .swatch {
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
     border-width: 3px;
   }
 
   .model-color-picker span {
-    font-size: 1.25rem;
+    display: none;
+  }
+
+  .model-canvas-instruction {
+    bottom: 2.75rem;
   }
 
   .model-ball {

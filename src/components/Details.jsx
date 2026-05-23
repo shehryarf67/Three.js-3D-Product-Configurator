@@ -12,6 +12,7 @@ import {
     Html,
     useProgress,
     Environment,
+    useMediaQuery,
 } from "../imports.js";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -56,7 +57,7 @@ function ModelLoader() {
 
 const MODEL_BASE_Y = 0.1;
 
-const SpinningModel = () => {
+const SpinningModel = ({ baseX, baseY, modelScale }) => {
     const floatRef = useRef(null);
     const spinRef = useRef(null);
     const [hoveredPart, setHoveredPart] = useState(null);
@@ -67,12 +68,12 @@ const SpinningModel = () => {
         }
         if (floatRef.current) {
             floatRef.current.position.y =
-                MODEL_BASE_Y + Math.sin(state.clock.elapsedTime * 0.6) * 0.1;
+                baseY + Math.sin(state.clock.elapsedTime * 0.6) * 0.1;
         }
     });
 
     return (
-        <group ref={floatRef} position={[1.5, MODEL_BASE_Y, 0]} rotation={[0.22, 0, -0.14]}>
+        <group ref={floatRef} position={[baseX, baseY, 0]} rotation={[0.22, 0, -0.14]}>
             <group ref={spinRef}>
                 <Suspense fallback={<ModelLoader />}>
                     <Model
@@ -81,7 +82,7 @@ const SpinningModel = () => {
                         onSelect={() => {}}
                         position={[0, 0, 0]}
                         rotation={[0, 0, 0]}
-                        scale={[0.32, 0.32, 0.32]}
+                        scale={[modelScale, modelScale, modelScale]}
                     />
                 </Suspense>
             </group>
@@ -91,6 +92,11 @@ const SpinningModel = () => {
 
 const Details = () => {
     const sectionRef = useRef(null);
+    const isMobile = useMediaQuery({ maxWidth: 480 });
+    const isTablet = useMediaQuery({ maxWidth: 768 });
+    const baseX = isTablet ? 0 : 1.5;
+    const baseY = isTablet ? 0.95 : MODEL_BASE_Y;
+    const modelScale = isMobile ? 0.22 : isTablet ? 0.26 : 0.32;
 
     useGSAP(() => {
         gsap.set(".feature-card", { xPercent: -115 });
@@ -153,7 +159,7 @@ const Details = () => {
                 >
                     <Environment background={false} preset="warehouse" />
                     <directionalLight position={[2, 2, 2]} intensity={1} />
-                    <SpinningModel />
+                    <SpinningModel baseX={baseX} baseY={baseY} modelScale={modelScale} />
                 </Canvas>
 
                 <div className="feature-cards">

@@ -918,36 +918,36 @@ header nav .hideOnMobile a:hover {
 
 .model-ball {
   z-index: 1;
-  opacity: 0.88;
+  opacity: 1;
 }
 
 .model-ball--blue {
-  left: -12%;
-  bottom: 2rem;
+  left: -8%;
+  bottom: 7%;
   width: clamp(300px, 37vw, 585px);
 }
 
 .model-ball--pink {
-  right: -10%;
-  bottom: 0.5rem;
+  right: -8%;
+  bottom: 3%;
   width: clamp(293px, 34vw, 533px);
 }
 
 .model-ball--purple {
-  right: -8%;
-  top: 2rem;
+  right: -5%;
+  top: 9%;
   width: clamp(240px, 30vw, 443px);
 }
 
 .model-ball--mint {
-  left: -8%;
-  top: 1%;
+  left: -5%;
+  top: 7%;
   width: clamp(248px, 31vw, 480px);
 }
 
 .model-ball--white {
-  left: 44%;
-  top: -18%;
+  left: 43%;
+  top: -12%;
   width: clamp(248px, 31vw, 480px);
 }
 
@@ -1330,12 +1330,13 @@ header nav .hideOnMobile a:hover {
 
 .feature-card-title {
   margin: 0 0 1rem 0;
-  font-size: clamp(1.8rem, 2.8vw, 2.8rem);
+  font-size: clamp(1.55rem, 2.45vw, 2.45rem);
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.035em;
   color: var(--main_bg_color);
   text-transform: uppercase;
   line-height: 1.05;
+  overflow-wrap: anywhere;
 }
 
 .feature-card-description {
@@ -1447,6 +1448,7 @@ header nav .hideOnMobile a:hover {
   flex-direction: column;
   align-items: center;
   width: 100%;
+  box-sizing: border-box;
   min-height: 100vh;
   padding: 1rem;
   background-color: var(--main_bg_color);
@@ -1456,6 +1458,7 @@ header nav .hideOnMobile a:hover {
 .about-content {
   width: 100%;
   max-width: 1100px;
+  box-sizing: border-box;
   margin-left: auto;
   margin-right: auto;
 }
@@ -1820,17 +1823,22 @@ button:focus-visible {
 
   #details-canvas {
     width: 100%;
-    opacity: 0.55;
+    height: 100%;
+    opacity: 1;
   }
 
   .feature-cards {
-    width: 90%;
+    width: 100%;
+    height: 100%;
+    top: 0;
   }
 
   .feature-card {
-    padding: 1.75rem 2rem 1.75rem calc(75px + 1.5rem);
-    margin-left: -75px;
-    width: calc(100% + 75px);
+    top: 50%;
+    padding: 1.4rem 1.75rem 1.4rem calc(60px + 1.25rem);
+    margin-left: -60px;
+    width: calc(100% + 60px);
+    max-width: 420px;
   }
 
   .scroll-indicator {
@@ -1843,6 +1851,16 @@ button:focus-visible {
 
   .about h1 {
     font-size: 2rem;
+  }
+
+  .card-grid {
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .card:before {
+    padding-bottom: 100%;
   }
 
   .footer-content {
@@ -1879,9 +1897,9 @@ button:focus-visible {
 
   /* Scale blob with proportionally correct clip-path for mobile */
   .logo-blob {
-    width: 160px;
-    height: 160px;
-    clip-path: path('M0,160 V0 H160 C53.72,0 0,53.72 0,160 Z');
+    width: 230px;
+    height: 230px;
+    clip-path: path('M0,230 V0 H230 C77.21,0 0,77.21 0,230 Z');
   }
 
   /* Ensure sidebar renders above the dimmer overlay */
@@ -1903,9 +1921,9 @@ button:focus-visible {
   }
 
   .logo-blob {
-    width: 120px;
-    height: 120px;
-    clip-path: path('M0,120 V0 H120 C40.29,0 0,40.29 0,120 Z');
+    width: 180px;
+    height: 180px;
+    clip-path: path('M0,180 V0 H180 C60.44,0 0,60.44 0,180 Z');
   }
 
   .hero-content {
@@ -2002,23 +2020,29 @@ button:focus-visible {
   }
 
   .feature-cards {
-    width: 95%;
+    width: 100%;
+    height: 100%;
+    top: 0;
   }
 
   .feature-card {
-    padding: 1.4rem 1.5rem 1.4rem calc(45px + 1.25rem);
+    top: 52%;
+    padding: 1.1rem 1.4rem 1.1rem calc(45px + 1rem);
     margin-left: -45px;
     width: calc(100% + 45px);
+    max-width: 320px;
   }
 
   .feature-card-title {
-    font-size: clamp(1.4rem, 6vw, 2rem);
-    letter-spacing: 0.04em;
+    font-size: clamp(0.95rem, 4.8vw, 1.32rem);
+    letter-spacing: 0.015em;
+    line-height: 1.08;
+    margin-bottom: 0.6rem;
   }
 
   .feature-card-description {
-    font-size: 0.9rem;
-    line-height: 1.55;
+    font-size: 0.78rem;
+    line-height: 1.5;
   }
 
   .scroll-indicator {
@@ -2027,6 +2051,15 @@ button:focus-visible {
 
   .card-grid {
     grid-template-columns: 1fr;
+    max-width: 280px;
+  }
+
+  .card:before {
+    padding-bottom: 95%;
+  }
+
+  .card__heading {
+    font-size: 1.5rem;
   }
 
   .footer-content {
@@ -2148,8 +2181,71 @@ button:focus-visible {
     width: clamp(900px, 185vw, 1225px);
   }
 
-  .hero-ball {
-    width: 110px;
+  .hero-ball--blue {
+    left: -18%;
+    bottom: 7rem;
+    width: clamp(250px, 38vw, 430px);
+  }
+
+  .hero-ball--pink {
+    left: auto;
+    right: -18%;
+    bottom: 6rem;
+    width: clamp(230px, 34vw, 390px);
+  }
+
+  .hero-ball--purple {
+    left: auto;
+    right: -13%;
+    top: 9%;
+    width: clamp(230px, 34vw, 400px);
+  }
+
+  .hero-ball--mint {
+    right: 2%;
+    top: 31%;
+    width: clamp(230px, 34vw, 400px);
+  }
+
+  .hero-ball--white {
+    right: auto;
+    left: -19%;
+    bottom: 19rem;
+    width: clamp(205px, 27vw, 330px);
+  }
+
+  .model-ball {
+    opacity: 1;
+  }
+
+  .model-ball--blue {
+    left: -24%;
+    bottom: 9%;
+    width: clamp(260px, 42vw, 420px);
+  }
+
+  .model-ball--pink {
+    right: -24%;
+    bottom: 8%;
+    width: clamp(245px, 39vw, 390px);
+  }
+
+  .model-ball--purple {
+    right: -19%;
+    top: 14%;
+    width: clamp(220px, 35vw, 360px);
+  }
+
+  .model-ball--mint {
+    left: -19%;
+    top: 14%;
+    width: clamp(220px, 35vw, 360px);
+  }
+
+  .model-ball--white {
+    left: 43%;
+    top: -6%;
+    width: clamp(205px, 33vw, 340px);
   }
 
   .model-canvas {
@@ -2160,24 +2256,25 @@ button:focus-visible {
   }
 
   .model-canvas-bg {
-    inset: 2rem 1.25rem;
-    border-radius: 4rem;
+    inset: 2.2rem 4.2rem 2.4rem;
+    border-radius: 4.8rem;
   }
 
   .model-canvas-content {
     grid-column: 1;
     grid-row: 1;
     align-self: start;
-    max-width: 280px;
+    max-width: min(330px, calc(100% - 9rem));
     margin-top: 2.5rem;
-    margin-left: 1.5rem;
+    margin-left: clamp(4.2rem, 12vw, 5rem);
   }
 
   .model-3d {
     grid-column: 1;
     grid-row: 1;
-    width: 100%;
-    height: 460px;
+    justify-self: center;
+    width: calc(100% - 8.4rem);
+    height: 430px;
     margin-top: 8rem;
   }
 
@@ -2185,11 +2282,11 @@ button:focus-visible {
     grid-column: 1;
     grid-row: 1;
     justify-self: end;
-    margin-right: 2rem;
+    margin-right: 5rem;
   }
 
   .model-canvas-instruction {
-    bottom: 3.5rem;
+    bottom: 4rem;
   }
 }
 
@@ -2223,10 +2320,40 @@ button:focus-visible {
     width: clamp(700px, 200vw, 950px);
   }
 
-  .hero-ball--mint,
-  .hero-ball--white,
+  .hero-ball--blue {
+    left: -20%;
+    bottom: 6.2rem;
+    width: 190px;
+  }
+
   .hero-ball--pink {
-    display: none;
+    display: block;
+    left: auto;
+    right: -20%;
+    bottom: 6.8rem;
+    width: 190px;
+  }
+
+  .hero-ball--purple {
+    left: auto;
+    right: -18%;
+    top: 11%;
+    width: 185px;
+  }
+
+  .hero-ball--mint {
+    display: block;
+    right: -7%;
+    top: 31%;
+    width: 185px;
+  }
+
+  .hero-ball--white {
+    display: block;
+    right: auto;
+    left: -18%;
+    bottom: 14rem;
+    width: 175px;
   }
 
   .model-canvas {
@@ -2235,13 +2362,13 @@ button:focus-visible {
   }
 
   .model-canvas-bg {
-    inset: 1.4rem 0.8rem;
-    border-radius: 3rem;
+    inset: 1.8rem 2.2rem 2.2rem;
+    border-radius: 3.4rem;
   }
 
   .model-canvas-content {
-    max-width: 210px;
-    margin-left: 1rem;
+    max-width: min(230px, calc(100% - 6.2rem));
+    margin-left: 3rem;
   }
 
   .body-specs,
@@ -2282,12 +2409,13 @@ button:focus-visible {
   }
 
   .model-3d {
-    height: 390px;
+    width: calc(100% - 4.8rem);
+    height: 360px;
     margin-top: 8.5rem;
   }
 
   .model-color-picker {
-    margin-right: 1rem;
+    margin-right: 2.8rem;
   }
 
   .model-color-picker .swatch {
@@ -2301,13 +2429,75 @@ button:focus-visible {
   }
 
   .model-ball {
-    opacity: 0.65;
+    opacity: 1;
+  }
+
+  .model-ball--blue {
+    left: -46%;
+    bottom: 10%;
+    width: 280px;
+  }
+
+  .model-ball--pink {
+    right: -46%;
+    bottom: 11%;
+    width: 260px;
+  }
+
+  .model-ball--purple {
+    right: -36%;
+    top: 16%;
+    width: 235px;
+  }
+
+  .model-ball--mint {
+    left: -36%;
+    top: 15%;
+    width: 235px;
+  }
+
+  .model-ball--white {
+    left: 42%;
+    top: -9%;
+    width: 215px;
   }
 }
 
 /* Mid-range laptops — 1024px to 1399px
    Without this, the default margin-left: 8rem on hero-content causes the flex
    items to overflow and wrap at these viewport sizes. */
+@media (max-width: 380px) {
+  .hero-ball--blue {
+    left: -16%;
+    bottom: 6rem;
+    width: 178px;
+  }
+
+  .hero-ball--pink {
+    right: -16%;
+    bottom: 6.6rem;
+    width: 178px;
+  }
+
+  .hero-ball--purple {
+    right: -16%;
+    top: 11%;
+    width: 174px;
+  }
+
+  .hero-ball--mint {
+    right: -9%;
+    top: 31%;
+    width: 174px;
+  }
+
+  .hero-ball--white {
+    left: -17%;
+    bottom: 14rem;
+    width: 166px;
+  }
+}
+
 @media (min-width: 1024px) and (max-width: 1399px) {
   .hero-content {
     margin-left: 6rem;

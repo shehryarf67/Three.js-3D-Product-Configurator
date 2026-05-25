@@ -125,9 +125,15 @@ const Details = () => {
     const sectionRef = useRef(null);
     const isMobile = useMediaQuery({ maxWidth: 480 });
     const isTablet = useMediaQuery({ maxWidth: 768 });
+    // On very wide monitors the right-anchored canvas + a positive baseX
+    // pushes the model out near 75% of viewport width. Pull it back toward
+    // the canvas center so it sits closer to where the eye expects it.
+    const isWideDesktop = useMediaQuery({ minWidth: 1500 });
     const [isCanvasActive, setIsCanvasActive] = useState(false);
-    const baseX = isTablet ? 0 : 0.45;
-    const baseY = isMobile ? 1.16 : isTablet ? 1.18 : 0.42;
+    const baseX = isTablet ? 0 : isWideDesktop ? 0.15 : 0.45;
+    // Lower the model a bit on desktop so it sits in the same vertical band
+    // as the card instead of floating above it.
+    const baseY = isMobile ? 1.16 : isTablet ? 1.18 : 0.2;
     const modelScale = isMobile ? 0.22 : isTablet ? 0.26 : 0.32;
 
     useEffect(() => {

@@ -1452,8 +1452,8 @@ header nav .hideOnMobile a.active {
 .details {
   position: relative;
   width: 100%;
-  min-height: 370vh;
-  min-height: 370svh;
+  min-height: 320vh;
+  min-height: 320svh;
   box-sizing: border-box;
   background-color: var(--main_bg_color);
   overflow: visible;
@@ -1461,7 +1461,7 @@ header nav .hideOnMobile a.active {
 
 @supports (min-height: 100dvh) {
   .details {
-    min-height: 370dvh;
+    min-height: 320dvh;
   }
 }
 
@@ -1505,13 +1505,22 @@ header nav .hideOnMobile a.active {
 }
 
 .feature-card {
+  /* Overhang = how far the card "hangs" off the left edge of its container.
+     Was a fixed 100px — on wide monitors that's only ~4.5% of viewport, so
+     the card barely peeked off. Scaling it with vw keeps the pill anchored
+     to the screen edge at every size. The same value drives the negative
+     margin, the width compensation, and the left padding so the text
+     position lines up consistently. */
+  --overhang: clamp(80px, 7vw, 200px);
   position: absolute;
-  top: 24%;
+  top: 32%;
   left: 0;
-  width: calc(100% + 100px);
-  max-width: 720px;
-  margin-left: -100px;
-  padding: 2.5rem 3rem 2.5rem calc(100px + 3rem);
+  width: calc(100% + var(--overhang));
+  /* Bumped the upper bound from 1200 → 1320 so a 2000px+ viewport gets a
+     visibly larger card instead of capping out mid-screen. */
+  max-width: clamp(720px, 62vw, 1320px);
+  margin-left: calc(var(--overhang) * -1);
+  padding: clamp(2.2rem, 2.6vw, 3.4rem) clamp(2.5rem, 3.2vw, 4.2rem) clamp(2.2rem, 2.6vw, 3.4rem) calc(var(--overhang) + clamp(2.5rem, 3.2vw, 4.2rem));
   box-sizing: border-box;
   background: var(--secondary_color);
   border-radius: 0 999px 999px 0;

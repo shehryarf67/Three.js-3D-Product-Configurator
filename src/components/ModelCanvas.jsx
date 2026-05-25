@@ -322,14 +322,19 @@ const ModelCanvas = () => {
             >
                 <Canvas
                     frameloop="demand"
+                    dpr={[1, 1.5]}
                     camera={{ position: [0, 0.5, 5.8], fov: 38, near: 0.1, far: 100 }}
-                    gl={{ alpha: true }}
+                    gl={{
+                        alpha: true,
+                        antialias: false,
+                        powerPreference: "low-power",
+                    }}
                     onPointerMissed={() => {
                         if (isTouch) setHoveredPart(null);
                     }}
                 >
                     <Suspense fallback={<ModelLoader />}>
-                        <Environment background={false} preset="warehouse" intensity={2} />
+                        <Environment background={false} preset="warehouse" intensity={2} resolution={64} />
                         <directionalLight position={[2, 2, 2]} intensity={1} />
                         {/* <Backdrop /> */}
                         <ScrollingModel

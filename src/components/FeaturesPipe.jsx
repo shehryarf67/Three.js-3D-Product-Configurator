@@ -16,8 +16,12 @@ const FeaturesPipe = () => {
 
         const tl = gsap.timeline({
             scrollTrigger: {
+                // Fire when the section pins (sticky child reaches viewport top).
+                // At that moment the pipe is centered in the viewport — visible
+                // and ready to be seen sliding in. Previous "top 75%" fired while
+                // the pipe was still ~100vh below the fold.
                 trigger: sectionRef.current,
-                start: "top 75%",
+                start: "top top",
                 toggleActions: "play none none none",
             },
         });

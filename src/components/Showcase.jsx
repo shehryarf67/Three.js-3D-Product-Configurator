@@ -64,6 +64,51 @@ const Showcase = () => {
         };
     }, [isCompact, isPhone]);
 
+    // Pause the videos when the section is off-screen or the tab is hidden.
+    // Two autoplay/loop H.264 streams decoding 24/7 was the second-biggest
+    // source of background CPU/GPU work after the Details model loop.
+    useEffect(() => {
+        const section = sectionRef.current;
+        if (!section || typeof IntersectionObserver === "undefined") return;
+
+        let isIntersecting = false;
+        let isPageVisible = typeof document === "undefined" || !document.hidden;
+
+        const sync = () => {
+            const videos = [baseVideoRef.current, maskedVideoRef.current].filter(Boolean);
+            const shouldPlay = isIntersecting && isPageVisible;
+            videos.forEach((video) => {
+                if (shouldPlay) {
+                    // play() returns a promise; swallow rejections from rapid
+                    // pause/play toggles during fast scroll.
+                    video.play().catch(() => {});
+                } else if (!video.paused) {
+                    video.pause();
+                }
+            });
+        };
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                isIntersecting = entry.isIntersecting;
+                sync();
+            },
+            { rootMargin: "10% 0px 10% 0px" }
+        );
+        observer.observe(section);
+
+        const handleVisibilityChange = () => {
+            isPageVisible = !document.hidden;
+            sync();
+        };
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        return () => {
+            observer.disconnect();
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+        };
+    }, []);
+
     useGSAP(() => {
         if (!mediaReady) return;
 

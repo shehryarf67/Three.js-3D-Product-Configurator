@@ -56,7 +56,9 @@ function ModelLoader() {
     );
 }
 
-const DETAILS_MODEL_FRAME_MS = 1000 / 30;
+// The model rotates slowly (~0.35 rad/s) and floats gently — 24fps is
+// indistinguishable from 30fps for this motion and cuts render work by 20%.
+const DETAILS_MODEL_FRAME_MS = 1000 / 24;
 
 const SpinningModel = ({ baseX, baseY, modelScale }) => {
     const modelGroupRef = useRef(null);
@@ -143,15 +145,38 @@ const Details = () => {
             return undefined;
         }
 
+        let isIntersecting = false;
+        let isPageVisible = typeof document === "undefined" || !document.hidden;
+
+        const apply = () => setIsCanvasActive(isIntersecting && isPageVisible);
+
+        // Tightened from 80% → 25%. The previous margin kept the spinning
+        // model rendering at 30fps even when the section was ~80vh above or
+        // below the viewport — i.e. most of the page. 25% is enough headroom
+        // to preload before the user reaches the section without burning the
+        // GPU while they're elsewhere on the page.
         const observer = new IntersectionObserver(
             ([entry]) => {
-                setIsCanvasActive(entry.isIntersecting);
+                isIntersecting = entry.isIntersecting;
+                apply();
             },
-            { rootMargin: "80% 0px 80% 0px" }
+            { rootMargin: "25% 0px 25% 0px" }
         );
-
         observer.observe(node);
-        return () => observer.disconnect();
+
+        // Pause the render loop entirely when the tab/window is hidden. With
+        // the continuous spin animation this was the single biggest source of
+        // background heat on laptops left with the tab open.
+        const handleVisibilityChange = () => {
+            isPageVisible = !document.hidden;
+            apply();
+        };
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        return () => {
+            observer.disconnect();
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+        };
     }, []);
 
     useGSAP(() => {

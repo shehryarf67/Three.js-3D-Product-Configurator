@@ -5,9 +5,11 @@ import {
     ScrollTrigger,
     useGSAP,
     useFrame,
+    useThree,
     Suspense,
     useRef,
     useState,
+    useEffect,
     clsx,
     Html,
     useProgress,
@@ -54,13 +56,32 @@ function ModelLoader() {
     );
 }
 
-const MODEL_BASE_Y = 0.1;
+const DETAILS_MODEL_FRAME_MS = 1000 / 30;
 
 const SpinningModel = ({ baseX, baseY, modelScale }) => {
     const modelGroupRef = useRef(null);
     const spinRef = useRef(null);
     const floatTimeRef = useRef(0);
+    const frameTimerRef = useRef(null);
     const [hoveredPart, setHoveredPart] = useState(null);
+    const { invalidate } = useThree();
+
+    const scheduleNextFrame = () => {
+        if (frameTimerRef.current !== null || typeof window === "undefined") return;
+        frameTimerRef.current = window.setTimeout(() => {
+            frameTimerRef.current = null;
+            invalidate();
+        }, DETAILS_MODEL_FRAME_MS);
+    };
+
+    useEffect(() => {
+        invalidate();
+        return () => {
+            if (frameTimerRef.current !== null) {
+                window.clearTimeout(frameTimerRef.current);
+            }
+        };
+    }, [invalidate]);
 
     useFrame((_, delta) => {
         floatTimeRef.current += delta;
@@ -73,6 +94,8 @@ const SpinningModel = ({ baseX, baseY, modelScale }) => {
             modelGroupRef.current.position.y +=
                 (targetY - modelGroupRef.current.position.y) * Math.min(1, delta * 7);
         }
+
+        scheduleNextFrame();
     });
 
     return (
@@ -87,6 +110,7 @@ const SpinningModel = ({ baseX, baseY, modelScale }) => {
                         hoveredPart={hoveredPart}
                         setHoveredPart={setHoveredPart}
                         onSelect={() => {}}
+                        interactive={false}
                         position={[0, 0, 0]}
                         rotation={[0, 0, 0]}
                         scale={[modelScale, modelScale, modelScale]}
@@ -101,9 +125,28 @@ const Details = () => {
     const sectionRef = useRef(null);
     const isMobile = useMediaQuery({ maxWidth: 480 });
     const isTablet = useMediaQuery({ maxWidth: 768 });
-    const baseX = isTablet ? 0 : 1.5;
+    const [isCanvasActive, setIsCanvasActive] = useState(false);
+    const baseX = isTablet ? 0 : 0.45;
     const baseY = isMobile ? 1.16 : isTablet ? 1.18 : 0.42;
     const modelScale = isMobile ? 0.22 : isTablet ? 0.26 : 0.32;
+
+    useEffect(() => {
+        const node = sectionRef.current;
+        if (!node || typeof IntersectionObserver === "undefined") {
+            setIsCanvasActive(true);
+            return undefined;
+        }
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsCanvasActive(entry.isIntersecting);
+            },
+            { rootMargin: "80% 0px 80% 0px" }
+        );
+
+        observer.observe(node);
+        return () => observer.disconnect();
+    }, []);
 
     useGSAP(() => {
         const q = gsap.utils.selector(sectionRef);
@@ -145,13 +188,17 @@ const Details = () => {
         );
 
         for (let i = 1; i < features.length; i++) {
+            const isLastFeature = i === features.length - 1;
+            const waitBeforeNextCard = isLastFeature ? "+=0.25" : "+=0.45";
+            const transitionDuration = isLastFeature ? 0.35 : 0.5;
+
             tl.to(
                 q(`.feature-card-${i}`),
-                { xPercent: -115, ease: "power2.in", duration: 0.5 },
-                "+=0.45"
+                { xPercent: -115, ease: "power2.in", duration: transitionDuration },
+                waitBeforeNextCard
             ).to(
                 q(`.feature-card-${i + 1}`),
-                { xPercent: 0, ease: "power2.out", duration: 0.5 },
+                { xPercent: 0, ease: "power2.out", duration: transitionDuration },
                 "<+0.15"
             );
         }
@@ -162,7 +209,7 @@ const Details = () => {
         tl.fromTo(
             q(".feature-card-4"),
             { opacity: 1 },
-            { opacity: 1, ease: "none", duration: 1.1 }
+            { opacity: 1, ease: "none", duration: 2.1 }
         );
 
         requestAnimationFrame(() => ScrollTrigger.refresh());
@@ -171,21 +218,25 @@ const Details = () => {
     return (
         <section className="details" id="details" ref={sectionRef}>
             <div className="details-stage">
-                <Canvas
-                    id="details-canvas"
-                    frameloop="always"
-                    dpr={[1, 1.5]}
-                    gl={{ powerPreference: "high-performance", antialias: false }}
-                    camera={{ position: [0, 0.5, 7], fov: 38 }}
-                >
-                    <Environment background={false} preset="warehouse" />
-                    <directionalLight position={[2, 2, 2]} intensity={1} />
-                    <SpinningModel
-                        baseX={baseX}
-                        baseY={baseY}
-                        modelScale={modelScale}
-                    />
-                </Canvas>
+                <div id="details-canvas">
+                    {isCanvasActive && (
+                        <Canvas
+                            className="details-canvas-renderer"
+                            frameloop="demand"
+                            dpr={[0.75, 1]}
+                            gl={{ powerPreference: "low-power", antialias: false }}
+                            camera={{ position: [0, 0.5, 7], fov: 38 }}
+                        >
+                            <Environment background={false} preset="warehouse" resolution={64} />
+                            <directionalLight position={[2, 2, 2]} intensity={1} />
+                            <SpinningModel
+                                baseX={baseX}
+                                baseY={baseY}
+                                modelScale={modelScale}
+                            />
+                        </Canvas>
+                    )}
+                </div>
 
                 <div className="feature-cards">
                     {features.map((feature, index) => (

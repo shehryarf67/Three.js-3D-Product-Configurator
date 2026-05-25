@@ -224,10 +224,18 @@ body {
 
 header nav .hideOnMobile a {
   color: var(--main_bg_color);
+  display: inline-block;
+  transition: transform 0.18s ease, color 0.18s ease;
 }
 
 header nav .hideOnMobile a:hover {
-  color: rgba(200, 90, 135, 0.5);
+  color: var(--main_bg_color);
+  transform: translateY(-2px);
+}
+
+/* Add className="active" to the matching <a> in Navbar.jsx to show the active page */
+header nav .hideOnMobile a.active {
+  font-weight: 700;
 }
 
 .app-logo-svg {
@@ -310,6 +318,7 @@ header nav .hideOnMobile a:hover {
 .hero-content p {
   margin: 0.5rem 0 1rem 0;
   margin-left: 1rem;
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .hero-3d {
@@ -1197,15 +1206,15 @@ header nav .hideOnMobile a:hover {
 .features-pipe-section {
   overflow: hidden;
   background-color: var(--main_bg_color);
-  min-height: 200vh;
-  min-height: 200svh;
+  min-height: 118vh;
+  min-height: 118svh;
   box-sizing: border-box;
   position: relative;
 }
 
 @supports (min-height: 100dvh) {
   .features-pipe-section {
-    min-height: 200dvh;
+    min-height: 118dvh;
   }
 }
 
@@ -1216,7 +1225,7 @@ header nav .hideOnMobile a:hover {
   height: 100svh;
   display: flex;
   align-items: center;
-  padding: 4.5rem 0;
+  padding: 2rem 0;
   box-sizing: border-box;
 }
 
@@ -1309,8 +1318,8 @@ header nav .hideOnMobile a:hover {
 .details {
   position: relative;
   width: 100%;
-  min-height: 340vh;
-  min-height: 340svh;
+  min-height: 370vh;
+  min-height: 370svh;
   box-sizing: border-box;
   background-color: var(--main_bg_color);
   overflow: visible;
@@ -1318,7 +1327,7 @@ header nav .hideOnMobile a:hover {
 
 @supports (min-height: 100dvh) {
   .details {
-    min-height: 340dvh;
+    min-height: 370dvh;
   }
 }
 
@@ -1344,6 +1353,11 @@ header nav .hideOnMobile a:hover {
   width: 55%;
   height: 100%;
   background: transparent;
+}
+
+.details-canvas-renderer {
+  width: 100%;
+  height: 100%;
 }
 
 .feature-cards {

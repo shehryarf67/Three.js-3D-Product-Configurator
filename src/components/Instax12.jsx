@@ -20,7 +20,7 @@ const getPointerPoint = (event) => {
   }
 }
 
-export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, ...props }) {
+export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, interactive = true, ...props }) {
   const group = React.useRef()
   const shutterButtonRef = React.useRef()
   const flashRef = React.useRef()
@@ -37,21 +37,25 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, ..
   const isTouch = useMediaQuery({ query: '(hover: none), (pointer: coarse)' })
 
   const setPartHover = (part) => (e) => {
+    if (!interactive) return
     e.stopPropagation()
     setHoveredPart(part)
   }
 
   const clearPartHover = (e) => {
+    if (!interactive) return
     e.stopPropagation()
     setHoveredPart(null)
   }
 
   const selectPart = (part) => (e) => {
+    if (!interactive) return
     e.stopPropagation()
     onSelect(part)
   }
 
   const playPhotoAnimation = () => {
+    if (!interactive) return
     const action = actions['Plane.001Action.001']
     if (!action) return
 
@@ -68,6 +72,7 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, ..
   }
 
   const activateTouchPart = (part) => {
+    if (!interactive) return
     onSelect(part)
 
     if (part === 'shutter-button') {
@@ -80,6 +85,7 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, ..
   }
 
   const beginTouchPart = (part) => (e) => {
+    if (!interactive) return
     e.stopPropagation()
     const point = getPointerPoint(e)
     touchStartRef.current = {
@@ -91,6 +97,7 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, ..
   }
 
   const moveTouchPart = (e) => {
+    if (!interactive) return
     if (!touchStartRef.current) return
 
     const point = getPointerPoint(e)
@@ -103,6 +110,7 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, ..
   }
 
   const endTouchPart = (part) => (e) => {
+    if (!interactive) return
     e.stopPropagation()
     const touchStart = touchStartRef.current
     touchStartRef.current = null
@@ -118,11 +126,15 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, ..
   }
 
   const pressShutter = (e) => {
+    if (!interactive) return
     e.stopPropagation()
     activateTouchPart('shutter-button')
   }
 
   const partHandlers = (part) =>
+    !interactive
+      ? {}
+      :
     isTouch
       ? {
           onPointerDown: beginTouchPart(part),
@@ -160,15 +172,17 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, ..
   }
 
   React.useEffect(() => {
+    if (!interactive) return
     const isLensHovered = hoveredPart === 'lens'
     if (wasLensHovered.current === isLensHovered) return
 
     const lensClips = ['lenseAction', 'lesne1Action', 'lense2Action', 'lense2Action.001', 'lense2Action.002']
     lensClips.forEach((clip) => playClip(clip, !isLensHovered, isLensHovered))
     wasLensHovered.current = isLensHovered
-  }, [hoveredPart, actions])
+  }, [hoveredPart, actions, interactive])
 
   React.useEffect(() => {
+    if (!interactive) return
     const handleFinished = (e) => {
       if (e.action.getClip().name === 'Plane.001Action.001') {
         setPhotoVisible(false)
@@ -177,7 +191,7 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, ..
 
     mixer.addEventListener('finished', handleFinished)
     return () => mixer.removeEventListener('finished', handleFinished)
-  }, [mixer])
+  }, [mixer, interactive])
 
   React.useEffect(() => {
     if (!flashGlassMaterial.emissive) return
@@ -192,6 +206,7 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, ..
   }, [flashDoorMaterial])
 
   useFrame((state, delta) => {
+    if (!interactive) return
     let dirty = false
 
     if (shutterButtonRef.current) {
@@ -292,7 +307,9 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, ..
           geometry={nodes.button_2.geometry}
           material={materials['pastel blue']}
           position={[-1.524, 0.341, 0.944]}
-          {...(isTouch
+          {...(!interactive
+            ? {}
+            : isTouch
             ? {
                 onPointerDown: beginTouchPart('shutter-button'),
                 onPointerMove: moveTouchPart,

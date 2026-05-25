@@ -1,5 +1,5 @@
 import { gsap, ScrollTrigger, useEffect, useGSAP, useMediaQuery, useRef, useState } from "../imports.js";
-import showcaseVideo from "../assets/INSTAX mini 12 Fill your world with joy_FUJIFILM - FUJIFILMglobal (1080p, h264).mp4";
+import showcaseVideo from "../assets/showcase-instax.mp4";
 import instaxLogo from "../assets/Logo.svg?raw";
 
 const svgDataUrl = `data:image/svg+xml,${encodeURIComponent(instaxLogo)}`;
@@ -18,8 +18,11 @@ const Showcase = () => {
     useEffect(() => {
         setMediaReady(false);
 
-        const videos = [baseVideoRef.current, maskedVideoRef.current].filter(Boolean);
-        if (!videos.length) return;
+        // Only the base video has to be ready to set up the timeline — it's the
+        // one filling the section. The masked video uses preload="metadata" so
+        // its readyState lags; gating on it would delay mediaReady unnecessarily.
+        const baseVideo = baseVideoRef.current;
+        if (!baseVideo) return;
 
         const isReady = (video) => video.readyState >= 2;
         let rafId;
@@ -30,7 +33,7 @@ const Showcase = () => {
         };
 
         const markReadyIfSettled = () => {
-            if (videos.every(isReady)) {
+            if (isReady(baseVideo)) {
                 setMediaReady(true);
                 refreshAfterPaint();
             }
@@ -41,11 +44,9 @@ const Showcase = () => {
             refreshAfterPaint();
         };
 
-        videos.forEach((video) => {
-            video.addEventListener("loadeddata", markReadyIfSettled);
-            video.addEventListener("canplay", markReadyIfSettled);
-            video.addEventListener("error", handleVideoError);
-        });
+        baseVideo.addEventListener("loadeddata", markReadyIfSettled);
+        baseVideo.addEventListener("canplay", markReadyIfSettled);
+        baseVideo.addEventListener("error", handleVideoError);
 
         markReadyIfSettled();
 
@@ -57,11 +58,9 @@ const Showcase = () => {
         return () => {
             window.clearTimeout(timeoutId);
             cancelAnimationFrame(rafId);
-            videos.forEach((video) => {
-                video.removeEventListener("loadeddata", markReadyIfSettled);
-                video.removeEventListener("canplay", markReadyIfSettled);
-                video.removeEventListener("error", handleVideoError);
-            });
+            baseVideo.removeEventListener("loadeddata", markReadyIfSettled);
+            baseVideo.removeEventListener("canplay", markReadyIfSettled);
+            baseVideo.removeEventListener("error", handleVideoError);
         };
     }, [isCompact, isPhone]);
 
@@ -137,6 +136,11 @@ const Showcase = () => {
                         maskImage: `url("${svgDataUrl}")`,
                     }}
                 >
+                    {/* Same src as the base video — once the browser has fetched it
+                        once, this element plays from cache. preload="metadata" stops
+                        it from racing the base video for bandwidth on first load,
+                        which was causing the section to appear empty on slow
+                        connections while two parallel fetches fought for the pipe. */}
                     <video
                         ref={maskedVideoRef}
                         src={showcaseVideo}
@@ -144,7 +148,7 @@ const Showcase = () => {
                         loop
                         muted
                         playsInline
-                        preload="auto"
+                        preload="metadata"
                     />
                 </div>
             </div>

@@ -1633,10 +1633,12 @@ button:focus-visible {
 
 .footer_content_box1 h2 {
   margin: 0.5;
+  color: #c85a87;
 }
 
 .footer_content_box1 p {
   margin: 0;
+  color: rgba(200, 90, 135, 0.72);
 }
 
 .pills {
@@ -1647,9 +1649,9 @@ button:focus-visible {
 }
 
 .pill {
-  background: rgba(255, 255, 255, 0.28);
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  color: white;
+  background: rgba(200, 90, 135, 0.1);
+  border: 1px solid rgba(200, 90, 135, 0.4);
+  color: #c85a87;
   padding: 6px 14px;
   border-radius: 999px;
   font-size: 12px;
@@ -1664,11 +1666,12 @@ button:focus-visible {
 
 .footer_content_box2 h3 {
   margin: 0.5;
+  color: #c85a87;
 }
 
 .footer_content_box2 a {
   display: block;
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(200, 90, 135, 0.72);
   font-size: 0.95rem;
   margin: 0;
   cursor: pointer;
@@ -1676,7 +1679,7 @@ button:focus-visible {
 }
 
 .footer_content_box2 a:hover {
-  color: white;
+  color: #c85a87;
 }
 
 .footer_content_box3 {
@@ -1686,25 +1689,28 @@ button:focus-visible {
 
 .footer_content_box3 h3 {
   margin: 0.5;
+  color: #c85a87;
 }
 
 .footer_content_box3 h2 {
   margin: 0;
   font-size: 1.2rem;
+  color: #c85a87;
 }
 
 .footer_content_box3 p {
   margin: 0;
+  color: rgba(200, 90, 135, 0.72);
 }
 
 .footer_content_box3 a {
   display: block;
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(200, 90, 135, 0.72);
   font-size: 0.95rem;
 }
 
 .footer_content_box3 a:hover {
-  color: white;
+  color: #c85a87;
 }
 
 .footer-bottom {
@@ -1721,6 +1727,7 @@ button:focus-visible {
 
 .footer-bottom p {
   margin: 0;
+  color: rgba(200, 90, 135, 0.55);
 }
 
 .waves-container {

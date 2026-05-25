@@ -10,7 +10,17 @@ import { useAnimations, useGLTF } from '@react-three/drei'
 import { AdditiveBlending, LoopOnce, LoopRepeat } from 'three'
 import { useMediaQuery } from 'react-responsive'
 
-export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...props }) {
+const TAP_MOVE_TOLERANCE = 12
+
+const getPointerPoint = (event) => {
+  const source = event.nativeEvent || event
+  return {
+    x: source.clientX ?? 0,
+    y: source.clientY ?? 0,
+  }
+}
+
+export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, ...props }) {
   const group = React.useRef()
   const shutterButtonRef = React.useRef()
   const flashRef = React.useRef()
@@ -18,12 +28,13 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...pr
   const flashGlowMaterialRef = React.useRef()
   const batteryCoverRef = React.useRef()
   const wasLensHovered = React.useRef(false)
+  const touchStartRef = React.useRef(null)
   const [photoVisible, setPhotoVisible] = React.useState(false)
   const { nodes, materials, animations } = useGLTF('/models/instaxmini12.glb')
   const { actions, mixer } = useAnimations(animations, group)
   const flashGlassMaterial = React.useMemo(() => materials['eevee glass 1'].clone(), [materials])
   const flashDoorMaterial = React.useMemo(() => materials['Material.007'].clone(), [materials])
-  const isTouch = useMediaQuery({ query: '(hover: none)' })
+  const isTouch = useMediaQuery({ query: '(hover: none), (pointer: coarse)' })
 
   const setPartHover = (part) => (e) => {
     e.stopPropagation()
@@ -35,24 +46,10 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...pr
     setHoveredPart(null)
   }
 
-  const togglePart = (part) => (e) => {
-    e.stopPropagation()
-    setHoveredPart((prev) => (prev === part ? null : part))
-  }
-
   const selectPart = (part) => (e) => {
     e.stopPropagation()
     onSelect(part)
   }
-
-  const partHandlers = (part) =>
-    isTouch
-      ? { onClick: togglePart(part) }
-      : {
-          onClick: selectPart(part),
-          onPointerOver: setPartHover(part),
-          onPointerLeave: clearPartHover,
-        }
 
   const playPhotoAnimation = () => {
     const action = actions['Plane.001Action.001']
@@ -70,12 +67,74 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...pr
     action.play()
   }
 
+  const activateTouchPart = (part) => {
+    onSelect(part)
+
+    if (part === 'shutter-button') {
+      setHoveredPart('polaroid-image')
+      playPhotoAnimation()
+      return
+    }
+
+    setHoveredPart((prev) => (prev === part ? null : part))
+  }
+
+  const beginTouchPart = (part) => (e) => {
+    e.stopPropagation()
+    const point = getPointerPoint(e)
+    touchStartRef.current = {
+      part,
+      x: point.x,
+      y: point.y,
+      didMove: false,
+    }
+  }
+
+  const moveTouchPart = (e) => {
+    if (!touchStartRef.current) return
+
+    const point = getPointerPoint(e)
+    const deltaX = Math.abs(point.x - touchStartRef.current.x)
+    const deltaY = Math.abs(point.y - touchStartRef.current.y)
+
+    if (deltaX > TAP_MOVE_TOLERANCE || deltaY > TAP_MOVE_TOLERANCE) {
+      touchStartRef.current.didMove = true
+    }
+  }
+
+  const endTouchPart = (part) => (e) => {
+    e.stopPropagation()
+    const touchStart = touchStartRef.current
+    touchStartRef.current = null
+
+    if (!touchStart || touchStart.part !== part) return
+    if (touchStart.didMove || isDraggingRef?.current) return
+
+    activateTouchPart(part)
+  }
+
+  const cancelTouchPart = () => {
+    touchStartRef.current = null
+  }
+
   const pressShutter = (e) => {
     e.stopPropagation()
-    onSelect('shutter-button')
-    setHoveredPart('polaroid-image')
-    playPhotoAnimation()
+    activateTouchPart('shutter-button')
   }
+
+  const partHandlers = (part) =>
+    isTouch
+      ? {
+          onPointerDown: beginTouchPart(part),
+          onPointerMove: moveTouchPart,
+          onPointerUp: endTouchPart(part),
+          onPointerCancel: cancelTouchPart,
+        }
+      : {
+          onClick: selectPart(part),
+          onPointerOver: setPartHover(part),
+          onPointerLeave: clearPartHover,
+        }
 
   const playClip = (name, reversed = false, repeat = false) => {
     const action = actions[name]
@@ -234,7 +293,12 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, modelColor, ...pr
           material={materials['pastel blue']}
           position={[-1.524, 0.341, 0.944]}
           {...(isTouch
-            ? { onClick: pressShutter }
+            ? {
+                onPointerDown: beginTouchPart('shutter-button'),
+                onPointerMove: moveTouchPart,
+                onPointerUp: endTouchPart('shutter-button'),
+                onPointerCancel: cancelTouchPart,
+              }
             : {
                 onPointerDown: pressShutter,
                 onPointerOver: setPartHover('shutter-button'),

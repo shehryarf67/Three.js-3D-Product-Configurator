@@ -16,28 +16,27 @@ import {
 } from "../imports.js";
 
 gsap.registerPlugin(ScrollTrigger);
-ScrollTrigger.normalizeScroll(true);
 
 const features = [
     {
         title: "Auto Exposure System",
         description:
-            "Measures ambient brightness and automatically sets shutter speed from 1/250 s in bright daylight down to 1/30 s in dim interiors. A dedicated Selfie Mode engages close-up exposure compensation the moment the selfie mirror slides out — no dials, no guesswork.",
+            "Measures ambient brightness and automatically sets shutter speed from 1/250 s in bright daylight down to 1/30 s in dim interiors. A dedicated Selfie Mode engages close-up exposure compensation the moment the selfie mirror slides out - no dials, no guesswork.",
     },
     {
         title: "60 mm f/12.7 Lens",
         description:
-            "Fixed-focus 60 mm glass element at f/12.7 renders ISO 800 Instax Mini film with consistent sharpness from 0.6 m to infinity. Slide the built-in selfie mirror out and the optics reconfigure to lock focus between 30–50 cm for a pin-sharp self-portrait every time.",
+            "Fixed-focus 60 mm glass element at f/12.7 renders ISO 800 Instax Mini film with consistent sharpness from 0.6 m to infinity. Slide the built-in selfie mirror out and the optics reconfigure to lock focus between 30-50 cm for a pin-sharp self-portrait every time.",
     },
     {
         title: "Compact Rangefinder Body",
         description:
-            "Iconic rounded shell at 106.8 × 121.7 × 67.3 mm and just 293 g fully loaded. The real-image optical viewfinder offers 0.37× magnification and ~82% field coverage. Ships in five signature pastel colorways: Blossom Pink, Mint Green, Lilac Purple, Clay White, and Baby Blue.",
+            "Iconic rounded shell at 106.8 x 121.7 x 67.3 mm and just 293 g fully loaded. The real-image optical viewfinder offers 0.37x magnification and ~82% field coverage. Ships in five signature pastel colorways: Blossom Pink, Mint Green, Lilac Purple, Clay White, and Baby Blue.",
     },
     {
         title: "Instax Mini Film",
         description:
-            "Produces 54 × 86 mm credit-card-sized prints on ISO 800 Instax Mini film, developing in natural light within 90 seconds. Two AA alkaline batteries power up to 100 shots, and the built-in auto flash recycles in as little as 0.2 s.",
+            "Produces 54 x 86 mm credit-card-sized prints on ISO 800 Instax Mini film, developing in natural light within 90 seconds. Two AA alkaline batteries power up to 100 shots, and the built-in auto flash recycles in as little as 0.2 s.",
     },
 ];
 
@@ -58,22 +57,30 @@ function ModelLoader() {
 const MODEL_BASE_Y = 0.1;
 
 const SpinningModel = ({ baseX, baseY, modelScale }) => {
-    const floatRef = useRef(null);
+    const modelGroupRef = useRef(null);
     const spinRef = useRef(null);
+    const floatTimeRef = useRef(0);
     const [hoveredPart, setHoveredPart] = useState(null);
 
-    useFrame((state, delta) => {
+    useFrame((_, delta) => {
+        floatTimeRef.current += delta;
+
         if (spinRef.current) {
             spinRef.current.rotation.y += delta * 0.35;
         }
-        if (floatRef.current) {
-            floatRef.current.position.y =
-                baseY + Math.sin(state.clock.elapsedTime * 0.6) * 0.1;
+        if (modelGroupRef.current) {
+            const targetY = baseY + Math.sin(floatTimeRef.current * 1.15) * 0.055;
+            modelGroupRef.current.position.y +=
+                (targetY - modelGroupRef.current.position.y) * Math.min(1, delta * 7);
         }
     });
 
     return (
-        <group ref={floatRef} position={[baseX, baseY, 0]} rotation={[0.22, 0, -0.14]}>
+        <group
+            ref={modelGroupRef}
+            position={[baseX, baseY, 0]}
+            rotation={[0.22, 0, -0.14]}
+        >
             <group ref={spinRef}>
                 <Suspense fallback={<ModelLoader />}>
                     <Model
@@ -95,57 +102,71 @@ const Details = () => {
     const isMobile = useMediaQuery({ maxWidth: 480 });
     const isTablet = useMediaQuery({ maxWidth: 768 });
     const baseX = isTablet ? 0 : 1.5;
-    const baseY = isTablet ? 0.95 : MODEL_BASE_Y;
+    const baseY = isMobile ? 1.16 : isTablet ? 1.18 : 0.42;
     const modelScale = isMobile ? 0.22 : isTablet ? 0.26 : 0.32;
 
     useGSAP(() => {
-        gsap.set(".feature-card", { xPercent: -115 });
+        const q = gsap.utils.selector(sectionRef);
+
+        gsap.set(q(".feature-card"), { xPercent: -115 });
+        gsap.set(q("#details-canvas"), {
+            opacity: 0,
+            scale: 1,
+            x: 0,
+            y: 0,
+            clearProps: "transform",
+            transformOrigin: "center center",
+        });
 
         const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: sectionRef.current,
                 start: "top top",
-                end: `+=${features.length * 550}`,
+                end: "bottom bottom",
                 scrub: 0.5,
-                pin: true,
-                pinSpacing: true,
-                fastScrollEnd: true,
                 invalidateOnRefresh: true,
             },
         });
 
-        tl.from(
-            "#details-canvas",
-            { opacity: 0, scale: 0.85, ease: "power2.out", duration: 0.7 },
+        tl.to(
+            q("#details-canvas"),
+            { opacity: 1, ease: "none", duration: 0.6 },
             0
         );
         tl.from(
-            ".scroll-indicator",
+            q(".scroll-indicator"),
             { opacity: 0, y: -24, ease: "power2.out", duration: 0.5 },
             0.15
         );
         tl.to(
-            ".feature-card-1",
+            q(".feature-card-1"),
             { xPercent: 0, ease: "power2.out", duration: 0.55 },
             0.2
         );
 
         for (let i = 1; i < features.length; i++) {
             tl.to(
-                `.feature-card-${i}`,
+                q(`.feature-card-${i}`),
                 { xPercent: -115, ease: "power2.in", duration: 0.5 },
-                "+=0.8"
+                "+=0.45"
             ).to(
-                `.feature-card-${i + 1}`,
+                q(`.feature-card-${i + 1}`),
                 { xPercent: 0, ease: "power2.out", duration: 0.5 },
                 "<+0.15"
             );
         }
 
-        tl.addLabel("hold", "+=0.8");
+        // Reserve part of the scrubbed timeline for the finished composition.
+        // The CSS sticky stage then scrolls away naturally with card-4 + model
+        // still in their final positions.
+        tl.fromTo(
+            q(".feature-card-4"),
+            { opacity: 1 },
+            { opacity: 1, ease: "none", duration: 1.1 }
+        );
 
-        ScrollTrigger.refresh();
-    }, { scope: sectionRef });
+        requestAnimationFrame(() => ScrollTrigger.refresh());
+    }, { scope: sectionRef, revertOnUpdate: true });
 
     return (
         <section className="details" id="details" ref={sectionRef}>
@@ -159,7 +180,11 @@ const Details = () => {
                 >
                     <Environment background={false} preset="warehouse" />
                     <directionalLight position={[2, 2, 2]} intensity={1} />
-                    <SpinningModel baseX={baseX} baseY={baseY} modelScale={modelScale} />
+                    <SpinningModel
+                        baseX={baseX}
+                        baseY={baseY}
+                        modelScale={modelScale}
+                    />
                 </Canvas>
 
                 <div className="feature-cards">

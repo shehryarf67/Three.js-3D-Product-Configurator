@@ -1197,7 +1197,33 @@ header nav .hideOnMobile a:hover {
 .features-pipe-section {
   overflow: hidden;
   background-color: var(--main_bg_color);
+  min-height: 200vh;
+  min-height: 200svh;
+  box-sizing: border-box;
+  position: relative;
+}
+
+@supports (min-height: 100dvh) {
+  .features-pipe-section {
+    min-height: 200dvh;
+  }
+}
+
+.features-pipe-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  display: flex;
+  align-items: center;
   padding: 4.5rem 0;
+  box-sizing: border-box;
+}
+
+@supports (height: 100dvh) {
+  .features-pipe-sticky {
+    height: 100dvh;
+  }
 }
 
 .features-pipe {
@@ -1283,15 +1309,32 @@ header nav .hideOnMobile a:hover {
 .details {
   position: relative;
   width: 100%;
-  height: 100vh;
+  min-height: 340vh;
+  min-height: 340svh;
+  box-sizing: border-box;
   background-color: var(--main_bg_color);
-  overflow: hidden;
+  overflow: visible;
+}
+
+@supports (min-height: 100dvh) {
+  .details {
+    min-height: 340dvh;
+  }
 }
 
 .details-stage {
-  position: relative;
+  position: sticky;
+  top: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+
+@supports (height: 100dvh) {
+  .details-stage {
+    height: 100dvh;
+  }
 }
 
 #details-canvas {
@@ -1315,7 +1358,7 @@ header nav .hideOnMobile a:hover {
 
 .feature-card {
   position: absolute;
-  top: 32%;
+  top: 24%;
   left: 0;
   width: calc(100% + 100px);
   max-width: 720px;
@@ -1350,7 +1393,7 @@ header nav .hideOnMobile a:hover {
 .scroll-indicator {
   position: absolute;
   right: 1.75rem;
-  top: 32%;
+  top: 24%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1834,7 +1877,7 @@ button:focus-visible {
   }
 
   .feature-card {
-    top: 50%;
+    top: 40%;
     padding: 1.4rem 1.75rem 1.4rem calc(60px + 1.25rem);
     margin-left: -60px;
     width: calc(100% + 60px);
@@ -2026,7 +2069,7 @@ button:focus-visible {
   }
 
   .feature-card {
-    top: 52%;
+    top: 42%;
     padding: 1.1rem 1.4rem 1.1rem calc(45px + 1rem);
     margin-left: -45px;
     width: calc(100% + 45px);

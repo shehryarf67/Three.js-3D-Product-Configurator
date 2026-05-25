@@ -54,24 +54,26 @@ const FeaturesPipe = () => {
 
     return (
         <div className="features-pipe-section" ref={sectionRef}>
-            <div className="features-pipe">
-                <div
-                    className="features-layer features-layer--3rd"
-                    style={{ backgroundImage: `url(${layer3rd})` }}
-                    aria-hidden="true"
-                />
-                <div
-                    className="features-layer features-layer--2nd"
-                    style={{ backgroundImage: `url(${layer2nd})` }}
-                    aria-hidden="true"
-                />
-                <div
-                    className="features-layer features-layer--top"
-                    style={{ backgroundImage: `url(${layerTop})` }}
-                    aria-hidden="true"
-                />
-                <div className="features-pipe-heading-wrap">
-                    <h2 className="features-pipe-heading">FEATURES</h2>
+            <div className="features-pipe-sticky">
+                <div className="features-pipe">
+                    <div
+                        className="features-layer features-layer--3rd"
+                        style={{ backgroundImage: `url(${layer3rd})` }}
+                        aria-hidden="true"
+                    />
+                    <div
+                        className="features-layer features-layer--2nd"
+                        style={{ backgroundImage: `url(${layer2nd})` }}
+                        aria-hidden="true"
+                    />
+                    <div
+                        className="features-layer features-layer--top"
+                        style={{ backgroundImage: `url(${layerTop})` }}
+                        aria-hidden="true"
+                    />
+                    <div className="features-pipe-heading-wrap">
+                        <h2 className="features-pipe-heading">FEATURES</h2>
+                    </div>
                 </div>
             </div>
         </div>

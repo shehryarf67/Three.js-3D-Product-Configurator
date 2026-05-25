@@ -36,6 +36,8 @@ const MODEL_BALLS = [
     { src: ballWhite, className: "model-ball model-ball--white" },
 ];
 
+const getDragStartThreshold = (pointerType) => (pointerType === "touch" ? 12 : 4);
+
 function Backdrop() {
     const { scene } = useGLTF('/models/bg_dropoff-compressed.glb')
     return (
@@ -62,12 +64,13 @@ function ModelLoader() {
 }
 
 function ScrollingModel({
-    rotationTargetX,
-    rotationTargetY,
+    rotationTargetXRef,
+    rotationTargetYRef,
     modelColor,
     hoveredPart,
     setHoveredPart,
     onSelect,
+    isDraggingRef,
     invalidateRef,
     ...groupProps
 }) {
@@ -105,8 +108,8 @@ function ScrollingModel({
 
     useFrame((_, delta) => {
         if (!ref.current) return;
-        const dx = rotationTargetX.current - ref.current.rotation.x;
-        const dy = rotationTargetY.current - ref.current.rotation.y;
+        const dx = rotationTargetXRef.current - ref.current.rotation.x;
+        const dy = rotationTargetYRef.current - ref.current.rotation.y;
         if (Math.abs(dx) < 0.0001 && Math.abs(dy) < 0.0001) return;
         const smoothing = Math.min(1, delta * 8);
         ref.current.rotation.x += dx * smoothing;
@@ -120,7 +123,7 @@ function ScrollingModel({
                 hoveredPart={hoveredPart}
                 setHoveredPart={setHoveredPart}
                 onSelect={onSelect}
-                modelColor={modelColor}
+                isDraggingRef={isDraggingRef}
                 rotation={[0, 0, 0]}
             />
         </group>
@@ -130,29 +133,29 @@ function ScrollingModel({
 
 const ModelCanvas = () => {
     const model3dRef = useRef(null);
-    const isPointerInside = useRef(false);
-    const isPointerDown = useRef(false);
-    const isDragging = useRef(false);
-    const lastPointerX = useRef(0);
-    const lastPointerY = useRef(0);
-    const rotationTargetX = useRef(0);
-    const rotationTargetY = useRef(0);
+    const isPointerInsideRef = useRef(false);
+    const isPointerDownRef = useRef(false);
+    const isDraggingRef = useRef(false);
+    const lastPointerXRef = useRef(0);
+    const lastPointerYRef = useRef(0);
+    const rotationTargetXRef = useRef(0);
+    const rotationTargetYRef = useRef(0);
     const invalidateRef = useRef(() => { });
     const [modelColor, setModelColor] = useState(INSTAX_COLORS[0].value);
     const modelSize = [0.45, 0.45, 0.45];
     const [hoveredPart, setHoveredPart] = useState(null);
     const activePart = hoveredPart;
-    const isTouch = useMediaQuery({ query: '(hover: none)' });
+    const isTouch = useMediaQuery({ query: '(hover: none), (pointer: coarse)' });
 
     useEffect(() => {
         const node = model3dRef.current;
         if (!node) return;
 
         const handleWheel = (event) => {
-            if (!isPointerInside.current) return;
+            if (!isPointerInsideRef.current) return;
             event.preventDefault();
             event.stopPropagation();
-            rotationTargetY.current += event.deltaY * 0.003;
+            rotationTargetYRef.current += event.deltaY * 0.003;
             invalidateRef.current();
         };
 
@@ -266,49 +269,51 @@ const ModelCanvas = () => {
                 className="model-3d reveal"
                 ref={model3dRef}
                 onPointerEnter={() => {
-                    isPointerInside.current = true;
+                    isPointerInsideRef.current = true;
                 }}
                 onPointerLeave={() => {
-                    isPointerInside.current = false;
+                    isPointerInsideRef.current = false;
                 }}
                 onPointerDown={(event) => {
-                    isPointerDown.current = true;
-                    lastPointerX.current = event.clientX;
-                    lastPointerY.current = event.clientY;
+                    isPointerDownRef.current = true;
+                    lastPointerXRef.current = event.clientX;
+                    lastPointerYRef.current = event.clientY;
                 }}
                 onPointerMove={(event) => {
-                    if (!isPointerDown.current) return;
+                    if (!isPointerDownRef.current) return;
 
-                    const deltaX = event.clientX - lastPointerX.current;
-                    const deltaY = event.clientY - lastPointerY.current;
+                    const deltaX = event.clientX - lastPointerXRef.current;
+                    const deltaY = event.clientY - lastPointerYRef.current;
 
-                    if (!isDragging.current) {
-                        if (Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4) {
-                            isDragging.current = true;
+                    if (!isDraggingRef.current) {
+                        const dragStartThreshold = getDragStartThreshold(event.pointerType);
+
+                        if (Math.abs(deltaX) > dragStartThreshold || Math.abs(deltaY) > dragStartThreshold) {
+                            isDraggingRef.current = true;
                             event.currentTarget.setPointerCapture(event.pointerId);
-                            lastPointerX.current = event.clientX;
-                            lastPointerY.current = event.clientY;
+                            lastPointerXRef.current = event.clientX;
+                            lastPointerYRef.current = event.clientY;
                         }
                         return;
                     }
 
-                    lastPointerX.current = event.clientX;
-                    lastPointerY.current = event.clientY;
-                    rotationTargetY.current += deltaX * 0.01;
-                    rotationTargetX.current += deltaY * 0.01;
+                    lastPointerXRef.current = event.clientX;
+                    lastPointerYRef.current = event.clientY;
+                    rotationTargetYRef.current += deltaX * 0.01;
+                    rotationTargetXRef.current += deltaY * 0.01;
                     invalidateRef.current();
                 }}
                 onPointerUp={(event) => {
-                    isPointerDown.current = false;
-                    isDragging.current = false;
+                    isPointerDownRef.current = false;
+                    isDraggingRef.current = false;
 
                     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
                         event.currentTarget.releasePointerCapture(event.pointerId);
                     }
                 }}
                 onPointerCancel={(event) => {
-                    isPointerDown.current = false;
-                    isDragging.current = false;
+                    isPointerDownRef.current = false;
+                    isDraggingRef.current = false;
 
                     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
                         event.currentTarget.releasePointerCapture(event.pointerId);
@@ -319,6 +324,9 @@ const ModelCanvas = () => {
                     frameloop="demand"
                     camera={{ position: [0, 0.5, 5.8], fov: 38, near: 0.1, far: 100 }}
                     gl={{ alpha: true }}
+                    onPointerMissed={() => {
+                        if (isTouch) setHoveredPart(null);
+                    }}
                 >
                     <Suspense fallback={<ModelLoader />}>
                         <Environment background={false} preset="warehouse" intensity={2} />
@@ -327,11 +335,12 @@ const ModelCanvas = () => {
                         <ScrollingModel
                             scale={modelSize}
                             position={[0, 0.25, 0]}
-                            rotationTargetX={rotationTargetX}
-                            rotationTargetY={rotationTargetY}
+                            rotationTargetXRef={rotationTargetXRef}
+                            rotationTargetYRef={rotationTargetYRef}
                             modelColor={modelColor}
                             hoveredPart={hoveredPart}
                             setHoveredPart={setHoveredPart}
+                            isDraggingRef={isDraggingRef}
                             onSelect={() => { }}
                             invalidateRef={invalidateRef}
                         />

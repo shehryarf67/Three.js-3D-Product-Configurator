@@ -1281,15 +1281,15 @@ header nav .hideOnMobile a.active {
   }
 
   #showcase .text-video-mask {
-    opacity: 1;
     -webkit-mask-size: 85%;
     mask-size: 85%;
     transform: scale(1);
+    /* opacity intentionally left at the base 0 — GSAP animates it on scroll
+       so mobile matches the desktop "base video first, then logo" flow. */
   }
 
-  #showcase .media-matte {
-    opacity: 1;
-  }
+  /* media-matte stays at base opacity 0 on mobile too, so the base video is
+     visible before the user scrolls. GSAP fades it in on scroll. */
 
   #showcase .mask {
     opacity: 1;
@@ -2085,11 +2085,18 @@ button:focus-visible {
     line-height: 1.14;
   }
 
+  /* 2-column compact layout: intro spans full width across the top, then
+     Navigate + Team sit side-by-side below. Stacking all three columns
+     vertically was making the footer ~2x as tall as the page above it. */
   .footer-content {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    padding: 1.5rem;
-    margin-top: 120px;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem 1.25rem;
+    padding: 1.25rem;
+    margin-top: 80px;
+  }
+
+  .footer_content_box1 {
+    grid-column: 1 / -1;
   }
 
   .footer-bottom {
@@ -2299,14 +2306,16 @@ button:focus-visible {
      percentage transforms — they scale naturally with card size, so no
      mobile override is needed here. */
 
+  /* Keep the 2-column layout from the 768 breakpoint; just tighten the
+     spacing and let min-height collapse to fit content + waves. */
   .footer-content {
-    grid-template-columns: 1fr;
-    margin-top: 150px;
+    margin-top: 65px;
     padding: 1rem;
+    gap: 1.25rem 1rem;
   }
 
   .footer {
-    min-height: 500px;
+    min-height: auto;
   }
 
   .pills {

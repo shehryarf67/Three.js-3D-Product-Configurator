@@ -625,6 +625,15 @@ header nav .hideOnMobile a.active {
 .card {
   list-style: none;
   position: relative;
+  overflow: visible;
+  z-index: 1;
+  isolation: isolate;
+  background-color: var(--secondary_color);
+  border-radius: var(--spacing-l);
+}
+
+.card:hover {
+  z-index: 10;
 }
 
 .card:before {
@@ -635,24 +644,80 @@ header nav .hideOnMobile a.active {
 }
 
 .card__background {
-  background-color: var(--secondary_color);
   background-size: cover;
   background-position: center;
   border-radius: var(--spacing-l);
+  overflow: hidden;
   bottom: 0;
   left: 0;
   position: absolute;
   right: 0;
   top: 0;
+  z-index: 1;
   transform-origin: center;
   transform: scale(1) translateZ(0);
+  opacity: 1;
   transition:
-    filter 200ms linear,
-    transform 200ms linear;
+    opacity 400ms ease,
+    filter 400ms ease,
+    transform 400ms ease;
+  backface-visibility: hidden;
+  will-change: opacity, transform, filter;
+}
+
+.card__hover-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  opacity: 0;
+  transform: scale(0.95);
+  transform-origin: center;
+  transition: opacity 400ms ease, transform 500ms cubic-bezier(0.34, 1.45, 0.64, 1);
+  z-index: 2;
+  pointer-events: none;
+  filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.18));
+  backface-visibility: hidden;
+  will-change: opacity, transform;
 }
 
 .card:hover .card__background {
-  transform: scale(1.05) translateZ(0);
+  opacity: 0;
+}
+
+.card:hover .card__hover-image {
+  opacity: 1;
+}
+
+/* Per-card hover image placement.
+   Each card's hover webp pops out a different direction by anchoring the
+   scale transform to a different corner/edge:
+     - Cameras  (1): origin top-right  → grows DOWN + LEFT
+     - Films    (2): origin top-center → grows DOWN + BOTH SIDES (non-uniform)
+     - Accessories (3): origin top-left  → grows DOWN + RIGHT
+*/
+.card:nth-child(1) .card__hover-image {
+  transform-origin: 100% 0;
+}
+.card:nth-child(1):hover .card__hover-image {
+  transform: scale(1.25);
+}
+
+.card:nth-child(2) .card__hover-image {
+  transform-origin: 50% 0;
+  object-position: center;
+}
+.card:nth-child(2):hover .card__hover-image {
+  transform: scaleX(1.4) scaleY(1.2);
+}
+
+.card:nth-child(3) .card__hover-image {
+  transform-origin: 0 0;
+}
+.card:nth-child(3):hover .card__hover-image {
+  transform: scale(1.25);
 }
 
 .card-grid:hover>.card:not(:hover) .card__background {
@@ -661,11 +726,18 @@ header nav .hideOnMobile a.active {
 
 .card__content {
   position: absolute;
-  top: 0;
+  top: 50%;
   left: 0;
   right: 0;
+  transform: translateY(-50%);
   padding: var(--spacing-l);
   text-align: center;
+  z-index: 3;
+  transition: opacity 240ms ease;
+}
+
+.card:hover .card__content {
+  opacity: 0;
 }
 
 .card__category {
@@ -674,13 +746,55 @@ header nav .hideOnMobile a.active {
 
 .card__heading {
   margin: 0;
-  color: var(--main_bg_color);
+  color: white;
   font-size: clamp(1.4rem, 2.4vw, 2.2rem);
   font-weight: 800;
-  letter-spacing: 0.04em;
+  font-family: inherit;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   line-height: 1.1;
   word-spacing: normal;
+}
+
+.card__hover-copy {
+  position: absolute;
+  left: 50%;
+  top: clamp(1rem, 6%, 2rem);
+  width: min(88%, 300px);
+  transform: translate(-50%, 14px) scale(0.94);
+  opacity: 0;
+  z-index: 4;
+  pointer-events: none;
+  text-align: center;
+  transition: opacity 360ms ease 80ms, transform 420ms ease 80ms;
+  will-change: opacity, transform;
+}
+
+.card:hover .card__hover-copy {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
+.card__hover-line {
+  display: block;
+  font-family: inherit;
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.18;
+  text-transform: none;
+}
+
+.card__hover-word {
+  font-family: inherit;
+}
+
+.card__hover-word--pink {
+  color: var(--main_bg_color);
+}
+
+.card__hover-word--white {
+  color: white;
 }
 
 .card:nth-child(2) {
@@ -1927,6 +2041,21 @@ button:focus-visible {
     padding-bottom: 100%;
   }
 
+  .card__heading {
+    font-size: clamp(1.35rem, 5vw, 1.9rem);
+    letter-spacing: 0.07em;
+  }
+
+  .card__hover-copy {
+    top: clamp(0.75rem, 5%, 1.25rem);
+    width: 86%;
+  }
+
+  .card__hover-line {
+    font-size: clamp(1.25rem, 7vw, 2.15rem);
+    line-height: 1.14;
+  }
+
   .footer-content {
     grid-template-columns: 1fr;
     gap: 2rem;
@@ -2124,7 +2253,22 @@ button:focus-visible {
 
   .card__heading {
     font-size: 1.5rem;
+    letter-spacing: 0.06em;
   }
+
+  .card__hover-copy {
+    top: 0.7rem;
+    width: 88%;
+  }
+
+  .card__hover-line {
+    font-size: clamp(1.1rem, 8.2vw, 1.85rem);
+    line-height: 1.12;
+  }
+
+  /* Hover image scale handled by per-card :nth-child rules using
+     percentage transforms — they scale naturally with card size, so no
+     mobile override is needed here. */
 
   .footer-content {
     grid-template-columns: 1fr;

@@ -207,13 +207,13 @@ const Details = () => {
             );
         }
 
-        // Reserve part of the scrubbed timeline for the finished composition.
-        // The CSS sticky stage then scrolls away naturally with card-4 + model
-        // still in their final positions.
+        // Short tail after card 4 lands — just enough to register the final
+        // composition before the sticky stage unpins. Anything longer turns
+        // into dead-scroll between sections.
         tl.fromTo(
             q(".feature-card-4"),
             { opacity: 1 },
-            { opacity: 1, ease: "none", duration: 2.1 }
+            { opacity: 1, ease: "none", duration: 0.3 }
         );
 
         requestAnimationFrame(() => ScrollTrigger.refresh());

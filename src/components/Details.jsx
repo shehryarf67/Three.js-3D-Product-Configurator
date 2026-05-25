@@ -181,15 +181,19 @@ const Details = () => {
             { opacity: 0, y: -24, ease: "power2.out", duration: 0.5 },
             0.15
         );
+        // Pin-first: let the canvas finish fading in and give the user a beat
+        // to take in the stationary stage before card 1 arrives.
         tl.to(
             q(".feature-card-1"),
             { xPercent: 0, ease: "power2.out", duration: 0.55 },
-            0.2
+            0.85
         );
 
         for (let i = 1; i < features.length; i++) {
             const isLastFeature = i === features.length - 1;
-            const waitBeforeNextCard = isLastFeature ? "+=0.25" : "+=0.45";
+            // Longer wait between cards — each card stays readable instead
+            // of being shoved off-screen by the next one.
+            const waitBeforeNextCard = isLastFeature ? "+=0.55" : "+=0.85";
             const transitionDuration = isLastFeature ? 0.35 : 0.5;
 
             tl.to(

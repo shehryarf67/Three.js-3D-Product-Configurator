@@ -1452,8 +1452,8 @@ header nav .hideOnMobile a.active {
 .details {
   position: relative;
   width: 100%;
-  min-height: 370vh;
-  min-height: 370svh;
+  min-height: 420vh;
+  min-height: 420svh;
   box-sizing: border-box;
   background-color: var(--main_bg_color);
   overflow: visible;
@@ -1461,7 +1461,7 @@ header nav .hideOnMobile a.active {
 
 @supports (min-height: 100dvh) {
   .details {
-    min-height: 370dvh;
+    min-height: 420dvh;
   }
 }
 

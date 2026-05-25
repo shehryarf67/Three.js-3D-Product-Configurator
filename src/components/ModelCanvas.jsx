@@ -14,11 +14,11 @@ import {
     useMediaQuery,
 } from "../imports.js";
 import { Model as Model } from "./Instax12.jsx";
-import ballBlue from "../assets/balls/balls/1.png";
-import ballPink from "../assets/balls/balls/2.png";
-import ballPurple from "../assets/balls/balls/3.png";
-import ballMint from "../assets/balls/balls/4.png";
-import ballWhite from "../assets/balls/balls/5.png";
+import ballBlue from "../assets/balls/balls/1.webp";
+import ballPink from "../assets/balls/balls/2.webp";
+import ballPurple from "../assets/balls/balls/3.webp";
+import ballMint from "../assets/balls/balls/4.webp";
+import ballWhite from "../assets/balls/balls/5.webp";
 
 const INSTAX_COLORS = [
     { name: "Lilac Purple", value: "#C8A2C8" },

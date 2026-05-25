@@ -689,7 +689,7 @@ header nav .hideOnMobile a.active {
     filter 400ms ease,
     transform 400ms ease;
   backface-visibility: hidden;
-  will-change: opacity, transform, filter;
+  will-change: filter, transform, opacity;
 }
 
 .card__hover-image {
@@ -700,7 +700,7 @@ header nav .hideOnMobile a.active {
   object-fit: contain;
   object-position: center bottom;
   opacity: 0;
-  transform: scale(0.95);
+  transform: scale(0.95) translateZ(0);
   transform-origin: center;
   transition: opacity 500ms ease, transform 600ms cubic-bezier(0.34, 1.45, 0.64, 1);
   z-index: 2;
@@ -729,7 +729,7 @@ header nav .hideOnMobile a.active {
   transform-origin: 100% 0;
 }
 .card:nth-child(1):hover .card__hover-image {
-  transform: scale(1.25);
+  transform: scale(1.25) translateZ(0);
 }
 
 .card:nth-child(2) .card__hover-image {
@@ -737,18 +737,18 @@ header nav .hideOnMobile a.active {
   object-position: center;
 }
 .card:nth-child(2):hover .card__hover-image {
-  transform: scaleX(1.4) scaleY(1.2);
+  transform: scaleX(1.4) scaleY(1.2) translateZ(0);
 }
 
 .card:nth-child(3) .card__hover-image {
   transform-origin: 0 0;
 }
 .card:nth-child(3):hover .card__hover-image {
-  transform: scale(1.25);
+  transform: scale(1.25) translateZ(0);
 }
 
 .card-grid:hover>.card:not(:hover) .card__background {
-  filter: brightness(0.5) saturate(0.5) contrast(1.2) blur(20px);
+  filter: brightness(0.5) saturate(0.5) blur(8px);
 }
 
 .card__content {

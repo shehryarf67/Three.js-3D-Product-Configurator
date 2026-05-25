@@ -1,8 +1,8 @@
 import { useRef } from "../imports.js";
 import { gsap, ScrollTrigger, useGSAP } from "../imports.js";
-import layer2nd from "../assets/features main/2ND LAYER - 1.png";
-import layerTop from "../assets/features main/TOP LAYER-2.png";
-import layer3rd from "../assets/features main/3RD LAYER - 3.png";
+import layer2nd from "../assets/features main/2ND LAYER - 1.webp";
+import layerTop from "../assets/features main/TOP LAYER-2.webp";
+import layer3rd from "../assets/features main/3RD LAYER - 3.webp";
 
 gsap.registerPlugin(ScrollTrigger);
 

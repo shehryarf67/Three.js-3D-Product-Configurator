@@ -1,40 +1,40 @@
 import { useEffect, useRef, useState } from "../imports.js";
 
-import camera1Front from "../assets/camera1/front.png";
-import camera1Rot1 from "../assets/camera1/rot_1.png";
-import camera1Rot2 from "../assets/camera1/rot_2.png";
-import camera1Rot3 from "../assets/camera1/rot_3.png";
-import camera1Rot4 from "../assets/camera1/rot_4.png";
+import camera1Front from "../assets/camera1/front.webp";
+import camera1Rot1 from "../assets/camera1/rot_1.webp";
+import camera1Rot2 from "../assets/camera1/rot_2.webp";
+import camera1Rot3 from "../assets/camera1/rot_3.webp";
+import camera1Rot4 from "../assets/camera1/rot_4.webp";
 
-import camera2Front from "../assets/camera2/front.png";
-import camera2Rot1 from "../assets/camera2/rot_1.png";
-import camera2Rot2 from "../assets/camera2/rot_2.png";
-import camera2Rot3 from "../assets/camera2/rot_3.png";
-import camera2Rot4 from "../assets/camera2/rot_4.png";
+import camera2Front from "../assets/camera2/front.webp";
+import camera2Rot1 from "../assets/camera2/rot_1.webp";
+import camera2Rot2 from "../assets/camera2/rot_2.webp";
+import camera2Rot3 from "../assets/camera2/rot_3.webp";
+import camera2Rot4 from "../assets/camera2/rot_4.webp";
 
-import camera3Front from "../assets/camera3/front.png";
-import camera3Rot1 from "../assets/camera3/rot_1.png";
-import camera3Rot2 from "../assets/camera3/rot_2.png";
-import camera3Rot3 from "../assets/camera3/rot_3.png";
-import camera3Rot4 from "../assets/camera3/rot_4.png";
+import camera3Front from "../assets/camera3/front.webp";
+import camera3Rot1 from "../assets/camera3/rot_1.webp";
+import camera3Rot2 from "../assets/camera3/rot_2.webp";
+import camera3Rot3 from "../assets/camera3/rot_3.webp";
+import camera3Rot4 from "../assets/camera3/rot_4.webp";
 
-import camera4Front from "../assets/camera4/front.png";
-import camera4Rot1 from "../assets/camera4/rot_1.png";
-import camera4Rot2 from "../assets/camera4/rot_2.png";
-import camera4Rot3 from "../assets/camera4/rot_3.png";
-import camera4Rot4 from "../assets/camera4/rot_4.png";
+import camera4Front from "../assets/camera4/front.webp";
+import camera4Rot1 from "../assets/camera4/rot_1.webp";
+import camera4Rot2 from "../assets/camera4/rot_2.webp";
+import camera4Rot3 from "../assets/camera4/rot_3.webp";
+import camera4Rot4 from "../assets/camera4/rot_4.webp";
 
-import camera5Front from "../assets/camera5/front.png";
-import camera5Rot1 from "../assets/camera5/rot_1.png";
-import camera5Rot2 from "../assets/camera5/rot_2.png";
-import camera5Rot3 from "../assets/camera5/rot_3.png";
-import camera5Rot4 from "../assets/camera5/rot_4.png";
+import camera5Front from "../assets/camera5/front.webp";
+import camera5Rot1 from "../assets/camera5/rot_1.webp";
+import camera5Rot2 from "../assets/camera5/rot_2.webp";
+import camera5Rot3 from "../assets/camera5/rot_3.webp";
+import camera5Rot4 from "../assets/camera5/rot_4.webp";
 
-import ballBlue from "../assets/balls/balls/1.png";
-import ballPink from "../assets/balls/balls/2.png";
-import ballPurple from "../assets/balls/balls/3.png";
-import ballMint from "../assets/balls/balls/4.png";
-import ballWhite from "../assets/balls/balls/5.png";
+import ballBlue from "../assets/balls/balls/1.webp";
+import ballPink from "../assets/balls/balls/2.webp";
+import ballPurple from "../assets/balls/balls/3.webp";
+import ballMint from "../assets/balls/balls/4.webp";
+import ballWhite from "../assets/balls/balls/5.webp";
 
 const CAMERA_IMAGES = {
   "Lilac Purple": { front: camera1Front, left: camera1Rot1, topLeft: camera1Rot2, topRight: camera1Rot3, right: camera1Rot4 },

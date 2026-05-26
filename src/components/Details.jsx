@@ -1,4 +1,9 @@
 import { Model as Model } from "./Instax12.jsx";
+import ballBlue from "../assets/balls/balls/1.webp";
+import ballPink from "../assets/balls/balls/2.webp";
+import ballPurple from "../assets/balls/balls/3.webp";
+import ballMint from "../assets/balls/balls/4.webp";
+import ballWhite from "../assets/balls/balls/5.webp";
 import {
     Canvas,
     gsap,
@@ -40,6 +45,14 @@ const features = [
         description:
             "Produces 54 x 86 mm credit-card-sized prints on ISO 800 Instax Mini film, developing in natural light within 90 seconds. Two AA alkaline batteries power up to 100 shots, and the built-in auto flash recycles in as little as 0.2 s.",
     },
+];
+
+const DETAILS_BALLS = [
+    { src: ballBlue, className: "details-ball details-ball--blue" },
+    { src: ballPink, className: "details-ball details-ball--pink" },
+    { src: ballPurple, className: "details-ball details-ball--purple" },
+    { src: ballMint, className: "details-ball details-ball--mint" },
+    { src: ballWhite, className: "details-ball details-ball--white" },
 ];
 
 function ModelLoader() {
@@ -197,7 +210,7 @@ const Details = () => {
                 trigger: sectionRef.current,
                 start: "top top",
                 end: "bottom bottom",
-                scrub: 0.5,
+                scrub: 0.25,
                 invalidateOnRefresh: true,
             },
         });
@@ -212,19 +225,22 @@ const Details = () => {
             { opacity: 0, y: -24, ease: "power2.out", duration: 0.5 },
             0.15
         );
-        // Pin-first: let the canvas finish fading in and give the user a beat
-        // to take in the stationary stage before card 1 arrives.
-        tl.to(
-            q(".feature-card-1"),
-            { xPercent: 0, ease: "power2.out", duration: 0.55 },
-            0.85
-        );
+        // Card 1 holds back until well after the stage pins — it should feel
+        // like "another card arriving" rather than a card that was already
+        // there when the section came into view. The 1.7 offset mirrors the
+        // inter-card wait pattern (other cards have +1.45/+0.85 dwell before
+        // they slide in), so card 1 gets the same kind of breathing room
+        // relative to the model that the other cards get relative to their
+        // predecessor. Model (#details-canvas) still fades in at position 0
+        // so it appears immediately on pin — only the card is delayed.
+        tl.to(q(".feature-card-1"), { xPercent: 0, ease: "power2.out", duration: 0.45 }, 1.7);
 
         for (let i = 1; i < features.length; i++) {
             const isLastFeature = i === features.length - 1;
+            const isFirstTransition = i === 1;
             // Longer wait between cards — each card stays readable instead
             // of being shoved off-screen by the next one.
-            const waitBeforeNextCard = isLastFeature ? "+=0.55" : "+=0.85";
+            const waitBeforeNextCard = isFirstTransition ? "+=1.45" : isLastFeature ? "+=0.55" : "+=0.85";
             const transitionDuration = isLastFeature ? 0.35 : 0.5;
 
             tl.to(
@@ -238,21 +254,15 @@ const Details = () => {
             );
         }
 
-        // Short tail after card 4 lands — just enough to register the final
-        // composition before the sticky stage unpins. Anything longer turns
-        // into dead-scroll between sections.
-        tl.fromTo(
-            q(".feature-card-4"),
-            { opacity: 1 },
-            { opacity: 1, ease: "none", duration: 0.3 }
-        );
-
         requestAnimationFrame(() => ScrollTrigger.refresh());
     }, { scope: sectionRef, revertOnUpdate: true });
 
     return (
         <section className="details" id="details" ref={sectionRef}>
             <div className="details-stage">
+                {DETAILS_BALLS.map((ball) => (
+                    <img key={ball.className} className={ball.className} src={ball.src} alt="" aria-hidden="true" />
+                ))}
                 <div id="details-canvas">
                     {isCanvasActive && (
                         <Canvas

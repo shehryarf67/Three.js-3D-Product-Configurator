@@ -3,8 +3,17 @@ import { gsap, ScrollTrigger, useGSAP } from "../imports.js";
 import layer2nd from "../assets/features main/2ND LAYER - 1.webp";
 import layerTop from "../assets/features main/TOP LAYER-2.webp";
 import layer3rd from "../assets/features main/3RD LAYER - 3.webp";
+import ballBlue from "../assets/balls/balls/1.webp";
+import ballPink from "../assets/balls/balls/2.webp";
+import ballMint from "../assets/balls/balls/4.webp";
 
 gsap.registerPlugin(ScrollTrigger);
+
+const PIPE_BALLS = [
+    { src: ballBlue, className: "pipe-ball pipe-ball--blue" },
+    { src: ballPink, className: "pipe-ball pipe-ball--pink" },
+    { src: ballMint, className: "pipe-ball pipe-ball--mint" },
+];
 
 const FeaturesPipe = () => {
     const sectionRef = useRef();
@@ -59,6 +68,9 @@ const FeaturesPipe = () => {
     return (
         <div className="features-pipe-section" ref={sectionRef}>
             <div className="features-pipe-sticky">
+                {PIPE_BALLS.map((ball) => (
+                    <img key={ball.className} className={ball.className} src={ball.src} alt="" aria-hidden="true" />
+                ))}
                 <div className="features-pipe">
                     <div
                         className="features-layer features-layer--3rd"

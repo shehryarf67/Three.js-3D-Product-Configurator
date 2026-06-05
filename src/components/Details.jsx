@@ -254,6 +254,22 @@ const Details = () => {
             );
         }
 
+        // Fix 11 — kill the trailing dead-scroll. The timeline already ends on
+        // the final card's slide-in (there is no hold/empty tween), but the
+        // pinned scroll distance was driven by a hardcoded section height
+        // (240vh) that overshot the animation, so the user kept scrolling past
+        // the last card with nothing happening. Derive the section height from
+        // the timeline's real duration instead, so the sticky stage releases
+        // exactly as the final card finishes and the next section follows with
+        // no pause. .details-stage is 100vh/sticky; everything beyond that is
+        // the scrub-mapped pin distance.
+        const SCROLL_PER_UNIT = 21; // vh of scroll granted per timeline time-unit
+        const detailsScrollDistance = tl.duration() * SCROLL_PER_UNIT;
+        const node = sectionRef.current;
+        if (node) {
+            node.style.minHeight = `${(100 + detailsScrollDistance).toFixed(1)}vh`;
+        }
+
         requestAnimationFrame(() => ScrollTrigger.refresh());
     }, { scope: sectionRef, revertOnUpdate: true });
 

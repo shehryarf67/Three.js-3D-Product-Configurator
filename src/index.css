@@ -83,7 +83,7 @@ nav {
 nav ul {
   list-style: none;
   display: flex;
-  gap: 1rem;
+  gap: 2.5rem;
   margin: 0;
   padding: 0;
   margin-left: auto;
@@ -379,33 +379,33 @@ header nav .hideOnMobile a.active {
 }
 
 .hero-camera--center {
-  width: clamp(1625px, 138vw, 2500px);
+  width: clamp(1270px, 108vw, 1950px);
   transform: translate3d(-50%, -50%, 0);
   z-index: 4;
 }
 
 .hero-camera--left {
-  width: clamp(1625px, 138vw, 2500px);
+  width: clamp(1270px, 108vw, 1950px);
   transform: translate3d(-50%, -55%, 0);
   z-index: 2;
 }
 
 .hero-camera--top-left {
-  width: clamp(1625px, 138vw, 2500px);
+  width: clamp(1270px, 108vw, 1950px);
   transform: translate3d(-50%, -53%, 0);
   opacity: 1;
   z-index: 1;
 }
 
 .hero-camera--top-right {
-  width: clamp(1625px, 138vw, 2500px);
+  width: clamp(1270px, 108vw, 1950px);
   transform: translate3d(-50%, -50%, 0);
   opacity: 1;
   z-index: 1;
 }
 
 .hero-camera--right {
-  width: clamp(1625px, 138vw, 2500px);
+  width: clamp(1270px, 108vw, 1950px);
   transform: translate3d(-52%, -50%, 0);
   z-index: 3;
 }
@@ -608,7 +608,7 @@ header nav .hideOnMobile a.active {
   grid-template-columns: repeat(1, 1fr);
   grid-column-gap: var(--spacing-l);
   grid-row-gap: var(--spacing-l);
-  max-width: 1100px;
+  max-width: 900px;
   width: 100%;
   z-index: 2;
 }
@@ -669,7 +669,7 @@ header nav .hideOnMobile a.active {
 .card:before {
   content: '';
   display: block;
-  padding-bottom: 140%;
+  padding-bottom: 120%;
   width: 100%;
 }
 
@@ -713,10 +713,9 @@ header nav .hideOnMobile a.active {
   will-change: opacity, transform;
 }
 
-.card:hover .card__background {
-  opacity: 0;
-}
-
+/* Base PNG (.card__background) intentionally stays visible behind the hover
+   PNG on hover — it is NOT faded out, so the hover image pops out over the
+   base product shot. */
 .card:hover .card__hover-image {
   opacity: 1;
 }
@@ -830,10 +829,10 @@ header nav .hideOnMobile a.active {
 
 .model-canvas {
   display: grid;
-  grid-template-columns: minmax(230px, 0.58fr) minmax(360px, 1fr) minmax(92px, 0.24fr);
+  grid-template-columns: minmax(230px, 0.41fr) minmax(360px, 1fr) minmax(92px, 0.41fr);
   align-items: center;
   width: 100%;
-  min-height: 720px;
+  min-height: 860px;
   padding: clamp(4rem, 7vw, 6rem) clamp(2rem, 9vw, 8rem);
   box-sizing: border-box;
   background-color: var(--main_bg_color);
@@ -991,6 +990,7 @@ header nav .hideOnMobile a.active {
   height: 600px;
   flex-shrink: 0;
   align-self: center;
+  justify-self: center;
   margin-top: 0;
   margin-right: 0;
   border-radius: 16px;
@@ -1026,15 +1026,15 @@ header nav .hideOnMobile a.active {
   writing-mode: vertical-rl;
   text-orientation: mixed;
   color: white;
-  font-size: clamp(1.5rem, 2vw, 2.15rem);
+  font-size: clamp(1.8rem, 2.4vw, 2.6rem);
   font-weight: 500;
   line-height: 1;
   letter-spacing: 0;
 }
 
 .model-color-picker .swatch {
-  width: 44px;
-  height: 44px;
+  width: 56px;
+  height: 56px;
   border: 4px solid rgba(255, 255, 255, 0.82);
   box-shadow: 0 5px 14px rgba(100, 28, 64, 0.18);
 }
@@ -1114,7 +1114,7 @@ header nav .hideOnMobile a.active {
   width: 100%;
   height: 85vh;
   margin-top: 12px;
-  border-radius: 20px;
+  border-radius: 48px;
   overflow: hidden;
   background: transparent;
 }
@@ -1280,7 +1280,7 @@ header nav .hideOnMobile a.active {
 
   #showcase .media {
     height: 60vh;
-    border-radius: 16px;
+    border-radius: 32px;
   }
 
   #showcase .text-video-mask {
@@ -1375,9 +1375,9 @@ header nav .hideOnMobile a.active {
 
 .features-pipe {
   position: relative;
-  height: 560px;
-  width: calc(100% + 200px);
-  margin-left: -100px;
+  height: 620px;
+  width: 100vw;
+  margin-left: calc(-1 * ((100vw - 100%) / 2));
   background: var(--secondary_color);
   border-radius: 0 999px 999px 0;
   overflow: hidden;
@@ -1434,7 +1434,7 @@ header nav .hideOnMobile a.active {
 
 .features-pipe-heading {
   margin: 0;
-  font-size: clamp(2rem, 4.2vw, 3.5rem);
+  font-size: clamp(2.8rem, 5.5vw, 5rem);
   font-weight: 800;
   letter-spacing: 0.08em;
   color: var(--secondary_color);
@@ -1462,9 +1462,9 @@ header nav .hideOnMobile a.active {
   }
 
   .features-pipe {
-    height: 390px;
-    width: calc(100% + 150px);
-    margin-left: -75px;
+    height: 430px;
+    width: 100vw;
+    margin-left: calc(-1 * ((100vw - 100%) / 2));
   }
 
   .features-pipe-heading-wrap {
@@ -1492,9 +1492,9 @@ header nav .hideOnMobile a.active {
 
 @media (max-width: 480px) {
   .features-pipe {
-    height: 265px;
-    width: calc(100% + 90px);
-    margin-left: -45px;
+    height: 290px;
+    width: 100vw;
+    margin-left: calc(-1 * ((100vw - 100%) / 2));
   }
 
   .features-pipe-heading-wrap {
@@ -1617,22 +1617,17 @@ header nav .hideOnMobile a.active {
 }
 
 .feature-card {
-  /* Overhang = how far the card "hangs" off the left edge of its container.
-     Was a fixed 100px — on wide monitors that's only ~4.5% of viewport, so
-     the card barely peeked off. Scaling it with vw keeps the pill anchored
-     to the screen edge at every size. The same value drives the negative
-     margin, the width compensation, and the left padding so the text
-     position lines up consistently. */
-  --overhang: clamp(80px, 7vw, 200px);
+  /* The card emerges from off-screen left as a rounded pill. The negative
+     margin pulls it past the container edge, the left padding pushes the
+     text back into the visible area, and the 160px values all match so the
+     text position stays consistent. */
   position: absolute;
   top: 32%;
   left: 0;
-  width: calc(100% + var(--overhang));
-  /* Bumped the upper bound from 1200 → 1320 so a 2000px+ viewport gets a
-     visibly larger card instead of capping out mid-screen. */
-  max-width: clamp(720px, 62vw, 1320px);
-  margin-left: calc(var(--overhang) * -1);
-  padding: clamp(2.2rem, 2.6vw, 3.4rem) clamp(2.5rem, 3.2vw, 4.2rem) clamp(2.2rem, 2.6vw, 3.4rem) calc(var(--overhang) + clamp(2.5rem, 3.2vw, 4.2rem));
+  width: calc(55% + 160px);
+  max-width: 820px;
+  margin-left: -160px;
+  padding: 3rem 4rem 3rem calc(160px + 4rem);
   box-sizing: border-box;
   background: var(--secondary_color);
   border-radius: 0 999px 999px 0;
@@ -1642,7 +1637,7 @@ header nav .hideOnMobile a.active {
 
 .feature-card-title {
   margin: 0 0 1rem 0;
-  font-size: clamp(1.55rem, 2.45vw, 2.45rem);
+  font-size: clamp(2rem, 3vw, 3rem);
   font-weight: 800;
   letter-spacing: 0.035em;
   color: var(--main_bg_color);
@@ -1653,7 +1648,7 @@ header nav .hideOnMobile a.active {
 
 .feature-card-description {
   margin: 0;
-  font-size: clamp(0.95rem, 1.05vw, 1.1rem);
+  font-size: clamp(1.05rem, 1.2vw, 1.25rem);
   line-height: 1.65;
   color: var(--main_bg_color);
   font-weight: 500;
@@ -2223,10 +2218,10 @@ button:focus-visible {
 
   .feature-card {
     top: 40%;
-    padding: 1.4rem 1.75rem 1.4rem calc(60px + 1.25rem);
-    margin-left: -60px;
-    width: calc(100% + 60px);
-    max-width: 420px;
+    padding: 1.6rem 2rem 1.6rem calc(90px + 1.5rem);
+    margin-left: -90px;
+    width: calc(100% + 90px);
+    max-width: 480px;
   }
 
   .scroll-indicator {
@@ -2320,7 +2315,7 @@ button:focus-visible {
   .hero-camera--top-left,
   .hero-camera--top-right,
   .hero-camera--right {
-    width: clamp(675px, 169vw, 1163px);
+    width: clamp(525px, 132vw, 905px);
   }
 
   /* Scale blob with proportionally correct clip-path for mobile */
@@ -2455,21 +2450,21 @@ button:focus-visible {
 
   .feature-card {
     top: 42%;
-    padding: 1.1rem 1.4rem 1.1rem calc(45px + 1rem);
-    margin-left: -45px;
-    width: calc(100% + 45px);
-    max-width: 320px;
+    padding: 1.2rem 1.6rem 1.2rem calc(70px + 1.1rem);
+    margin-left: -70px;
+    width: calc(100% + 70px);
+    max-width: 360px;
   }
 
   .feature-card-title {
-    font-size: clamp(0.95rem, 4.8vw, 1.32rem);
+    font-size: clamp(1.1rem, 5vw, 1.5rem);
     letter-spacing: 0.015em;
     line-height: 1.08;
     margin-bottom: 0.6rem;
   }
 
   .feature-card-description {
-    font-size: 0.78rem;
+    font-size: 0.9rem;
     line-height: 1.5;
   }
 
@@ -2573,7 +2568,7 @@ button:focus-visible {
   .hero-camera--top-left,
   .hero-camera--top-right,
   .hero-camera--right {
-    width: clamp(675px, 180vw, 975px);
+    width: clamp(525px, 140vw, 760px);
   }
 
   .app-logo {
@@ -2686,7 +2681,7 @@ button:focus-visible {
   .hero-camera--top-left,
   .hero-camera--top-right,
   .hero-camera--right {
-    width: clamp(900px, 185vw, 1225px);
+    width: clamp(700px, 144vw, 955px);
   }
 
   .hero-ball--blue {
@@ -2880,7 +2875,7 @@ button:focus-visible {
   .hero-camera--top-left,
   .hero-camera--top-right,
   .hero-camera--right {
-    width: clamp(700px, 200vw, 950px);
+    width: clamp(545px, 156vw, 740px);
   }
 
   .hero-ball--blue {
@@ -3095,7 +3090,7 @@ button:focus-visible {
   .hero-camera--top-left,
   .hero-camera--top-right,
   .hero-camera--right {
-    width: clamp(1875px, 156vw, 3000px);
+    width: clamp(1465px, 122vw, 2340px);
   }
 
   .model-canvas-content {
@@ -3139,13 +3134,13 @@ button:focus-visible {
   .hero-camera--top-left,
   .hero-camera--top-right,
   .hero-camera--right {
-    width: clamp(2250px, 175vw, 3625px);
+    width: clamp(1755px, 137vw, 2830px);
   }
 
   .model-canvas {
     padding-left: max(8rem, calc((100vw - var(--width-content)) / 2));
     padding-right: max(8rem, calc((100vw - var(--width-content)) / 2));
-    grid-template-columns: minmax(230px, 0.58fr) minmax(360px, 720px) minmax(92px, 0.24fr);
+    grid-template-columns: minmax(230px, 0.41fr) minmax(360px, 720px) minmax(92px, 0.41fr);
   }
 
   .model-canvas-bg {
@@ -3155,7 +3150,7 @@ button:focus-visible {
 
   .model-3d {
     max-width: 720px;
-    justify-self: start;
+    justify-self: center;
   }
 
   #showcase .media {

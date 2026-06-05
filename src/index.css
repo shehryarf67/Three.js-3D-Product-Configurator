@@ -1428,13 +1428,17 @@ header nav .hideOnMobile a.active {
   transform: translateY(-50%);
   z-index: 10;
   background: var(--main_bg_color);
-  padding: 1.4rem 4rem 1.4rem calc(100px + 4rem);
-  border-radius: 999px;
+  padding: 2.4rem 6rem 2.4rem 3.5rem;
+  /* Flat left edge so the pill reads as emerging straight from the left
+     screen edge. The pipe now bleeds full 100vw (Fix 8), so left:0 sits at
+     the viewport edge — a rounded left cap just left teal gaps in the
+     corners. Rounded on the right only. */
+  border-radius: 0 999px 999px 0;
 }
 
 .features-pipe-heading {
   margin: 0;
-  font-size: clamp(2.8rem, 5.5vw, 5rem);
+  font-size: clamp(3.4rem, 6.5vw, 6rem);
   font-weight: 800;
   letter-spacing: 0.08em;
   color: var(--secondary_color);
@@ -1445,7 +1449,7 @@ header nav .hideOnMobile a.active {
 
 @media (max-width: 1024px) {
   .features-pipe-heading-wrap {
-    padding: 1.1rem 3rem 1.1rem calc(100px + 3rem);
+    padding: 2rem 4.5rem 2rem 3rem;
   }
 }
 
@@ -1468,7 +1472,7 @@ header nav .hideOnMobile a.active {
   }
 
   .features-pipe-heading-wrap {
-    padding: 0.9rem 2.25rem 0.9rem calc(75px + 2rem);
+    padding: 1.4rem 3rem 1.4rem 2rem;
   }
 
   .pipe-ball--blue {
@@ -1498,7 +1502,7 @@ header nav .hideOnMobile a.active {
   }
 
   .features-pipe-heading-wrap {
-    padding: 0.65rem 1.6rem 0.65rem calc(45px + 1.4rem);
+    padding: 1rem 2.25rem 1rem 1.5rem;
   }
 
   .pipe-ball--blue {

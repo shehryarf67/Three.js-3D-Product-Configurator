@@ -1622,10 +1622,10 @@ header nav .hideOnMobile a.active {
      text back into the visible area, and the 160px values all match so the
      text position stays consistent. */
   position: absolute;
-  top: 32%;
+  top: 24%;
   left: 0;
-  width: calc(55% + 160px);
-  max-width: 820px;
+  width: calc(100% + 160px);
+  max-width: clamp(720px, 62vw, 1320px);
   margin-left: -160px;
   padding: 3rem 4rem 3rem calc(160px + 4rem);
   box-sizing: border-box;

@@ -671,7 +671,7 @@ header nav .hideOnMobile a.active {
 .card:before {
   content: '';
   display: block;
-  padding-bottom: 120%;
+  padding-bottom: 140%;
   width: 100%;
 }
 
@@ -703,9 +703,13 @@ header nav .hideOnMobile a.active {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  object-position: center bottom;
+  object-position: center;
   opacity: 0;
-  transform: scale(0.95) translateZ(0);
+  --hover-x: 0%;
+  --hover-y: -8%;
+  --hover-scale-x: 1.32;
+  --hover-scale-y: 1.32;
+  transform: translate3d(0, 4%, 0) scale(0.95);
   transform-origin: center;
   transition: opacity 500ms ease, transform 600ms cubic-bezier(0.34, 1.45, 0.64, 1);
   z-index: 2;
@@ -715,40 +719,38 @@ header nav .hideOnMobile a.active {
   will-change: opacity, transform;
 }
 
-/* Base PNG (.card__background) intentionally stays visible behind the hover
-   PNG on hover — it is NOT faded out, so the hover image pops out over the
-   base product shot. */
-.card:hover .card__hover-image {
-  opacity: 1;
+.card:hover .card__background {
+  opacity: 0;
+  transform: scale(0.98) translateZ(0);
 }
 
-/* Per-card hover image placement.
-   Each card's hover webp pops out a different direction by anchoring the
-   scale transform to a different corner/edge:
-     - Cameras  (1): origin top-right  → grows DOWN + LEFT
-     - Films    (2): origin top-center → grows DOWN + BOTH SIDES (non-uniform)
-     - Accessories (3): origin top-left  → grows DOWN + RIGHT
-*/
-.card:nth-child(1) .card__hover-image {
-  transform-origin: 100% 0;
+.card:hover .card__hover-image {
+  opacity: 1;
+  transform:
+    translate3d(var(--hover-x), var(--hover-y), 0)
+    scale(var(--hover-scale-x), var(--hover-scale-y));
 }
-.card:nth-child(1):hover .card__hover-image {
-  transform: scale(1.45) translateZ(0);
+
+/* Per-card hover placement keeps the visible PNG content centered while still
+   letting it scale past the card edges for the pop-out effect. */
+.card:nth-child(1) .card__hover-image {
+  --hover-x: -16%;
+  --hover-y: 10%;
+  --hover-scale-x: 1.36;
+  --hover-scale-y: 1.36;
 }
 
 .card:nth-child(2) .card__hover-image {
-  transform-origin: 50% 0;
-  object-position: center;
-}
-.card:nth-child(2):hover .card__hover-image {
-  transform: scaleX(1.6) scaleY(1.4) translateZ(0);
+  --hover-y: 12%;
+  --hover-scale-x: 1.72;
+  --hover-scale-y: 1.5;
 }
 
 .card:nth-child(3) .card__hover-image {
-  transform-origin: 0 0;
-}
-.card:nth-child(3):hover .card__hover-image {
-  transform: scale(1.45) translateZ(0);
+  --hover-x: 16%;
+  --hover-y: 10%;
+  --hover-scale-x: 1.36;
+  --hover-scale-y: 1.36;
 }
 
 .card-grid:hover>.card:not(:hover) .card__background {
@@ -2314,7 +2316,7 @@ button:focus-visible {
   }
 
   .card:before {
-    padding-bottom: 100%;
+    padding-bottom: 118%;
   }
 
   .card__heading {
@@ -2531,7 +2533,7 @@ button:focus-visible {
   }
 
   .card:before {
-    padding-bottom: 95%;
+    padding-bottom: 112%;
   }
 
   .card__heading {

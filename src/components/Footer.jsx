@@ -1,9 +1,32 @@
-
+import { useEffect, useRef, useState } from "react";
 
 const Footer = () => {
+  const wavesRef = useRef(null);
+  // Start paused — the footer is below the fold on load, so there's no point
+  // animating the waves until it actually scrolls into view.
+  const [wavesVisible, setWavesVisible] = useState(false);
+
+  useEffect(() => {
+    const node = wavesRef.current;
+    if (!node || typeof IntersectionObserver === "undefined") {
+      setWavesVisible(true);
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setWavesVisible(entry.isIntersecting),
+      { rootMargin: "100px 0px" }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <footer className="footer" id="contact">
-      <div className="waves-container">
+      <div
+        ref={wavesRef}
+        className={`waves-container${wavesVisible ? "" : " is-paused"}`}
+      >
         <svg
           className="waves"
           xmlns="http://www.w3.org/2000/svg"

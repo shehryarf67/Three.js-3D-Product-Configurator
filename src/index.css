@@ -829,7 +829,11 @@ header nav .hideOnMobile a.active {
 
 .model-canvas {
   display: grid;
-  grid-template-columns: minmax(230px, 0.41fr) minmax(360px, 1fr) minmax(92px, 0.41fr);
+  /* Symmetric side columns keep the middle (model) column centered in the
+     section. The right column only needs ~110px for the color picker, but it
+     matches the left column's track so the model and the bottom instruction
+     line stay centered at every desktop width. */
+  grid-template-columns: minmax(160px, 0.41fr) minmax(360px, 1fr) minmax(160px, 0.41fr);
   align-items: center;
   width: 100%;
   min-height: 860px;
@@ -1047,11 +1051,17 @@ header nav .hideOnMobile a.active {
 
 .model-canvas-instruction {
   position: absolute;
-  left: 50%;
+  /* Centered via left/right:0 + margin:auto rather than translateX(-50%):
+     this element also carries the .reveal class, whose `.reveal.show`
+     `transform: translateX(0)` would otherwise override a transform-based
+     centering and shove the text to the right once the reveal fires. */
+  left: 0;
+  right: 0;
   bottom: 5.7rem;
+  width: max-content;
+  max-width: calc(100% - 4rem);
+  margin: 0 auto;
   z-index: 4;
-  margin: 0;
-  transform: translateX(-50%);
   color: white;
   font-size: 1rem;
   text-align: center;
@@ -2031,6 +2041,14 @@ button:focus-visible {
   animation: move-forever 25s cubic-bezier(.55, .5, .45, .5) infinite;
 }
 
+/* The footer sits at the very bottom of the page, so these four looping wave
+   animations would otherwise keep the compositor busy the whole time the user
+   is anywhere above the footer. The IntersectionObserver in Footer.jsx adds
+   .is-paused whenever the footer is out of view. */
+.waves-container.is-paused>.waves .parallax>use {
+  animation-play-state: paused;
+}
+
 .parallax {
   transform-origin: bottom;
 }
@@ -2062,6 +2080,18 @@ button:focus-visible {
 
   100% {
     transform: translate3d(85px, 0, 0);
+  }
+}
+
+/* Honour the OS "reduce motion" setting: stop the always-on decorative loops
+   (footer waves, hero marquee, scroll-arrow bob). This both respects the
+   accessibility preference and removes their continuous compositor work for
+   users who opt in. Loaders keep spinning so progress stays legible. */
+@media (prefers-reduced-motion: reduce) {
+  .parallax>use,
+  .hero-marquee-track,
+  .scroll-indicator-line::after {
+    animation: none;
   }
 }
 
@@ -3144,7 +3174,9 @@ button:focus-visible {
   .model-canvas {
     padding-left: max(8rem, calc((100vw - var(--width-content)) / 2));
     padding-right: max(8rem, calc((100vw - var(--width-content)) / 2));
-    grid-template-columns: minmax(230px, 0.41fr) minmax(360px, 720px) minmax(92px, 0.41fr);
+    /* Symmetric side columns (see base rule) — keeps the 720px model column
+       centered between the specs and the color picker. */
+    grid-template-columns: minmax(160px, 0.41fr) minmax(360px, 720px) minmax(160px, 0.41fr);
   }
 
   .model-canvas-bg {

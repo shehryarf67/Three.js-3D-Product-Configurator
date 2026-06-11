@@ -606,9 +606,11 @@ header nav .hideOnMobile a.active {
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(1, 1fr);
-  grid-column-gap: var(--spacing-l);
-  grid-row-gap: var(--spacing-l);
-  max-width: 900px;
+  /* Bigger cards + a touch more separation. Gap is overridden locally (not via
+     the global --spacing-l token, which other sections rely on). */
+  grid-column-gap: clamp(2rem, 2.4vw, 2.75rem);
+  grid-row-gap: clamp(2rem, 2.4vw, 2.75rem);
+  max-width: 1140px;
   width: 100%;
   z-index: 2;
 }
@@ -731,7 +733,7 @@ header nav .hideOnMobile a.active {
   transform-origin: 100% 0;
 }
 .card:nth-child(1):hover .card__hover-image {
-  transform: scale(1.25) translateZ(0);
+  transform: scale(1.45) translateZ(0);
 }
 
 .card:nth-child(2) .card__hover-image {
@@ -739,14 +741,14 @@ header nav .hideOnMobile a.active {
   object-position: center;
 }
 .card:nth-child(2):hover .card__hover-image {
-  transform: scaleX(1.4) scaleY(1.2) translateZ(0);
+  transform: scaleX(1.6) scaleY(1.4) translateZ(0);
 }
 
 .card:nth-child(3) .card__hover-image {
   transform-origin: 0 0;
 }
 .card:nth-child(3):hover .card__hover-image {
-  transform: scale(1.25) translateZ(0);
+  transform: scale(1.45) translateZ(0);
 }
 
 .card-grid:hover>.card:not(:hover) .card__background {
@@ -1017,7 +1019,13 @@ header nav .hideOnMobile a.active {
   align-items: center;
   justify-content: center;
   gap: 0.85rem;
-  justify-self: center;
+  /* Anchor the picker to the right grid-track edge — which coincides with the
+     pink panel's right inner edge (both share the same horizontal inset). With
+     justify-self:center it floated in the middle of the wide right column and
+     drifted further from the edge as the viewport grew (the "palette too far
+     left" report). The small inset keeps it off the very edge. */
+  justify-self: end;
+  margin-right: clamp(0.75rem, 1.4vw, 2rem);
 }
 
 .model-color-picker .color-palette {
@@ -1437,6 +1445,11 @@ header nav .hideOnMobile a.active {
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
+  /* Safety net: the nowrap heading can never slice its own letters against the
+     pipe's right edge regardless of system-font metrics. Ships together with
+     the smaller font floor above. */
+  max-width: calc(100vw - 1.5rem);
+  overflow: hidden;
   background: var(--main_bg_color);
   padding: 2.4rem 6rem 2.4rem 3.5rem;
   /* Flat left edge so the pill reads as emerging straight from the left
@@ -1448,7 +1461,10 @@ header nav .hideOnMobile a.active {
 
 .features-pipe-heading {
   margin: 0;
-  font-size: clamp(3.4rem, 6.5vw, 6rem);
+  /* Lower phone floor (was clamp(3.4rem, 6.5vw, 6rem)): the old 3.4rem floor
+     held the word at ~54px on all phones, overrunning the pill and clipping
+     "FEATURES" at <=340px. Desktop cap unchanged at 6rem. */
+  font-size: clamp(2.4rem, 8.5vw, 6rem);
   font-weight: 800;
   letter-spacing: 0.08em;
   color: var(--secondary_color);
@@ -1781,7 +1797,7 @@ header nav .hideOnMobile a.active {
 
 .about-content {
   width: 100%;
-  max-width: 1100px;
+  max-width: 1240px;
   box-sizing: border-box;
   margin-left: auto;
   margin-right: auto;
@@ -2289,7 +2305,10 @@ button:focus-visible {
   }
 
   .card-grid {
-    max-width: 320px;
+    /* 720px (was 320px, which crushed the active 2-column layout to ~148px
+       tiles). Lets the 540-768 band render comfortably sized cards; below 540
+       it is single-column and clamps down to fit. */
+    max-width: 720px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -2508,7 +2527,7 @@ button:focus-visible {
 
   .card-grid {
     grid-template-columns: 1fr;
-    max-width: 280px;
+    max-width: 320px;
   }
 
   .card:before {
@@ -3154,8 +3173,14 @@ button:focus-visible {
    padding formula exactly so the pink rounded rectangle's left edge aligns with
    the grid's content edge. */
 @media (min-width: 1600px) {
+  /* .details is deliberately NOT in this list. Its content is a full-bleed
+     stage: the feature-card pill bleeds off the LEFT viewport edge (fixed
+     negative margin) and #details-canvas is anchored to the RIGHT edge. Adding
+     side padding here pushed the stage inward, so on monitors wider than
+     ~1920px the padding exceeded the card's -160px bleed and a pink gap opened
+     on the left. Keeping .details full-width lets the pill always emerge from
+     the screen edge at every width. */
   .hero,
-  .details,
   .about,
   #showcase {
     padding-left: max(4rem, calc((100vw - var(--width-content)) / 2));

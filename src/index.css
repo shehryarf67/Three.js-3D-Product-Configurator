@@ -3298,6 +3298,20 @@ button:focus-visible {
     width: clamp(1260px, 92vw, 1470px);
   }
 
+  .about-content {
+    max-width: 1320px;
+  }
+
+  .card-grid {
+    max-width: min(100%, clamp(1180px, 78vw, 1240px));
+    grid-column-gap: clamp(2.25rem, 2.2vw, 3rem);
+    grid-row-gap: clamp(2.25rem, 2.2vw, 3rem);
+  }
+
+  .card:before {
+    padding-bottom: 144%;
+  }
+
   .model-canvas {
     grid-template-columns: minmax(230px, 1fr) minmax(560px, 700px) minmax(230px, 1fr);
   }
@@ -3349,6 +3363,20 @@ button:focus-visible {
   #showcase {
     padding-left: max(4rem, calc((100vw - var(--width-content)) / 2));
     padding-right: max(4rem, calc((100vw - var(--width-content)) / 2));
+  }
+
+  .about-content {
+    max-width: 1480px;
+  }
+
+  .card-grid {
+    max-width: min(100%, clamp(1240px, 72vw, 1440px));
+    grid-column-gap: clamp(2.5rem, 2.4vw, 3.5rem);
+    grid-row-gap: clamp(2.5rem, 2.4vw, 3.5rem);
+  }
+
+  .card:before {
+    padding-bottom: 148%;
   }
 
   /* Keep ultra-wide hero cameras close to the large-laptop composition. */

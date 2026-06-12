@@ -25,12 +25,13 @@ const FeaturesPipe = () => {
 
         const tl = gsap.timeline({
             scrollTrigger: {
-                // Fire when the section pins (sticky child reaches viewport top).
-                // At that moment the pipe is centered in the viewport — visible
-                // and ready to be seen sliding in. Previous "top 75%" fired while
-                // the pipe was still ~100vh below the fold.
+                // The pipe is no longer sticky — it's a tall section you scroll
+                // THROUGH. Fire the reveal the moment the section's top edge
+                // enters from the bottom of the viewport, so the pipe slides in
+                // as it appears (firing at "top top" would leave the section's
+                // bg showing while it scrolled up into view first).
                 trigger: sectionRef.current,
-                start: "top top",
+                start: "top bottom",
                 toggleActions: "play none none none",
             },
         });
@@ -66,10 +67,10 @@ const FeaturesPipe = () => {
     }, { scope: sectionRef });
 
     return (
-        <div className="features-pipe-section" ref={sectionRef}>
-            <div className="features-pipe-sticky">
+        <div className="features-pipe-section" id="features-pipe" ref={sectionRef}>
+            <div className="features-pipe-frame">
                 {PIPE_BALLS.map((ball) => (
-                    <img key={ball.className} className={ball.className} src={ball.src} alt="" aria-hidden="true" />
+                    <img key={ball.className} className={ball.className} src={ball.src} alt="" aria-hidden="true" loading="lazy" decoding="async" />
                 ))}
                 <div className="features-pipe">
                     <div
@@ -87,6 +88,9 @@ const FeaturesPipe = () => {
                         style={{ backgroundImage: `url(${layerTop})` }}
                         aria-hidden="true"
                     />
+                    <div className="features-pipe__top-fill" aria-hidden="true" />
+                    <div className="features-pipe__right-bulge" aria-hidden="true" />
+                    <div className="features-pipe__bottom-fill" aria-hidden="true" />
                     <div className="features-pipe-heading-wrap">
                         <h2 className="features-pipe-heading">FEATURES</h2>
                     </div>

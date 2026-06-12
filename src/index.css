@@ -196,10 +196,12 @@ body {
 
 .app-logo {
   position: absolute;
-  top: 90%;
-  left: 1.5rem;
+  top: 88%;
+  left: 1.1rem;
   z-index: 120;
-  width: clamp(110px, 12vw, 170px);
+  /* Sized to sit inside the logo-blob's curved (clipped) area rather than
+     spilling past it — kept a comfortable margin below the blob's 300px box. */
+  width: clamp(95px, 10vw, 150px);
   color: var(--main_bg_color);
   display: flex;
   align-items: center;
@@ -210,10 +212,10 @@ body {
   position: absolute;
   top: calc(100% - 2px);
   left: 0;
-  width: 400px;
-  height: 400px;
+  width: 300px;
+  height: 300px;
   background: var(--secondary_color);
-  clip-path: path('M0,400 V0 H400 C134.31,0 0,134.31 0,400 Z');
+  clip-path: path('M0,300 V0 H300 C100.73,0 0,100.73 0,300 Z');
   z-index: 110;
   pointer-events: none;
 }
@@ -295,7 +297,7 @@ header nav .hideOnMobile a.active {
   background-color: var(--main_bg_color);
   overflow: hidden;
   position: relative;
-  border-bottom-left-radius: clamp(150px, 24vw, 360px);
+  border-bottom-left-radius: clamp(100px, 16vw, 250px);
   border-bottom-right-radius: 0;
 }
 
@@ -1361,45 +1363,64 @@ header nav .hideOnMobile a.active {
    ============================ */
 
 .features-pipe-section {
-  overflow: hidden;
+  /* A tall section you scroll THROUGH — no longer sticky/pinned (the sticky
+     was the bug that capped the pipe at one viewport height). `overflow: clip`
+     keeps the pipe's horizontal slide-in from spilling sideways. Actual height
+     comes from the taller-than-viewport frame inside it. */
+  overflow: clip;
   background-color: var(--main_bg_color);
-  min-height: 104vh;
-  min-height: 104svh;
+  min-height: 100vh;
+  min-height: 100svh;
   box-sizing: border-box;
   position: relative;
 }
 
 @supports (min-height: 100dvh) {
   .features-pipe-section {
-    min-height: 104dvh;
+    min-height: 100dvh;
   }
 }
 
-.features-pipe-sticky {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  height: 100svh;
+.features-pipe-frame {
+  /* The tall pipe viewport — taller than the screen, so the section is scrolled
+     THROUGH: the bulge sits at the very top, the cameras read bigger, and the
+     bottom bar comes into view as you reach the end. This height is what makes
+     the pipe "bigger than the viewport"; it is NOT sticky. overflow:hidden clips
+     the pipe's slide-in and the decorative balls. */
+  position: relative;
+  height: 115vh;
+  height: 115svh;
   display: flex;
-  align-items: center;
-  padding: 2rem 0;
+  align-items: stretch;
+  padding: 0;
   box-sizing: border-box;
   overflow: hidden;
 }
 
 @supports (height: 100dvh) {
-  .features-pipe-sticky {
-    height: 100dvh;
+  .features-pipe-frame {
+    height: 115dvh;
   }
 }
 
 .features-pipe {
+  /* --pipe-top-bar-height must stay >= --pipe-top-left-radius so the bar's
+     bottom-left cut renders as a full quarter-circle (CSS clamps a radius to
+     its box). The left swerve is sized like the Hero's bottom-left bulge. The
+     right swerve is a SEPARATE lobe (.features-pipe__right-bulge) whose radial
+     bite carves a concave curve, sized by --pipe-top-right-radius to match the
+     ModelCanvas top-right swerve. */
+  --pipe-top-bar-height: clamp(9rem, 22vh, 17rem);
+  --pipe-top-left-radius: clamp(7rem, 18vw, 16rem);
+  --pipe-top-right-radius: clamp(150px, 19vw, 320px);
+  --pipe-bottom-fill-height: clamp(4.75rem, 8.5vh, 6.75rem);
   position: relative;
-  height: 620px;
   width: 100vw;
+  /* Fills the tall frame (115vh) — the pipe IS the full scroll-through height. */
+  height: 100%;
   margin-left: calc(-1 * ((100vw - 100%) / 2));
   background: var(--secondary_color);
-  border-radius: 0 999px 999px 0;
+  border-radius: 0;
   overflow: hidden;
   z-index: 2;
 }
@@ -1430,6 +1451,9 @@ header nav .hideOnMobile a.active {
 .features-layer {
   position: absolute;
   inset: 0;
+  /* `cover` fills the full 115vh frame (no empty mint band). The shorter 115vh
+     frame keeps the resulting zoom modest. Each layer stays anchored to its edge
+     via the background-position rules below. */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
@@ -1441,10 +1465,58 @@ header nav .hideOnMobile a.active {
 .features-layer--2nd { z-index: 2; background-position: bottom center; }
 .features-layer--top  { z-index: 3; background-position: center center; }
 
+.features-pipe__top-fill,
+.features-pipe__right-bulge,
+.features-pipe__bottom-fill {
+  position: absolute;
+  background: var(--main_bg_color);
+  pointer-events: none;
+  z-index: 6;
+}
+
+.features-pipe__top-fill {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--pipe-top-bar-height);
+  /* Left swerve = Hero-style bulge (mint rounds up into the bar's corner). */
+  border-bottom-left-radius: var(--pipe-top-left-radius);
+}
+
+/* Separate top-right lobe: a convex pink bulge that swerves DOWN below the
+   right of the bar — the ModelCanvas top-right shape, via clip-path. It
+   overlaps the bar (top:0) so the pink joins it seamlessly and the vertical
+   start of the curve hides behind the bar; the part below the bar is the
+   visible swerve. Height = bar + radius so the full swerve clears the bar. */
+.features-pipe__right-bulge {
+  top: 0;
+  right: 0;
+  width: var(--pipe-top-right-radius);
+  height: calc(var(--pipe-top-bar-height) + var(--pipe-top-right-radius));
+  /* Concave swerve: a transparent quarter-circle bite (centered at this lobe's
+     bottom-left) scoops UP into the pink and reveals the cameras behind it. The
+     bite's top is tangent to the bar's bottom and its right is tangent to the
+     pipe edge, so the pink edge is a smooth CONCAVE curve — the ModelCanvas
+     top-right look (mint curving in), not a convex tongue. A clip-path can't
+     cut a concave responsive curve, so the bite is a hard-edged radial-gradient. */
+  background: radial-gradient(circle var(--pipe-top-right-radius) at left bottom,
+    transparent calc(var(--pipe-top-right-radius) - 1px),
+    var(--main_bg_color) var(--pipe-top-right-radius));
+}
+
+.features-pipe__bottom-fill {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--pipe-bottom-fill-height);
+}
+
 .features-pipe-heading-wrap {
   position: absolute;
   left: 0;
-  top: 50%;
+  /* Nudged below 50% so the pill looks vertically centered in the space BELOW
+     the pink top bar (the bar weights the top, making 50% read as too high). */
+  top: 55%;
   transform: translateY(-50%);
   z-index: 10;
   /* Safety net: the nowrap heading can never slice its own letters against the
@@ -1453,7 +1525,7 @@ header nav .hideOnMobile a.active {
   max-width: calc(100vw - 1.5rem);
   overflow: hidden;
   background: var(--main_bg_color);
-  padding: 2.4rem 6rem 2.4rem 3.5rem;
+  padding: clamp(2rem, 3.4vh, 3.2rem) clamp(5rem, 8vw, 9rem) clamp(2rem, 3.4vh, 3.2rem) clamp(3rem, 4.2vw, 5rem);
   /* Flat left edge so the pill reads as emerging straight from the left
      screen edge. The pipe now bleeds full 100vw (Fix 8), so left:0 sits at
      the viewport edge — a rounded left cap just left teal gaps in the
@@ -1466,7 +1538,7 @@ header nav .hideOnMobile a.active {
   /* Lower phone floor (was clamp(3.4rem, 6.5vw, 6rem)): the old 3.4rem floor
      held the word at ~54px on all phones, overrunning the pill and clipping
      "FEATURES" at <=340px. Desktop cap unchanged at 6rem. */
-  font-size: clamp(2.4rem, 8.5vw, 6rem);
+  font-size: clamp(3.4rem, 7vw, 7.4rem);
   font-weight: 800;
   letter-spacing: 0.08em;
   color: var(--secondary_color);
@@ -1476,8 +1548,15 @@ header nav .hideOnMobile a.active {
 }
 
 @media (max-width: 1024px) {
+  .features-pipe {
+    --pipe-top-bar-height: clamp(8rem, 20vh, 14rem);
+    --pipe-top-left-radius: clamp(6.5rem, 22vw, 13rem);
+    --pipe-top-right-radius: clamp(130px, 21vw, 260px);
+    --pipe-bottom-fill-height: clamp(3.75rem, 8vh, 5.5rem);
+  }
+
   .features-pipe-heading-wrap {
-    padding: 2rem 4.5rem 2rem 3rem;
+    padding: clamp(1.7rem, 3vh, 2.5rem) clamp(4rem, 7vw, 6rem) clamp(1.7rem, 3vh, 2.5rem) clamp(2.5rem, 4vw, 3.5rem);
   }
 }
 
@@ -1494,13 +1573,21 @@ header nav .hideOnMobile a.active {
   }
 
   .features-pipe {
-    height: 430px;
+    --pipe-top-bar-height: clamp(7rem, 18vh, 12rem);
+    --pipe-top-left-radius: clamp(6rem, 30vw, 11rem);
+    --pipe-top-right-radius: clamp(110px, 26vw, 200px);
+    --pipe-bottom-fill-height: clamp(3.25rem, 7.5vh, 4.75rem);
     width: 100vw;
+    height: 100%;
     margin-left: calc(-1 * ((100vw - 100%) / 2));
   }
 
   .features-pipe-heading-wrap {
-    padding: 1.4rem 3rem 1.4rem 2rem;
+    padding: 1.45rem 3.25rem 1.45rem 2rem;
+  }
+
+  .features-pipe-heading {
+    font-size: clamp(2.3rem, 12vw, 5rem);
   }
 
   .pipe-ball--blue {
@@ -1524,13 +1611,21 @@ header nav .hideOnMobile a.active {
 
 @media (max-width: 480px) {
   .features-pipe {
-    height: 290px;
+    --pipe-top-bar-height: clamp(5.5rem, 15vh, 9rem);
+    --pipe-top-left-radius: clamp(5rem, 38vw, 8.5rem);
+    --pipe-top-right-radius: clamp(85px, 32vw, 150px);
+    --pipe-bottom-fill-height: clamp(2.75rem, 6.5vh, 3.75rem);
     width: 100vw;
+    height: 100%;
     margin-left: calc(-1 * ((100vw - 100%) / 2));
   }
 
   .features-pipe-heading-wrap {
     padding: 1rem 2.25rem 1rem 1.5rem;
+  }
+
+  .features-pipe-heading {
+    font-size: clamp(1.85rem, 12vw, 3.6rem);
   }
 
   .pipe-ball--blue {
@@ -2123,7 +2218,8 @@ button:focus-visible {
 @media (max-width: 768px) {
   .app-logo {
     left: 1rem;
-    width: 108px;
+    /* Fits inside the 170px blob at this breakpoint. */
+    width: 90px;
   }
 
   .hamburger {
@@ -2375,9 +2471,9 @@ button:focus-visible {
 
   /* Scale blob with proportionally correct clip-path for mobile */
   .logo-blob {
-    width: 230px;
-    height: 230px;
-    clip-path: path('M0,230 V0 H230 C77.21,0 0,77.21 0,230 Z');
+    width: 170px;
+    height: 170px;
+    clip-path: path('M0,170 V0 H170 C57.08,0 0,57.08 0,170 Z');
   }
 
   /* Ensure sidebar renders above the dimmer overlay */
@@ -2399,9 +2495,9 @@ button:focus-visible {
   }
 
   .logo-blob {
-    width: 180px;
-    height: 180px;
-    clip-path: path('M0,180 V0 H180 C60.44,0 0,60.44 0,180 Z');
+    width: 135px;
+    height: 135px;
+    clip-path: path('M0,135 V0 H135 C45.33,0 0,45.33 0,135 Z');
   }
 
   .hero-content {
@@ -2627,7 +2723,8 @@ button:focus-visible {
   }
 
   .app-logo {
-    width: 84px;
+    /* Fits inside the 135px blob at this breakpoint. */
+    width: 70px;
   }
 
   /* Showcase: stack content on small phones */

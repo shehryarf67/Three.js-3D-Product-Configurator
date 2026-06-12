@@ -1126,19 +1126,46 @@ header nav .hideOnMobile a.active {
   background: var(--main_bg_color);
   overflow: hidden;
   padding: 0 2rem 1rem;
+  /* Overlap the section above by 1px so the pink page background can't show
+     through a sub-pixel seam where the ModelCanvas's teal bottom meets the
+     Showcase's teal lobe (the hairline pink line). */
+  margin-top: -1px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
 }
 
+/* Teal lobe in the top-left corner of the (pink) Showcase section — the SAME
+   shape as the navbar logo-blob: a teal corner whose inner edge curves back
+   toward the corner (the instax-blob clip-path, scaled up here). Same curve
+   ratio as the logo-blob (control offset = 0.3358 x size). Sits in front of the
+   video so it's fully visible. */
+#showcase::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 340px;
+  height: 340px;
+  background: var(--secondary_color);
+  clip-path: path('M0,340 V0 H340 C114.2,0 0,114.2 0,340 Z');
+  z-index: 2;
+  pointer-events: none;
+}
+
 #showcase .media {
   position: relative;
-  width: 100%;
-  height: 85vh;
-  margin-top: 12px;
+  /* Centered and pushed down so a gap opens between the video and the
+     ModelCanvas above. The pink below can run into the FeaturesPipe — that
+     overlap is fine per the design. */
+  width: min(84%, 1340px);
+  height: 70vh;
+  align-self: center;
+  margin-top: clamp(4rem, 12vh, 9.5rem);
   border-radius: 48px;
   overflow: hidden;
   background: transparent;
+  z-index: 1;
 }
 
 #showcase .base-video {
@@ -1301,8 +1328,16 @@ header nav .hideOnMobile a.active {
   }
 
   #showcase .media {
+    width: 92%;
     height: 60vh;
+    margin-top: clamp(2.5rem, 7vh, 5rem);
     border-radius: 32px;
+  }
+
+  #showcase::before {
+    width: 250px;
+    height: 250px;
+    clip-path: path('M0,250 V0 H250 C84,0 0,84 0,250 Z');
   }
 
   #showcase .text-video-mask {
@@ -1337,7 +1372,15 @@ header nav .hideOnMobile a.active {
 
 @media (max-width: 768px) {
   #showcase .media {
+    width: 96%;
     height: 50vh;
+    margin-top: clamp(2rem, 6vh, 4rem);
+  }
+
+  #showcase::before {
+    width: 180px;
+    height: 180px;
+    clip-path: path('M0,180 V0 H180 C60.4,0 0,60.4 0,180 Z');
   }
 
   #showcase .text-video-mask {
@@ -3230,28 +3273,50 @@ button:focus-visible {
 
   .hero-content {
     margin-left: clamp(8rem, 12vw, 22rem);
+    max-width: 420px;
+  }
+
+  .hero-content h1 {
+    font-size: clamp(3.6rem, 3.5vw, 4.75rem);
+    line-height: 1.08;
+  }
+
+  .hero-description {
+    font-size: clamp(2.25rem, 2vw, 3rem);
   }
 
   .hero-3d {
-    width: min(58%, 920px);
+    width: min(52%, 820px);
   }
 
-  /* Scale up hero camera PNGs on larger screens */
+  /* Keep hero camera PNGs restrained on larger laptop screens. */
   .hero-camera--center,
   .hero-camera--left,
   .hero-camera--top-left,
   .hero-camera--top-right,
   .hero-camera--right {
-    width: clamp(1465px, 122vw, 2340px);
+    width: clamp(1260px, 92vw, 1470px);
+  }
+
+  .model-canvas {
+    grid-template-columns: minmax(230px, 1fr) minmax(560px, 700px) minmax(230px, 1fr);
   }
 
   .model-canvas-content {
-    max-width: 460px;
-    margin-left: 5rem;
+    max-width: 390px;
+    margin-left: 0;
+    justify-self: center;
   }
 
   .model-3d {
+    width: 100%;
+    max-width: 700px;
     margin-right: 0;
+  }
+
+  .model-color-picker {
+    justify-self: end;
+    margin-right: clamp(0.5rem, 1vw, 1.25rem);
   }
 
   .footer-content {
@@ -3286,13 +3351,13 @@ button:focus-visible {
     padding-right: max(4rem, calc((100vw - var(--width-content)) / 2));
   }
 
-  /* Even larger hero camera PNGs on ultra-wide displays */
+  /* Keep ultra-wide hero cameras close to the large-laptop composition. */
   .hero-camera--center,
   .hero-camera--left,
   .hero-camera--top-left,
   .hero-camera--top-right,
   .hero-camera--right {
-    width: clamp(1755px, 137vw, 2830px);
+    width: clamp(1470px, 76vw, 1580px);
   }
 
   .model-canvas {
@@ -3300,7 +3365,7 @@ button:focus-visible {
     padding-right: max(8rem, calc((100vw - var(--width-content)) / 2));
     /* Symmetric side columns (see base rule) — keeps the 720px model column
        centered between the specs and the color picker. */
-    grid-template-columns: minmax(160px, 0.41fr) minmax(360px, 720px) minmax(160px, 0.41fr);
+    grid-template-columns: minmax(280px, 1fr) minmax(600px, 720px) minmax(280px, 1fr);
   }
 
   .model-canvas-bg {
@@ -3311,6 +3376,11 @@ button:focus-visible {
   .model-3d {
     max-width: 720px;
     justify-self: center;
+  }
+
+  .model-color-picker {
+    justify-self: end;
+    margin-right: clamp(0.5rem, 0.8vw, 1rem);
   }
 
   #showcase .media {

@@ -3395,7 +3395,10 @@ button:focus-visible {
   .hero-camera--top-left,
   .hero-camera--top-right,
   .hero-camera--right {
-    width: clamp(1580px, 84vw, 1760px);
+    /* Large laptops (Omen/Victus ~1920px) and external monitors. Grows with the
+       viewport (104vw) instead of capping at 1760px. The 1950px floor matches the
+       cap of the Surface band above, so cameras don't shrink crossing 1680px. */
+    width: clamp(1950px, 104vw, 2300px);
   }
 }
 

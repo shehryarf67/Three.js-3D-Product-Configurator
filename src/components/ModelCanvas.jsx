@@ -136,23 +136,29 @@ const ModelCanvas = () => {
     const isPointerInsideRef = useRef(false);
     const isPointerDownRef = useRef(false);
     const isDraggingRef = useRef(false);
+    const hoveredPartRef = useRef(null);
     const lastPointerXRef = useRef(0);
     const lastPointerYRef = useRef(0);
     const rotationTargetXRef = useRef(0);
     const rotationTargetYRef = useRef(0);
     const invalidateRef = useRef(() => { });
     const [modelColor, setModelColor] = useState(INSTAX_COLORS[0].value);
+    const [isDragging, setIsDragging] = useState(false);
     const modelSize = [0.45, 0.45, 0.45];
     const [hoveredPart, setHoveredPart] = useState(null);
     const activePart = hoveredPart;
     const isTouch = useMediaQuery({ query: '(hover: none), (pointer: coarse)' });
 
     useEffect(() => {
+        hoveredPartRef.current = hoveredPart;
+    }, [hoveredPart]);
+
+    useEffect(() => {
         const node = model3dRef.current;
         if (!node) return;
 
         const handleWheel = (event) => {
-            if (!isPointerInsideRef.current) return;
+            if (!isPointerInsideRef.current || !hoveredPartRef.current) return;
             event.preventDefault();
             event.stopPropagation();
             rotationTargetYRef.current += event.deltaY * 0.003;
@@ -267,6 +273,7 @@ const ModelCanvas = () => {
             </div>
             <div
                 className="model-3d reveal"
+                style={{ cursor: isDragging ? "grabbing" : hoveredPart ? "grab" : "default" }}
                 ref={model3dRef}
                 onPointerEnter={() => {
                     isPointerInsideRef.current = true;
@@ -275,6 +282,7 @@ const ModelCanvas = () => {
                     isPointerInsideRef.current = false;
                 }}
                 onPointerDown={(event) => {
+                    if (!hoveredPartRef.current) return;
                     isPointerDownRef.current = true;
                     lastPointerXRef.current = event.clientX;
                     lastPointerYRef.current = event.clientY;
@@ -290,6 +298,7 @@ const ModelCanvas = () => {
 
                         if (Math.abs(deltaX) > dragStartThreshold || Math.abs(deltaY) > dragStartThreshold) {
                             isDraggingRef.current = true;
+                            setIsDragging(true);
                             event.currentTarget.setPointerCapture(event.pointerId);
                             lastPointerXRef.current = event.clientX;
                             lastPointerYRef.current = event.clientY;
@@ -306,6 +315,7 @@ const ModelCanvas = () => {
                 onPointerUp={(event) => {
                     isPointerDownRef.current = false;
                     isDraggingRef.current = false;
+                    setIsDragging(false);
 
                     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
                         event.currentTarget.releasePointerCapture(event.pointerId);
@@ -314,6 +324,7 @@ const ModelCanvas = () => {
                 onPointerCancel={(event) => {
                     isPointerDownRef.current = false;
                     isDraggingRef.current = false;
+                    setIsDragging(false);
 
                     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
                         event.currentTarget.releasePointerCapture(event.pointerId);
@@ -323,7 +334,7 @@ const ModelCanvas = () => {
                 <Canvas
                     frameloop="demand"
                     dpr={[1, 1.5]}
-                    camera={{ position: [0, 0.5, 5.8], fov: 38, near: 0.1, far: 100 }}
+                    camera={{ position: [0, 0.9, 6.55], fov: 38, near: 0.1, far: 100 }}
                     gl={{
                         alpha: true,
                         antialias: false,
@@ -339,7 +350,7 @@ const ModelCanvas = () => {
                         {/* <Backdrop /> */}
                         <ScrollingModel
                             scale={modelSize}
-                            position={[0, 0.25, 0]}
+                            position={[0, -0.06, 0]}
                             rotationTargetXRef={rotationTargetXRef}
                             rotationTargetYRef={rotationTargetYRef}
                             modelColor={modelColor}

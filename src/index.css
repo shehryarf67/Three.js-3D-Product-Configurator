@@ -834,6 +834,12 @@ header nav .hideOnMobile a.active {
 
 
 .model-canvas {
+  --model-panel-x: clamp(2rem, 9vw, 8rem);
+  --model-panel-top: clamp(1.35rem, 2vw, 2rem);
+  --model-panel-bottom: clamp(2.5rem, 4vw, 3.75rem);
+  --model-copy-gutter: clamp(2.5rem, 5vw, 7rem);
+  --model-palette-gutter: clamp(3rem, 4.8vw, 5.5rem);
+  --model-center-nudge: clamp(0.35rem, 0.55vw, 0.9rem);
   display: grid;
   /* Symmetric side columns keep the middle (model) column centered in the
      section. The right column only needs ~110px for the color picker, but it
@@ -842,8 +848,8 @@ header nav .hideOnMobile a.active {
   grid-template-columns: minmax(160px, 0.41fr) minmax(360px, 1fr) minmax(160px, 0.41fr);
   align-items: center;
   width: 100%;
-  min-height: 860px;
-  padding: clamp(4rem, 7vw, 6rem) clamp(2rem, 9vw, 8rem);
+  min-height: 960px;
+  padding: clamp(2.5rem, 4vw, 4rem) clamp(2rem, 9vw, 8rem) clamp(3.25rem, 5vw, 5rem);
   box-sizing: border-box;
   background-color: var(--main_bg_color);
   position: relative;
@@ -865,10 +871,10 @@ header nav .hideOnMobile a.active {
 
 .model-canvas-bg {
   position: absolute;
-  top: 4.2rem;
-  left: clamp(2rem, 9vw, 8rem);
-  right: clamp(2rem, 9vw, 8rem);
-  bottom: 4.2rem;
+  top: var(--model-panel-top);
+  left: var(--model-panel-x);
+  right: var(--model-panel-x);
+  bottom: var(--model-panel-bottom);
   background: var(--main_bg_color);
   border-radius: 13rem;
   z-index: 2;
@@ -892,13 +898,14 @@ header nav .hideOnMobile a.active {
 
 .model-canvas-content {
   max-width: 340px;
-  margin-left: clamp(2rem, 6vw, 7rem);
+  margin-left: 0;
   padding-top: 0;
-  position: relative;
+  position: absolute;
+  left: calc(var(--model-panel-x) + var(--model-copy-gutter));
+  top: 50%;
+  translate: 0 -50%;
   z-index: 4;
   align-self: center;
-  grid-column: 1;
-  grid-row: 1;
 }
 
 .model-canvas-title {
@@ -996,29 +1003,37 @@ header nav .hideOnMobile a.active {
 }
 
 .model-3d {
-  width: 100%;
-  height: 600px;
+  width: min(100%, clamp(500px, 34vw, 620px));
+  height: clamp(780px, 78vh, 900px);
   flex-shrink: 0;
   align-self: center;
   justify-self: center;
   margin-top: 0;
   margin-right: 0;
   border-radius: 16px;
-  position: relative;
+  position: absolute;
+  left: calc(50% + var(--model-center-nudge));
+  top: 50%;
+  translate: -50% -50%;
   z-index: 3;
-  overflow: hidden;
+  overflow: visible;
   background: transparent;
-  cursor: grab;
+  cursor: default;
   touch-action: none;
-  grid-column: 2;
-  grid-row: 1;
+}
+
+.model-3d canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .model-color-picker {
-  position: relative;
+  position: absolute;
+  right: calc(var(--model-panel-x) + var(--model-palette-gutter));
+  top: 50%;
+  translate: 0 -50%;
   z-index: 4;
-  grid-column: 3;
-  grid-row: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1029,7 +1044,7 @@ header nav .hideOnMobile a.active {
      drifted further from the edge as the viewport grew (the "palette too far
      left" report). The small inset keeps it off the very edge. */
   justify-self: end;
-  margin-right: clamp(0.75rem, 1.4vw, 2rem);
+  margin-right: 0;
 }
 
 .model-color-picker .color-palette {
@@ -1416,6 +1431,14 @@ header nav .hideOnMobile a.active {
   min-height: 100svh;
   box-sizing: border-box;
   position: relative;
+  /* Pulled UP to overlap the bottom of the Showcase (the pink area below the
+     video) so the pipe's top-left bulge sits right under the video — "video
+     inside a section." z-index lifts it above the Showcase's lower area (the
+     overlap is below the video, so the video is never covered). The Showcase's
+     GSAP pin is untouched; the slide-in just recomputes its trigger on refresh.
+     Tune this margin to sit the bulge exactly under the video. */
+  margin-top: -18vh;
+  z-index: 3;
 }
 
 @supports (min-height: 100dvh) {
@@ -2342,16 +2365,31 @@ button:focus-visible {
   }
 
   .model-canvas-content {
+    position: relative;
+    left: auto;
+    top: auto;
+    translate: none;
     margin-left: 0;
     margin-top: 2rem;
     max-width: 100%;
   }
 
   .model-3d {
+    position: relative;
+    left: auto;
+    top: auto;
+    translate: none;
     width: 100%;
     height: 400px;
     margin-right: 0;
     margin-top: 1.5rem;
+  }
+
+  .model-color-picker {
+    position: relative;
+    right: auto;
+    top: auto;
+    translate: none;
   }
 
   #details-canvas {
@@ -3271,33 +3309,6 @@ button:focus-visible {
 /* Large screens — 1400px and above */
 @media (min-width: 1400px) {
 
-  .hero-content {
-    margin-left: clamp(8rem, 12vw, 22rem);
-    max-width: 420px;
-  }
-
-  .hero-content h1 {
-    font-size: clamp(3.6rem, 3.5vw, 4.75rem);
-    line-height: 1.08;
-  }
-
-  .hero-description {
-    font-size: clamp(2.25rem, 2vw, 3rem);
-  }
-
-  .hero-3d {
-    width: min(52%, 820px);
-  }
-
-  /* Keep hero camera PNGs restrained on larger laptop screens. */
-  .hero-camera--center,
-  .hero-camera--left,
-  .hero-camera--top-left,
-  .hero-camera--top-right,
-  .hero-camera--right {
-    width: clamp(1260px, 92vw, 1470px);
-  }
-
   .about-content {
     max-width: 1320px;
   }
@@ -3323,20 +3334,68 @@ button:focus-visible {
   }
 
   .model-3d {
-    width: 100%;
-    max-width: 700px;
+    width: min(100%, 660px);
+    max-width: 660px;
     margin-right: 0;
   }
 
   .model-color-picker {
     justify-self: end;
-    margin-right: clamp(0.5rem, 1vw, 1.25rem);
+    margin-right: 0;
   }
 
   .footer-content {
     max-width: 1400px;
     margin-left: auto;
     margin-right: auto;
+  }
+}
+
+/* Surface-class laptops (~1400–1680px CSS width): nudge the hero cameras
+   slightly larger. Base sizing resolves to 108vw here; this bumps it to 117vw
+   (~8% bigger). Capped below 1680px so wider desktop monitors — handled by the
+   1680px block below — are unaffected. */
+@media (min-width: 1400px) and (max-width: 1679px) {
+  .hero-camera--center,
+  .hero-camera--left,
+  .hero-camera--top-left,
+  .hero-camera--top-right,
+  .hero-camera--right {
+    width: clamp(1380px, 117vw, 1950px);
+  }
+}
+
+/* Hero large-screen composition: kept above common Surface laptop widths. */
+@media (min-width: 1680px) {
+  .hero {
+    padding-left: max(4rem, calc((100vw - var(--width-content)) / 2));
+    padding-right: max(4rem, calc((100vw - var(--width-content)) / 2));
+  }
+
+  .hero-content {
+    margin-left: clamp(8rem, 12vw, 22rem);
+    max-width: 420px;
+  }
+
+  .hero-content h1 {
+    font-size: clamp(3.6rem, 3.5vw, 4.75rem);
+    line-height: 1.08;
+  }
+
+  .hero-description {
+    font-size: clamp(2.25rem, 2vw, 3rem);
+  }
+
+  .hero-3d {
+    width: min(54%, 880px);
+  }
+
+  .hero-camera--center,
+  .hero-camera--left,
+  .hero-camera--top-left,
+  .hero-camera--top-right,
+  .hero-camera--right {
+    width: clamp(1580px, 84vw, 1760px);
   }
 }
 
@@ -3358,7 +3417,6 @@ button:focus-visible {
      ~1920px the padding exceeded the card's -160px bleed and a pink gap opened
      on the left. Keeping .details full-width lets the pill always emerge from
      the screen edge at every width. */
-  .hero,
   .about,
   #showcase {
     padding-left: max(4rem, calc((100vw - var(--width-content)) / 2));
@@ -3379,16 +3437,8 @@ button:focus-visible {
     padding-bottom: 148%;
   }
 
-  /* Keep ultra-wide hero cameras close to the large-laptop composition. */
-  .hero-camera--center,
-  .hero-camera--left,
-  .hero-camera--top-left,
-  .hero-camera--top-right,
-  .hero-camera--right {
-    width: clamp(1470px, 76vw, 1580px);
-  }
-
   .model-canvas {
+    --model-panel-x: max(8rem, calc((100vw - var(--width-content)) / 2));
     padding-left: max(8rem, calc((100vw - var(--width-content)) / 2));
     padding-right: max(8rem, calc((100vw - var(--width-content)) / 2));
     /* Symmetric side columns (see base rule) — keeps the 720px model column
@@ -3397,18 +3447,19 @@ button:focus-visible {
   }
 
   .model-canvas-bg {
-    left: max(8rem, calc((100vw - var(--width-content)) / 2));
-    right: max(8rem, calc((100vw - var(--width-content)) / 2));
+    left: var(--model-panel-x);
+    right: var(--model-panel-x);
   }
 
   .model-3d {
-    max-width: 720px;
+    width: min(100%, 680px);
+    max-width: 680px;
     justify-self: center;
   }
 
   .model-color-picker {
     justify-self: end;
-    margin-right: clamp(0.5rem, 0.8vw, 1rem);
+    margin-right: 0;
   }
 
   #showcase .media {

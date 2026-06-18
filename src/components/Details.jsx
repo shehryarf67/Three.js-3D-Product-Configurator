@@ -151,11 +151,18 @@ const Details = () => {
             // Derive the pinned scroll distance from the real timeline length so
             // the sticky stage releases exactly as the last scene settles — no
             // trailing dead-scroll (same approach the old card timeline used).
-            const SCROLL_PER_UNIT = 20;
-            const distance = tl.duration() * SCROLL_PER_UNIT;
+            //
+            // The distance is in PIXELS, not vh. A vh-based distance scales the
+            // pin range with the viewport height, so on a tall/extra-large screen
+            // the same timeline got stretched over far more scroll — the scrub
+            // ran "faster" relative to a flick and the brief intro scene blew
+            // past before you could read it. A fixed px-per-time-unit keeps the
+            // scrub rate identical on a laptop and a 4K monitor alike.
+            const SCROLL_PER_UNIT = 185; // px of scroll granted per timeline time-unit
+            const distance = Math.round(tl.duration() * SCROLL_PER_UNIT);
             const node = sectionRef.current;
             if (node) {
-                node.style.minHeight = `${(100 + distance).toFixed(1)}vh`;
+                node.style.minHeight = `calc(100vh + ${distance}px)`;
             }
 
             requestAnimationFrame(() => ScrollTrigger.refresh());

@@ -1789,10 +1789,8 @@ header nav .hideOnMobile a.active {
 .details {
   position: relative;
   width: 100%;
-  /* Floor only — the JS overrides this inline with a value derived from the
-     timeline length (taller on extra-large screens). */
-  min-height: 240vh;
-  min-height: 240svh;
+  min-height: 100vh;
+  min-height: 100svh;
   box-sizing: border-box;
   background-color: var(--main_bg_color);
   overflow: visible;
@@ -1800,14 +1798,12 @@ header nav .hideOnMobile a.active {
 
 @supports (min-height: 100dvh) {
   .details {
-    min-height: 240dvh;
+    min-height: 100dvh;
   }
 }
 
-/* Pinned with CSS sticky; ScrollTrigger only scrubs the timeline against scroll. */
 .details-stage {
-  position: sticky;
-  top: 0;
+  position: relative;
   width: 100%;
   height: 100vh;
   height: 100svh;
@@ -1832,6 +1828,8 @@ header nav .hideOnMobile a.active {
   width: 56%;
   background: var(--secondary_color);
   border-radius: 260px 0 0 260px;
+  opacity: 0;
+  visibility: hidden;
   z-index: 1;
   will-change: transform;
 }
@@ -1846,6 +1844,8 @@ header nav .hideOnMobile a.active {
 .details-scene {
   position: absolute;
   inset: 0;
+  opacity: 0;
+  visibility: hidden;
 }
 
 /* Left column — copy set in the site font (Canva typeface deliberately ignored). */
@@ -1955,9 +1955,10 @@ header nav .hideOnMobile a.active {
 
 .details-cam {
   position: absolute;
+  --details-cam-bleed-y: clamp(6px, 0.7vh, 10px);
   top: 38%;
   left: 42%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, calc(-50.85% + var(--details-cam-bleed-y)));
   width: auto;
   height: 66%;
   max-width: 92%;
@@ -2018,6 +2019,8 @@ header nav .hideOnMobile a.active {
   align-items: center;
   gap: 0.75rem;
   color: rgba(255, 255, 255, 0.78);
+  opacity: 0;
+  visibility: hidden;
   z-index: 4;
   pointer-events: none;
 }
@@ -2066,60 +2069,17 @@ header nav .hideOnMobile a.active {
    contents so nothing overlaps or overflows.
    ========================================================= */
 
-/* Extra-large screens. The pipe keeps reaching past the viewport centre (same as
-   laptops — width stays 56%, left edge ~44%), and everything scales UP so the
-   composition doesn't read small in all that space: taller pipe, larger cameras,
-   bigger ball cluster + callout, and proportionally larger copy. */
-@media (min-width: 1600px) {
+/* Ultra-wide: keep the composition from spreading too far apart.
+   .details is intentionally full-bleed (the pipe bleeds off the right),
+   so instead of padding we just rein in the pipe + copy widths. */
+@media (min-width: 1800px) {
   .details-pipe {
-    width: 56%;
-    top: 18%;
-    bottom: 18%;
-    border-radius: 320px 0 0 320px;
+    width: 50%;
   }
 
   .details-scene-copy {
-    left: clamp(8rem, 8vw, 14rem);
-    width: min(42%, 760px);
-  }
-
-  .details-number {
-    font-size: clamp(4.5rem, 5vw, 7rem);
-  }
-
-  .details-scene-title {
-    font-size: clamp(2.6rem, 3.2vw, 3.8rem);
-  }
-
-  .details-scene-description {
-    font-size: clamp(1.2rem, 1.25vw, 1.55rem);
-  }
-
-  /* Cameras scale with viewport height; bump each scene up on big displays.
-     (Per-scene rules win on specificity, so each is restated here.) */
-  .details-cam {
-    height: 78%;
-  }
-
-  .details-art--intro .details-cam,
-  .details-art--photos .details-cam {
-    height: 84%;
-  }
-
-  .details-art--closeup .details-cam {
-    height: 78%;
-  }
-
-  .details-art--selfie .details-cam {
-    height: 72%;
-  }
-
-  .details-art-balls {
-    width: clamp(380px, 34vw, 700px);
-  }
-
-  .details-callout {
-    width: clamp(340px, 30vw, 620px);
+    left: max(8rem, calc((100vw - var(--width-content)) / 2));
+    width: min(38%, 720px);
   }
 }
 
@@ -2829,13 +2789,13 @@ button:focus-visible {
   }
 
   .details {
-    min-height: 230vh;
-    min-height: 230svh;
+    min-height: 100vh;
+    min-height: 100svh;
   }
 
   @supports (min-height: 100dvh) {
     .details {
-      min-height: 230dvh;
+      min-height: 100dvh;
     }
   }
 
@@ -3245,13 +3205,13 @@ button:focus-visible {
   }
 
   .details {
-    min-height: 220vh;
-    min-height: 220svh;
+    min-height: 100vh;
+    min-height: 100svh;
   }
 
   @supports (min-height: 100dvh) {
     .details {
-      min-height: 220dvh;
+      min-height: 100dvh;
     }
   }
 
@@ -3742,6 +3702,10 @@ button:focus-visible {
 
 /* Large screens — 1400px and above */
 @media (min-width: 1400px) {
+
+  .hero-camera {
+    top: 39%;
+  }
 
   .about-content {
     max-width: 1320px;

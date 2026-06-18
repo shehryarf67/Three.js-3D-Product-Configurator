@@ -73,26 +73,65 @@ const scenes = [
     },
 ];
 
+const DETAILS_SCROLL_DISTANCE = {
+    desktop: 3800,
+    tablet: 3300,
+    phone: 2900,
+};
+
+// Timeline knobs. These are timeline units, mapped across the scroll distances
+// above. Increase PIN_BLANK to keep the pinned screen empty longer.
+const PIN_BLANK = 0.5;
+const PIPE_REVEAL_DURATION = 0.85;
+const FIRST_SCENE_OVERLAP = 0.2;
+const SCENE_IN_DURATION = 0.55;
+const SCENE_DWELL = 1.05;
+const SCENE_OUT_DURATION = 0.38;
+const SCENE_GAP = 0.16;
+const FINAL_DWELL = 0.85;
+const RELEASE_OUT_DURATION = 0.65;
+
+const getDetailsScrollDistance = () => {
+    if (typeof window === "undefined") return DETAILS_SCROLL_DISTANCE.desktop;
+    if (window.innerWidth <= 480) return DETAILS_SCROLL_DISTANCE.phone;
+    if (window.innerWidth <= 768) return DETAILS_SCROLL_DISTANCE.tablet;
+    return DETAILS_SCROLL_DISTANCE.desktop;
+};
+
 const Details = () => {
     const sectionRef = useRef(null);
 
     useGSAP(
         () => {
             const q = gsap.utils.selector(sectionRef);
+            const stage = q(".details-stage")[0];
             const sceneEls = q(".details-scene");
+            const pipe = q(".details-pipe");
+            const scrollIndicator = q(".scroll-indicator");
+            const node = sectionRef.current;
+            const allCopy = q(".details-anim");
+            const allArt = q(".details-scene-art");
 
-            // Starting state: the teal pipe waits off the right edge, the scroll
-            // hint is hidden, and every scene is faded out (revealed on scrub).
-            gsap.set(".details-pipe", { xPercent: 112 });
-            gsap.set(".scroll-indicator", { autoAlpha: 0 });
+            node?.style.removeProperty("min-height");
+
+            if (!stage || !node || sceneEls.length === 0) return;
+
+            gsap.set(pipe, { autoAlpha: 1, xPercent: 112 });
+            gsap.set(scrollIndicator, { autoAlpha: 0 });
             gsap.set(sceneEls, { autoAlpha: 0 });
+            gsap.set(allCopy, { autoAlpha: 0, y: 36 });
+            gsap.set(allArt, { autoAlpha: 0, yPercent: 7, scale: 0.94 });
 
             const tl = gsap.timeline({
                 scrollTrigger: {
-                    trigger: sectionRef.current,
+                    trigger: node,
                     start: "top top",
-                    end: "bottom bottom",
-                    scrub: 0.3,
+                    end: () => `+=${getDetailsScrollDistance()}`,
+                    scrub: 0.35,
+                    pin: stage,
+                    pinSpacing: true,
+                    anticipatePin: 1,
+                    fastScrollEnd: true,
                     invalidateOnRefresh: true,
                 },
             });
@@ -101,18 +140,16 @@ const Details = () => {
                 const scene = sceneEls[i];
                 const copy = scene.querySelectorAll(".details-anim");
                 const art = scene.querySelector(".details-scene-art");
-                tl.to(scene, { autoAlpha: 1, duration: 0.35, ease: "none" }, pos);
-                tl.fromTo(
+                tl.set(scene, { autoAlpha: 1 }, pos);
+                tl.to(
                     art,
-                    { autoAlpha: 0, yPercent: 7, scale: 0.93 },
-                    { autoAlpha: 1, yPercent: 0, scale: 1, duration: 0.6, ease: "power2.out" },
+                    { autoAlpha: 1, yPercent: 0, scale: 1, duration: SCENE_IN_DURATION, ease: "power2.out" },
                     pos
                 );
-                tl.fromTo(
+                tl.to(
                     copy,
-                    { autoAlpha: 0, y: 40 },
-                    { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out", stagger: 0.08 },
-                    pos + 0.1
+                    { autoAlpha: 1, y: 0, duration: SCENE_IN_DURATION, ease: "power2.out", stagger: 0.08 },
+                    pos + 0.08
                 );
             };
 
@@ -120,47 +157,40 @@ const Details = () => {
                 const scene = sceneEls[i];
                 const copy = scene.querySelectorAll(".details-anim");
                 const art = scene.querySelector(".details-scene-art");
-                tl.to(copy, { autoAlpha: 0, y: -30, duration: 0.35, ease: "power2.in" }, pos);
+                tl.to(copy, { autoAlpha: 0, y: -26, duration: SCENE_OUT_DURATION, ease: "power2.in" }, pos);
                 tl.to(
                     art,
-                    { autoAlpha: 0, yPercent: -5, scale: 0.97, duration: 0.4, ease: "power2.in" },
+                    { autoAlpha: 0, yPercent: -5, scale: 0.97, duration: SCENE_OUT_DURATION, ease: "power2.in" },
                     pos
                 );
-                tl.to(scene, { autoAlpha: 0, duration: 0.35, ease: "none" }, pos + 0.05);
+                tl.set(scene, { autoAlpha: 0 }, pos + SCENE_OUT_DURATION);
             };
 
-            // 1. Pipe pops in from the right, scroll hint fades in.
-            tl.to(".details-pipe", { xPercent: 0, duration: 0.9, ease: "power3.out" }, 0);
-            tl.to(".scroll-indicator", { autoAlpha: 1, duration: 0.5, ease: "none" }, 0.3);
+            const PIPE_IN_AT = PIN_BLANK;
+            const FIRST_SCENE_AT = PIPE_IN_AT + PIPE_REVEAL_DURATION - FIRST_SCENE_OVERLAP;
 
-            // 2. First scene rides in just behind the pipe, then each subsequent
-            //    scene crossfades after a readable dwell.
-            revealScene(0, 0.45);
-            let cursor = 0.45;
+            tl.to({}, { duration: PIN_BLANK }, 0);
+            tl.to(pipe, { xPercent: 0, duration: PIPE_REVEAL_DURATION, ease: "power3.out" }, PIPE_IN_AT);
+            tl.to(scrollIndicator, { autoAlpha: 1, duration: 0.5, ease: "none" }, PIPE_IN_AT + 0.35);
+
+            revealScene(0, FIRST_SCENE_AT);
+            let cursor = FIRST_SCENE_AT;
             for (let i = 1; i < scenes.length; i++) {
-                cursor += 1.15; // dwell so each scene stays readable
+                cursor += SCENE_IN_DURATION + SCENE_DWELL;
                 hideScene(i - 1, cursor);
-                revealScene(i, cursor + 0.3);
-                cursor += 0.45;
+                cursor += SCENE_OUT_DURATION + SCENE_GAP;
+                revealScene(i, cursor);
             }
 
-            // Derive the pinned scroll distance from the real timeline length so
-            // the sticky stage releases exactly as the last scene settles — no
-            // trailing dead-scroll.
-            //
-            // XL-only fix: the distance is in vh, and on a tall extra-large
-            // viewport a fixed vh count maps the same timeline onto far more
-            // scroll. The fix isn't fewer vh (that races faster) — it's GRANTING
-            // more scroll per scene on big screens so the brief intro and each
-            // following scene get enough travel to read. Normal/laptop widths keep
-            // the original 20 that was already working well.
-            const vw = typeof window !== "undefined" ? window.innerWidth : 0;
-            const SCROLL_PER_UNIT = vw >= 2200 ? 30 : vw >= 1600 ? 26 : 20;
-            const distance = tl.duration() * SCROLL_PER_UNIT;
-            const node = sectionRef.current;
-            if (node) {
-                node.style.minHeight = `${(100 + distance).toFixed(1)}vh`;
-            }
+            cursor += SCENE_IN_DURATION + FINAL_DWELL;
+            hideScene(scenes.length - 1, cursor);
+            tl.to(scrollIndicator, { autoAlpha: 0, duration: RELEASE_OUT_DURATION, ease: "none" }, cursor);
+            tl.to(
+                pipe,
+                { autoAlpha: 0, xPercent: 24, duration: RELEASE_OUT_DURATION, ease: "power2.in" },
+                cursor
+            );
+            tl.to({}, { duration: 0.15 });
 
             requestAnimationFrame(() => ScrollTrigger.refresh());
         },

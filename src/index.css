@@ -2063,17 +2063,60 @@ header nav .hideOnMobile a.active {
    contents so nothing overlaps or overflows.
    ========================================================= */
 
-/* Ultra-wide: keep the composition from spreading too far apart.
-   .details is intentionally full-bleed (the pipe bleeds off the right),
-   so instead of padding we just rein in the pipe + copy widths. */
-@media (min-width: 1800px) {
+/* Extra-large screens. The pipe keeps reaching past the viewport centre (same as
+   laptops — width stays 56%, left edge ~44%), and everything scales UP so the
+   composition doesn't read small in all that space: taller pipe, larger cameras,
+   bigger ball cluster + callout, and proportionally larger copy. */
+@media (min-width: 1600px) {
   .details-pipe {
-    width: 50%;
+    width: 56%;
+    top: 18%;
+    bottom: 18%;
+    border-radius: 320px 0 0 320px;
   }
 
   .details-scene-copy {
-    left: max(8rem, calc((100vw - var(--width-content)) / 2));
-    width: min(38%, 720px);
+    left: clamp(8rem, 8vw, 14rem);
+    width: min(42%, 760px);
+  }
+
+  .details-number {
+    font-size: clamp(4.5rem, 5vw, 7rem);
+  }
+
+  .details-scene-title {
+    font-size: clamp(2.6rem, 3.2vw, 3.8rem);
+  }
+
+  .details-scene-description {
+    font-size: clamp(1.2rem, 1.25vw, 1.55rem);
+  }
+
+  /* Cameras scale with viewport height; bump each scene up on big displays.
+     (Per-scene rules win on specificity, so each is restated here.) */
+  .details-cam {
+    height: 78%;
+  }
+
+  .details-art--intro .details-cam,
+  .details-art--photos .details-cam {
+    height: 84%;
+  }
+
+  .details-art--closeup .details-cam {
+    height: 78%;
+  }
+
+  .details-art--selfie .details-cam {
+    height: 72%;
+  }
+
+  .details-art-balls {
+    width: clamp(380px, 34vw, 700px);
+  }
+
+  .details-callout {
+    width: clamp(340px, 30vw, 620px);
   }
 }
 

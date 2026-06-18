@@ -144,25 +144,22 @@ const Details = () => {
                 cursor += 0.45;
             }
 
-            // Trailing dwell so the final scene sits fully revealed for a beat
-            // before the pinned stage releases into the next section.
-            tl.to({}, { duration: 1.1 });
-
             // Derive the pinned scroll distance from the real timeline length so
             // the sticky stage releases exactly as the last scene settles — no
-            // trailing dead-scroll (same approach the old card timeline used).
+            // trailing dead-scroll.
             //
-            // The distance is in PIXELS, not vh. A vh-based distance scales the
-            // pin range with the viewport height, so on a tall/extra-large screen
-            // the same timeline got stretched over far more scroll — the scrub
-            // ran "faster" relative to a flick and the brief intro scene blew
-            // past before you could read it. A fixed px-per-time-unit keeps the
-            // scrub rate identical on a laptop and a 4K monitor alike.
-            const SCROLL_PER_UNIT = 185; // px of scroll granted per timeline time-unit
-            const distance = Math.round(tl.duration() * SCROLL_PER_UNIT);
+            // XL-only fix: the distance is in vh, and on a tall extra-large
+            // viewport a fixed vh count maps the same timeline onto far more
+            // scroll. The fix isn't fewer vh (that races faster) — it's GRANTING
+            // more scroll per scene on big screens so the brief intro and each
+            // following scene get enough travel to read. Normal/laptop widths keep
+            // the original 20 that was already working well.
+            const vw = typeof window !== "undefined" ? window.innerWidth : 0;
+            const SCROLL_PER_UNIT = vw >= 2200 ? 30 : vw >= 1600 ? 26 : 20;
+            const distance = tl.duration() * SCROLL_PER_UNIT;
             const node = sectionRef.current;
             if (node) {
-                node.style.minHeight = `calc(100vh + ${distance}px)`;
+                node.style.minHeight = `${(100 + distance).toFixed(1)}vh`;
             }
 
             requestAnimationFrame(() => ScrollTrigger.refresh());

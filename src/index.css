@@ -1789,6 +1789,8 @@ header nav .hideOnMobile a.active {
 .details {
   position: relative;
   width: 100%;
+  /* Floor only — the JS overrides this inline with a value derived from the
+     timeline length (taller on extra-large screens). */
   min-height: 240vh;
   min-height: 240svh;
   box-sizing: border-box;
@@ -1802,6 +1804,7 @@ header nav .hideOnMobile a.active {
   }
 }
 
+/* Pinned with CSS sticky; ScrollTrigger only scrubs the timeline against scroll. */
 .details-stage {
   position: sticky;
   top: 0;

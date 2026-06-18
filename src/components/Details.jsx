@@ -1,313 +1,249 @@
-import { Model as Model } from "./Instax12.jsx";
-import ballBlue from "../assets/balls/balls/1.webp";
-import ballPink from "../assets/balls/balls/2.webp";
-import ballPurple from "../assets/balls/balls/3.webp";
-import ballMint from "../assets/balls/balls/4.webp";
-import ballWhite from "../assets/balls/balls/5.webp";
+import camIntro from "../assets/Features_WebP/6.webp";
+import camPhotos from "../assets/Features_WebP/4.webp";
+import camOn from "../assets/Features_WebP/1.webp";
+import camCloseup from "../assets/Features_WebP/2.webp";
+import camSelfie from "../assets/Features_WebP/5.webp";
+import selfieCallout from "../assets/Features_WebP/9.webp";
+import polaroidOff from "../assets/Features_WebP/7.webp";
+import polaroidOn from "../assets/Features_WebP/8.webp";
+import ballsCluster from "../assets/Features_WebP/3.webp";
 import {
-    Canvas,
     gsap,
     ScrollTrigger,
     useGSAP,
-    useFrame,
-    useThree,
-    Suspense,
     useRef,
-    useState,
-    useEffect,
     clsx,
-    Html,
-    useProgress,
-    Environment,
-    useMediaQuery,
 } from "../imports.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const features = [
+// Each entry is one scroll-step ("scene"). The left copy column and the right
+// webp composition crossfade as the pinned stage is scrubbed through.
+const scenes = [
     {
-        title: "Auto Exposure System",
+        key: "intro",
+        title: "INSTAX MINI 12",
         description:
-            "Measures ambient brightness and automatically sets shutter speed from 1/250 s in bright daylight down to 1/30 s in dim interiors. A dedicated Selfie Mode engages close-up exposure compensation the moment the selfie mirror slides out - no dials, no guesswork.",
+            "Experience the thrill of capturing every moment with cutting-edge technology.",
+        image: camIntro,
+        artClass: "details-art--intro",
     },
     {
-        title: "60 mm f/12.7 Lens",
+        key: "bright",
+        number: "01",
+        title: "Take bright photos, no matter where or when!",
         description:
-            "Fixed-focus 60 mm glass element at f/12.7 renders ISO 800 Instax Mini film with consistent sharpness from 0.6 m to infinity. Slide the built-in selfie mirror out and the optics reconfigure to lock focus between 30-50 cm for a pin-sharp self-portrait every time.",
+            "Shutter speed, flash brightness and other settings automatically adjust to ambient light, so you can take the photos with ease.",
+        image: camPhotos,
+        artClass: "details-art--photos",
     },
     {
-        title: "Compact Rangefinder Body",
-        description:
-            "Iconic rounded shell at 106.8 x 121.7 x 67.3 mm and just 293 g fully loaded. The real-image optical viewfinder offers 0.37x magnification and ~82% field coverage. Ships in five signature pastel colorways: Blossom Pink, Mint Green, Lilac Purple, Clay White, and Baby Blue.",
+        key: "closeup-on",
+        number: "02",
+        title: "Easy to use for the perfect close-up!",
+        description: "Twist the lens to turn on.",
+        image: camOn,
+        artClass: "details-art--on",
+        balls: true,
+        demo: [{ src: polaroidOff, on: false }],
     },
     {
-        title: "Instax Mini Film",
+        key: "closeup-mode",
+        number: "03",
+        title: "Easy to use for the perfect close-up!",
         description:
-            "Produces 54 x 86 mm credit-card-sized prints on ISO 800 Instax Mini film, developing in natural light within 90 seconds. Two AA alkaline batteries power up to 100 shots, and the built-in auto flash recycles in as little as 0.2 s.",
+            "Twist again for Close-up mode, simple! This mode is ideal for distances of 30 to 50 cm.",
+        image: camCloseup,
+        artClass: "details-art--closeup",
+        balls: true,
+        demo: [
+            { src: polaroidOff, on: false },
+            { src: polaroidOn, on: true },
+        ],
+    },
+    {
+        key: "selfie",
+        number: "04",
+        title: "Take better selfies than ever before!",
+        description:
+            "Use the selfie mirror to line up your shot. Flash adjusts automatically, even in Close-up mode! Get just the right amount of light without overexposing the photo.",
+        image: camSelfie,
+        artClass: "details-art--selfie",
+        callout: true,
     },
 ];
-
-const DETAILS_BALLS = [
-    { src: ballBlue, className: "details-ball details-ball--blue" },
-    { src: ballPink, className: "details-ball details-ball--pink" },
-    { src: ballPurple, className: "details-ball details-ball--purple" },
-    { src: ballMint, className: "details-ball details-ball--mint" },
-    { src: ballWhite, className: "details-ball details-ball--white" },
-];
-
-function ModelLoader() {
-    const { progress } = useProgress();
-
-    return (
-        <Html center>
-            <div className="model-loader">
-                <div className="model-loader__ring" />
-                <p className="model-loader__label">Loading camera...</p>
-                <span className="model-loader__progress">{Math.round(progress)}%</span>
-            </div>
-        </Html>
-    );
-}
-
-// The model rotates slowly (~0.35 rad/s) and floats gently — 24fps is
-// indistinguishable from 30fps for this motion and cuts render work by 20%.
-const DETAILS_MODEL_FRAME_MS = 1000 / 24;
-
-const SpinningModel = ({ baseX, baseY, modelScale }) => {
-    const modelGroupRef = useRef(null);
-    const spinRef = useRef(null);
-    const floatTimeRef = useRef(0);
-    const frameTimerRef = useRef(null);
-    const [hoveredPart, setHoveredPart] = useState(null);
-    const { invalidate } = useThree();
-
-    const scheduleNextFrame = () => {
-        if (frameTimerRef.current !== null || typeof window === "undefined") return;
-        frameTimerRef.current = window.setTimeout(() => {
-            frameTimerRef.current = null;
-            invalidate();
-        }, DETAILS_MODEL_FRAME_MS);
-    };
-
-    useEffect(() => {
-        invalidate();
-        return () => {
-            if (frameTimerRef.current !== null) {
-                window.clearTimeout(frameTimerRef.current);
-            }
-        };
-    }, [invalidate]);
-
-    useFrame((_, delta) => {
-        floatTimeRef.current += delta;
-
-        if (spinRef.current) {
-            spinRef.current.rotation.y += delta * 0.35;
-        }
-        if (modelGroupRef.current) {
-            const targetY = baseY + Math.sin(floatTimeRef.current * 1.15) * 0.055;
-            modelGroupRef.current.position.y +=
-                (targetY - modelGroupRef.current.position.y) * Math.min(1, delta * 7);
-        }
-
-        scheduleNextFrame();
-    });
-
-    return (
-        <group
-            ref={modelGroupRef}
-            position={[baseX, baseY, 0]}
-            rotation={[0.22, 0, -0.14]}
-        >
-            <group ref={spinRef}>
-                <Suspense fallback={<ModelLoader />}>
-                    <Model
-                        hoveredPart={hoveredPart}
-                        setHoveredPart={setHoveredPart}
-                        onSelect={() => {}}
-                        interactive={false}
-                        position={[0, 0, 0]}
-                        rotation={[0, 0, 0]}
-                        scale={[modelScale, modelScale, modelScale]}
-                    />
-                </Suspense>
-            </group>
-        </group>
-    );
-};
 
 const Details = () => {
     const sectionRef = useRef(null);
-    const isMobile = useMediaQuery({ maxWidth: 480 });
-    const isTablet = useMediaQuery({ maxWidth: 768 });
-    // On very wide monitors the right-anchored canvas + a positive baseX
-    // pushes the model out near 75% of viewport width. Pull it back toward
-    // the canvas center so it sits closer to where the eye expects it.
-    const isWideDesktop = useMediaQuery({ minWidth: 1500 });
-    const [isCanvasActive, setIsCanvasActive] = useState(false);
-    const baseX = isTablet ? 0 : isWideDesktop ? 0.15 : 0.45;
-    // Lower the model a bit on desktop so it sits in the same vertical band
-    // as the card instead of floating above it.
-    const baseY = isMobile ? 1.16 : isTablet ? 1.18 : 0.2;
-    const modelScale = isMobile ? 0.22 : isTablet ? 0.26 : 0.32;
 
-    useEffect(() => {
-        const node = sectionRef.current;
-        if (!node || typeof IntersectionObserver === "undefined") {
-            setIsCanvasActive(true);
-            return undefined;
-        }
+    useGSAP(
+        () => {
+            const q = gsap.utils.selector(sectionRef);
+            const sceneEls = q(".details-scene");
 
-        let isIntersecting = false;
-        let isPageVisible = typeof document === "undefined" || !document.hidden;
+            // Starting state: the teal pipe waits off the right edge, the scroll
+            // hint is hidden, and every scene is faded out (revealed on scrub).
+            gsap.set(".details-pipe", { xPercent: 112 });
+            gsap.set(".scroll-indicator", { autoAlpha: 0 });
+            gsap.set(sceneEls, { autoAlpha: 0 });
 
-        const apply = () => setIsCanvasActive(isIntersecting && isPageVisible);
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: sectionRef.current,
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 0.3,
+                    invalidateOnRefresh: true,
+                },
+            });
 
-        // Tightened from 80% → 25%. The previous margin kept the spinning
-        // model rendering at 30fps even when the section was ~80vh above or
-        // below the viewport — i.e. most of the page. 25% is enough headroom
-        // to preload before the user reaches the section without burning the
-        // GPU while they're elsewhere on the page.
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                isIntersecting = entry.isIntersecting;
-                apply();
-            },
-            { rootMargin: "25% 0px 25% 0px" }
-        );
-        observer.observe(node);
+            const revealScene = (i, pos) => {
+                const scene = sceneEls[i];
+                const copy = scene.querySelectorAll(".details-anim");
+                const art = scene.querySelector(".details-scene-art");
+                tl.to(scene, { autoAlpha: 1, duration: 0.35, ease: "none" }, pos);
+                tl.fromTo(
+                    art,
+                    { autoAlpha: 0, yPercent: 7, scale: 0.93 },
+                    { autoAlpha: 1, yPercent: 0, scale: 1, duration: 0.6, ease: "power2.out" },
+                    pos
+                );
+                tl.fromTo(
+                    copy,
+                    { autoAlpha: 0, y: 40 },
+                    { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out", stagger: 0.08 },
+                    pos + 0.1
+                );
+            };
 
-        // Pause the render loop entirely when the tab/window is hidden. With
-        // the continuous spin animation this was the single biggest source of
-        // background heat on laptops left with the tab open.
-        const handleVisibilityChange = () => {
-            isPageVisible = !document.hidden;
-            apply();
-        };
-        document.addEventListener("visibilitychange", handleVisibilityChange);
+            const hideScene = (i, pos) => {
+                const scene = sceneEls[i];
+                const copy = scene.querySelectorAll(".details-anim");
+                const art = scene.querySelector(".details-scene-art");
+                tl.to(copy, { autoAlpha: 0, y: -30, duration: 0.35, ease: "power2.in" }, pos);
+                tl.to(
+                    art,
+                    { autoAlpha: 0, yPercent: -5, scale: 0.97, duration: 0.4, ease: "power2.in" },
+                    pos
+                );
+                tl.to(scene, { autoAlpha: 0, duration: 0.35, ease: "none" }, pos + 0.05);
+            };
 
-        return () => {
-            observer.disconnect();
-            document.removeEventListener("visibilitychange", handleVisibilityChange);
-        };
-    }, []);
+            // 1. Pipe pops in from the right, scroll hint fades in.
+            tl.to(".details-pipe", { xPercent: 0, duration: 0.9, ease: "power3.out" }, 0);
+            tl.to(".scroll-indicator", { autoAlpha: 1, duration: 0.5, ease: "none" }, 0.3);
 
-    useGSAP(() => {
-        const q = gsap.utils.selector(sectionRef);
+            // 2. First scene rides in just behind the pipe, then each subsequent
+            //    scene crossfades after a readable dwell.
+            revealScene(0, 0.45);
+            let cursor = 0.45;
+            for (let i = 1; i < scenes.length; i++) {
+                cursor += 1.15; // dwell so each scene stays readable
+                hideScene(i - 1, cursor);
+                revealScene(i, cursor + 0.3);
+                cursor += 0.45;
+            }
 
-        gsap.set(q(".feature-card"), { xPercent: -115 });
-        gsap.set(q("#details-canvas"), {
-            opacity: 0,
-            scale: 1,
-            x: 0,
-            y: 0,
-            clearProps: "transform",
-            transformOrigin: "center center",
-        });
+            // Trailing dwell so the final scene sits fully revealed for a beat
+            // before the pinned stage releases into the next section.
+            tl.to({}, { duration: 1.1 });
 
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: sectionRef.current,
-                start: "top top",
-                end: "bottom bottom",
-                scrub: 0.25,
-                invalidateOnRefresh: true,
-            },
-        });
+            // Derive the pinned scroll distance from the real timeline length so
+            // the sticky stage releases exactly as the last scene settles — no
+            // trailing dead-scroll (same approach the old card timeline used).
+            const SCROLL_PER_UNIT = 20;
+            const distance = tl.duration() * SCROLL_PER_UNIT;
+            const node = sectionRef.current;
+            if (node) {
+                node.style.minHeight = `${(100 + distance).toFixed(1)}vh`;
+            }
 
-        tl.to(
-            q("#details-canvas"),
-            { opacity: 1, ease: "none", duration: 0.6 },
-            0
-        );
-        tl.from(
-            q(".scroll-indicator"),
-            { opacity: 0, y: -24, ease: "power2.out", duration: 0.5 },
-            0.15
-        );
-        // Card 1 holds back until well after the stage pins — it should feel
-        // like "another card arriving" rather than a card that was already
-        // there when the section came into view. The 1.7 offset mirrors the
-        // inter-card wait pattern (other cards have +1.45/+0.85 dwell before
-        // they slide in), so card 1 gets the same kind of breathing room
-        // relative to the model that the other cards get relative to their
-        // predecessor. Model (#details-canvas) still fades in at position 0
-        // so it appears immediately on pin — only the card is delayed.
-        tl.to(q(".feature-card-1"), { xPercent: 0, ease: "power2.out", duration: 0.45 }, 1.7);
-
-        for (let i = 1; i < features.length; i++) {
-            const isLastFeature = i === features.length - 1;
-            const isFirstTransition = i === 1;
-            // Longer wait between cards — each card stays readable instead
-            // of being shoved off-screen by the next one.
-            const waitBeforeNextCard = isFirstTransition ? "+=1.45" : isLastFeature ? "+=0.55" : "+=0.85";
-            const transitionDuration = isLastFeature ? 0.35 : 0.5;
-
-            tl.to(
-                q(`.feature-card-${i}`),
-                { xPercent: -115, ease: "power2.in", duration: transitionDuration },
-                waitBeforeNextCard
-            ).to(
-                q(`.feature-card-${i + 1}`),
-                { xPercent: 0, ease: "power2.out", duration: transitionDuration },
-                "<+0.15"
-            );
-        }
-
-        // Fix 11 — kill the trailing dead-scroll. The timeline already ends on
-        // the final card's slide-in (there is no hold/empty tween), but the
-        // pinned scroll distance was driven by a hardcoded section height
-        // (240vh) that overshot the animation, so the user kept scrolling past
-        // the last card with nothing happening. Derive the section height from
-        // the timeline's real duration instead, so the sticky stage releases
-        // exactly as the final card finishes and the next section follows with
-        // no pause. .details-stage is 100vh/sticky; everything beyond that is
-        // the scrub-mapped pin distance.
-        const SCROLL_PER_UNIT = 21; // vh of scroll granted per timeline time-unit
-        const detailsScrollDistance = tl.duration() * SCROLL_PER_UNIT;
-        const node = sectionRef.current;
-        if (node) {
-            node.style.minHeight = `${(100 + detailsScrollDistance).toFixed(1)}vh`;
-        }
-
-        requestAnimationFrame(() => ScrollTrigger.refresh());
-    }, { scope: sectionRef, revertOnUpdate: true });
+            requestAnimationFrame(() => ScrollTrigger.refresh());
+        },
+        { scope: sectionRef, revertOnUpdate: true }
+    );
 
     return (
         <section className="details" id="details" ref={sectionRef}>
             <div className="details-stage">
-                {DETAILS_BALLS.map((ball) => (
-                    <img key={ball.className} className={ball.className} src={ball.src} alt="" aria-hidden="true" />
-                ))}
-                <div id="details-canvas">
-                    {isCanvasActive && (
-                        <Canvas
-                            className="details-canvas-renderer"
-                            frameloop="demand"
-                            dpr={[0.75, 1]}
-                            gl={{ powerPreference: "low-power", antialias: false }}
-                            camera={{ position: [0, 0.5, 7], fov: 38 }}
-                        >
-                            <Environment background={false} preset="warehouse" resolution={64} />
-                            <directionalLight position={[2, 2, 2]} intensity={1} />
-                            <SpinningModel
-                                baseX={baseX}
-                                baseY={baseY}
-                                modelScale={modelScale}
-                            />
-                        </Canvas>
-                    )}
-                </div>
+                <div className="details-pipe" aria-hidden="true" />
 
-                <div className="feature-cards">
-                    {features.map((feature, index) => (
-                        <article
-                            key={feature.title}
-                            className={clsx("feature-card", `feature-card-${index + 1}`)}
+                <div className="details-scenes">
+                    {scenes.map((scene) => (
+                        <div
+                            key={scene.key}
+                            className={clsx("details-scene", `details-scene--${scene.key}`)}
                         >
-                            <h3 className="feature-card-title">{feature.title}</h3>
-                            <p className="feature-card-description">{feature.description}</p>
-                        </article>
+                            <div className="details-scene-copy">
+                                {scene.number && (
+                                    <span className="details-number details-anim">{scene.number}</span>
+                                )}
+                                <h3 className="details-scene-title details-anim">{scene.title}</h3>
+                                <p className="details-scene-description details-anim">
+                                    {scene.description}
+                                </p>
+                                {scene.demo && (
+                                    <div className="details-demo details-anim">
+                                        {scene.demo.map((demo) => (
+                                            <figure
+                                                key={demo.on ? "on" : "off"}
+                                                className="details-demo-item"
+                                            >
+                                                <img
+                                                    className="details-demo-img"
+                                                    src={demo.src}
+                                                    alt=""
+                                                    loading="lazy"
+                                                    decoding="async"
+                                                />
+                                                <figcaption
+                                                    className={clsx(
+                                                        "details-pill",
+                                                        demo.on ? "details-pill--on" : "details-pill--off"
+                                                    )}
+                                                >
+                                                    <span className="details-pill-label">CLOSE UP</span>
+                                                    <span className="details-pill-state">
+                                                        {demo.on ? "ON" : "OFF"}
+                                                    </span>
+                                                </figcaption>
+                                            </figure>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className={clsx("details-scene-art", scene.artClass)}>
+                                <img
+                                    className="details-cam"
+                                    src={scene.image}
+                                    alt=""
+                                    aria-hidden="true"
+                                    loading="lazy"
+                                    decoding="async"
+                                />
+                                {scene.balls && (
+                                    <img
+                                        className="details-art-balls"
+                                        src={ballsCluster}
+                                        alt=""
+                                        aria-hidden="true"
+                                        loading="lazy"
+                                        decoding="async"
+                                    />
+                                )}
+                                {scene.callout && (
+                                    <img
+                                        className="details-callout"
+                                        src={selfieCallout}
+                                        alt=""
+                                        aria-hidden="true"
+                                        loading="lazy"
+                                        decoding="async"
+                                    />
+                                )}
+                            </div>
+                        </div>
                     ))}
                 </div>
 

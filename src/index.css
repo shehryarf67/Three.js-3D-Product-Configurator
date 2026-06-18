@@ -1818,114 +1818,204 @@ header nav .hideOnMobile a.active {
   }
 }
 
-#details-canvas {
+/* Right-anchored teal pipe. It pops in from the right (GSAP xPercent) and then
+   stays put while the camera scenes crossfade in front of it. Rounded only on
+   its left edge — the right edge bleeds off the viewport. */
+.details-pipe {
   position: absolute;
-  top: 0;
+  top: 26%;
+  bottom: 26%;
   right: 0;
-  width: 55%;
-  height: 100%;
-  background: transparent;
-  z-index: 2;
-}
-
-.details-canvas-renderer {
-  width: 100%;
-  height: 100%;
-}
-
-.feature-cards {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 55%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 3;
-}
-
-.details-ball {
-  z-index: 1;
-  opacity: 0.9;
-}
-
-.details-ball--blue {
-  left: -8%;
-  bottom: 6%;
-  width: clamp(190px, 24vw, 430px);
-}
-
-.details-ball--pink {
-  right: -8%;
-  bottom: 5%;
-  width: clamp(200px, 26vw, 470px);
-}
-
-.details-ball--purple {
-  right: 18%;
-  top: 7%;
-  width: clamp(150px, 17vw, 310px);
-}
-
-.details-ball--mint {
-  left: 17%;
-  top: 9%;
-  width: clamp(145px, 16vw, 290px);
-}
-
-.details-ball--white {
-  left: 48%;
-  bottom: -8%;
-  width: clamp(170px, 20vw, 360px);
-}
-
-.feature-card {
-  /* The card emerges from off-screen left as a rounded pill. The negative
-     margin pulls it past the container edge, the left padding pushes the
-     text back into the visible area, and the 160px values all match so the
-     text position stays consistent. */
-  position: absolute;
-  top: 24%;
-  left: 0;
-  width: calc(100% + 160px);
-  max-width: clamp(720px, 62vw, 1320px);
-  margin-left: -160px;
-  padding: 3rem 4rem 3rem calc(160px + 4rem);
-  box-sizing: border-box;
+  width: 56%;
   background: var(--secondary_color);
-  border-radius: 0 999px 999px 0;
-  pointer-events: auto;
+  border-radius: 260px 0 0 260px;
+  z-index: 1;
   will-change: transform;
 }
 
-.feature-card-title {
-  margin: 0 0 1rem 0;
-  font-size: clamp(2rem, 3vw, 3rem);
-  font-weight: 800;
-  letter-spacing: 0.035em;
-  color: var(--main_bg_color);
-  text-transform: uppercase;
-  line-height: 1.05;
-  overflow-wrap: anywhere;
+.details-scenes {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
 }
 
-.feature-card-description {
-  margin: 0;
-  font-size: clamp(1.05rem, 1.2vw, 1.25rem);
-  line-height: 1.65;
-  color: var(--main_bg_color);
+/* Every scene fills the stage and is stacked; only the active one is faded in. */
+.details-scene {
+  position: absolute;
+  inset: 0;
+}
+
+/* Left column — copy set in the site font (Canva typeface deliberately ignored). */
+.details-scene-copy {
+  position: absolute;
+  left: clamp(3.5rem, 7vw, 8rem);
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(44%, 640px);
+  z-index: 3;
+}
+
+/* Typography mirrors the site's heading convention (hero/about): the system-ui
+   stack inherited from :root, weight 500, letter-spacing 0 — so the Details copy
+   reads identically to the rest of the page rather than as a heavier face. */
+.details-number {
+  display: block;
+  font-size: clamp(3rem, 6vw, 6rem);
   font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--secondary_color);
+  opacity: 0.85;
+  margin-bottom: 0.4rem;
+}
+
+.details-scene-title {
+  margin: 0 0 1.1rem 0;
+  font-size: clamp(1.9rem, 3vw, 3rem);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: 0;
+  color: var(--secondary_color);
+  text-wrap: balance;
+}
+
+.details-scene-description {
+  margin: 0;
+  font-size: clamp(1.05rem, 1.2vw, 1.3rem);
+  line-height: 1.6;
+  color: var(--text-lighter);
+  font-weight: 500;
+  max-width: 46ch;
+}
+
+/* Close-up demo polaroids shown beneath the copy on scene 02. */
+.details-demo {
+  display: flex;
+  gap: clamp(1rem, 2vw, 2rem);
+  margin-top: 1.75rem;
+}
+
+.details-demo-item {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.details-demo-img {
+  width: clamp(96px, 9vw, 150px);
+  height: auto;
+  border-radius: 6px;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
+}
+
+.details-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.05;
+  padding: 0.5rem 1.4rem;
+  border-radius: 999px;
+  background: var(--secondary_color);
+  color: var(--main_bg_color);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+}
+
+.details-pill--on {
+  background: var(--main_bg_color);
+  color: var(--secondary_color);
+}
+
+.details-pill-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.details-pill-state {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+/* Right column — the camera comp overflows the pipe for the pop-out look. */
+.details-scene-art {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 52%;
+  height: 100%;
+  z-index: 2;
+  will-change: transform, opacity;
+}
+
+.details-cam {
+  position: absolute;
+  top: 38%;
+  left: 42%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  height: 66%;
+  max-width: 92%;
+  object-fit: contain;
+  filter: drop-shadow(0 26px 40px rgba(0, 0, 0, 0.22));
+}
+
+.details-art--intro .details-cam,
+.details-art--photos .details-cam {
+  height: 72%;
+}
+
+.details-art--selfie .details-cam {
+  height: 62%;
+  top: 43%;
+  left: 48%;
+}
+
+/* Per-scene camera position knobs. Each rule targets one scene's wrapper class,
+   so you can move a single camera without touching the others. Raise `top` to
+   lower the camera (it's centered at top:50%); change `left` to shift it
+   horizontally; change `height` to resize just that scene. */
+.details-art--on .details-cam {
+  top: 41%;
+  left: 40%;
+}
+
+/* Scene 03 — close-up mode. Defaults match the base; edit to reposition. */
+.details-art--closeup .details-cam {
+  top: 41%;
+  left: 40%;
+  height: 66%;
+}
+
+.details-art-balls {
+  position: absolute;
+  right: -13%;
+  bottom: 10%;
+  width: clamp(280px, 32vw, 560px);
+  height: auto;
+  filter: drop-shadow(0 16px 26px rgba(0, 0, 0, 0.18));
+}
+
+.details-callout {
+  position: absolute;
+  top: 20%;
+  right: -3%;
+  width: clamp(240px, 28vw, 460px);
+  height: auto;
 }
 
 .scroll-indicator {
   position: absolute;
-  right: 1.75rem;
-  top: 24%;
+  left: 1.75rem;
+  bottom: 8%;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
   color: rgba(255, 255, 255, 0.78);
-  z-index: 3;
+  z-index: 4;
   pointer-events: none;
 }
 
@@ -1964,6 +2054,226 @@ header nav .hideOnMobile a.active {
   50% {
     transform: translate(-50%, 130%) rotate(45deg);
     opacity: 1;
+  }
+}
+
+/* =========================================================
+   Details — responsive. The stage is pinned/scrubbed at every
+   width; these breakpoints only resize and re-flow the scene
+   contents so nothing overlaps or overflows.
+   ========================================================= */
+
+/* Ultra-wide: keep the composition from spreading too far apart.
+   .details is intentionally full-bleed (the pipe bleeds off the right),
+   so instead of padding we just rein in the pipe + copy widths. */
+@media (min-width: 1800px) {
+  .details-pipe {
+    width: 50%;
+  }
+
+  .details-scene-copy {
+    left: max(8rem, calc((100vw - var(--width-content)) / 2));
+    width: min(38%, 720px);
+  }
+}
+
+/* Small laptops / large tablets (landscape) — still side-by-side. */
+@media (max-width: 1100px) {
+  .details-scene-copy {
+    width: min(48%, 520px);
+    left: clamp(2rem, 5vw, 5rem);
+  }
+
+  .details-pipe {
+    width: 58%;
+  }
+}
+
+@media (max-width: 900px) {
+  .details-scene-copy {
+    width: min(50%, 460px);
+    left: clamp(1.5rem, 4vw, 3.5rem);
+  }
+
+  .details-scene-art {
+    width: 56%;
+  }
+
+  .details-pipe {
+    width: 60%;
+    border-radius: 220px 0 0 220px;
+  }
+
+  .details-demo-img {
+    width: clamp(84px, 11vw, 120px);
+  }
+}
+
+/* Portrait tablets & phones — stack: copy on top (centered), the teal pipe
+   becomes a bottom band (still slides in from the right), camera comp in front. */
+@media (max-width: 768px) {
+  .details-pipe {
+    top: auto;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 50%;
+    border-radius: 160px 160px 0 0;
+  }
+
+  .details-scene-copy {
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(90%, 560px);
+    text-align: center;
+  }
+
+  .details-number {
+    font-size: clamp(2.4rem, 12vw, 3.6rem);
+  }
+
+  .details-scene-title {
+    font-size: clamp(1.6rem, 6vw, 2.4rem);
+  }
+
+  .details-scene-description {
+    font-size: clamp(0.95rem, 2.6vw, 1.15rem);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .details-demo {
+    justify-content: center;
+    margin-top: 1.1rem;
+  }
+
+  .details-demo-img {
+    width: clamp(74px, 20vw, 110px);
+  }
+
+  .details-scene-art {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 54%;
+  }
+
+  /* Re-center every camera within the full-width bottom band (desktop nudges
+     used percentages tuned to the narrow right column). */
+  .details-cam,
+  .details-art--on .details-cam,
+  .details-art--closeup .details-cam,
+  .details-art--selfie .details-cam {
+    top: 50%;
+    left: 50%;
+    height: 90%;
+  }
+
+  .details-art--intro .details-cam,
+  .details-art--photos .details-cam {
+    height: 96%;
+  }
+
+  .details-callout {
+    top: 0;
+    right: 2%;
+    width: clamp(150px, 40vw, 240px);
+  }
+
+  .details-art-balls {
+    right: 0;
+    bottom: 2%;
+    width: clamp(150px, 36vw, 240px);
+  }
+
+  .scroll-indicator {
+    display: none;
+  }
+}
+
+/* Phones. */
+@media (max-width: 480px) {
+  .details-scene-copy {
+    top: 4%;
+    width: 92%;
+  }
+
+  .details-number {
+    font-size: clamp(2.2rem, 13vw, 3rem);
+  }
+
+  .details-scene-title {
+    font-size: clamp(1.4rem, 6.5vw, 1.9rem);
+    margin-bottom: 0.8rem;
+  }
+
+  .details-scene-description {
+    font-size: clamp(0.9rem, 3.4vw, 1.02rem);
+    line-height: 1.5;
+  }
+
+  .details-scene-art {
+    height: 52%;
+  }
+
+  .details-cam,
+  .details-art--on .details-cam,
+  .details-art--closeup .details-cam,
+  .details-art--selfie .details-cam {
+    height: 84%;
+  }
+
+  .details-art--intro .details-cam,
+  .details-art--photos .details-cam {
+    height: 90%;
+  }
+
+  .details-demo {
+    gap: 1rem;
+  }
+
+  .details-demo-img {
+    width: clamp(64px, 22vw, 92px);
+  }
+
+  .details-pill {
+    padding: 0.35rem 0.9rem;
+  }
+
+  .details-pill-label {
+    font-size: 0.6rem;
+  }
+
+  .details-pill-state {
+    font-size: 0.8rem;
+  }
+
+  .details-callout {
+    width: clamp(130px, 42vw, 200px);
+  }
+
+  .details-art-balls {
+    width: clamp(130px, 40vw, 200px);
+  }
+}
+
+/* Short, wide viewports (landscape phones, split-screen) — the section stays
+   side-by-side here, so shrink the camera and re-center the copy vertically. */
+@media (min-width: 769px) and (max-height: 620px) {
+  .details-scene-copy {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .details-cam {
+    height: 78%;
+  }
+
+  .details-art--intro .details-cam,
+  .details-art--photos .details-cam {
+    height: 82%;
   }
 }
 

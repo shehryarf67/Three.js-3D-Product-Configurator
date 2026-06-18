@@ -831,7 +831,7 @@ header nav .hideOnMobile a.active {
    letting it scale past the card edges for the pop-out effect. */
 .card:nth-child(1) .card__hover-image {
   --hover-x: -6%;
-  --hover-y: -27%;
+  --hover-y: -27.5%;
   --hover-scale-x: 1.55;
   --hover-scale-y: 1.55;
 }
@@ -844,7 +844,7 @@ header nav .hideOnMobile a.active {
 
 .card:nth-child(3) .card__hover-image {
   --hover-x: 6%;
-  --hover-y: -27%;
+  --hover-y: -27.5%;
   --hover-scale-x: 1.55;
   --hover-scale-y: 1.55;
 }

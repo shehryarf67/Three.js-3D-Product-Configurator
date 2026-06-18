@@ -25,13 +25,14 @@ const FeaturesPipe = () => {
 
         const tl = gsap.timeline({
             scrollTrigger: {
-                // The pipe is no longer sticky — it's a tall section you scroll
-                // THROUGH. Fire the reveal the moment the section's top edge
-                // enters from the bottom of the viewport, so the pipe slides in
-                // as it appears (firing at "top top" would leave the section's
-                // bg showing while it scrolled up into view first).
+                // The pipe is a tall section you scroll THROUGH. Firing at
+                // "top bottom" (the instant it peeked in from the bottom) meant
+                // the whole reveal played before the user had scrolled to look at
+                // it — they missed it. Fire later, once the section's top has
+                // risen to 60% of the viewport, so the animation plays while it's
+                // comfortably in view. Lower the % to trigger even later.
                 trigger: sectionRef.current,
-                start: "top bottom",
+                start: "top 60%",
                 toggleActions: "play none none none",
             },
         });

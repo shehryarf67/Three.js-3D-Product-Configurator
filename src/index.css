@@ -233,6 +233,7 @@ body {
 header nav .hideOnMobile a {
   color: var(--main_bg_color);
   display: inline-block;
+  font-weight: 400;
   transition: transform 0.18s ease, color 0.18s ease;
 }
 

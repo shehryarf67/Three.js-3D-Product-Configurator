@@ -202,12 +202,12 @@ body {
 
 .app-logo {
   position: absolute;
-  top: 88%;
+  top: 66%;
   left: 1.1rem;
   z-index: 120;
   /* Sized to sit inside the logo-blob's curved (clipped) area rather than
      spilling past it — kept a comfortable margin below the blob's 300px box. */
-  width: clamp(95px, 10vw, 150px);
+  width: clamp(72px, 7vw, 112px);
   color: var(--main_bg_color);
   display: flex;
   align-items: center;
@@ -244,6 +244,30 @@ header nav .hideOnMobile a:hover {
 /* Add className="active" to the matching <a> in Navbar.jsx to show the active page */
 header nav .hideOnMobile a.active {
   font-weight: 700;
+}
+
+/* Desktop nav layout: the items used to be flush-right (margin-left:auto), which
+   left the whole middle empty on wide screens. Instead, center the main items
+   and pin a single item (Contact, tagged .nav-right) to the right edge — logo
+   left, items centered, Contact right fills the bar evenly. */
+@media (min-width: 769px) {
+  nav {
+    position: relative;
+  }
+
+  nav ul {
+    width: 100%;
+    margin-left: 0;
+    padding-left: 0;
+    justify-content: center;
+  }
+
+  nav ul li.nav-right {
+    position: absolute;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }
 
 .app-logo-svg {
@@ -822,6 +846,16 @@ header nav .hideOnMobile a.active {
   --hover-y: -27%;
   --hover-scale-x: 1.55;
   --hover-scale-y: 1.55;
+}
+
+/* On large screens the card grid switches to a taller aspect ratio, which drops
+   the popout slightly below the card's bottom edge. Nudge the left + right
+   popouts up a touch so they sit flush with the bottom again. */
+@media (min-width: 1600px) {
+  .card:nth-child(1) .card__hover-image,
+  .card:nth-child(3) .card__hover-image {
+    --hover-y: -30%;
+  }
 }
 
 .card-grid:hover>.card:not(:hover) .card__background {
@@ -2080,6 +2114,29 @@ header nav .hideOnMobile a.active {
   .details-scene-copy {
     left: max(8rem, calc((100vw - var(--width-content)) / 2));
     width: min(38%, 720px);
+  }
+
+  /* The intro (first card) camera was reading small in all that space — blow it
+     up so it clearly overflows the pipe. */
+  .details-art--intro .details-cam {
+    height: 94%;
+    top: 47%;
+  }
+
+  /* Pull every camera toward the centre of the (now 50%-wide) pipe. The art
+     column is right-anchored at 52%, so left:52% lands a camera at ~75vw — the
+     pipe's horizontal centre. Per-scene rules are restated to win specificity. */
+  .details-cam {
+    left: 52%;
+  }
+
+  .details-art--on .details-cam,
+  .details-art--closeup .details-cam {
+    left: 50%;
+  }
+
+  .details-art--selfie .details-cam {
+    left: 56%;
   }
 }
 

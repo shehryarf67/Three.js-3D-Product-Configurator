@@ -68,7 +68,10 @@ const Navbar = () => {
         <nav>
           <ul>
             {NAV_ITEMS.map((item) => (
-              <li className="hideOnMobile" key={item.label}>
+              <li
+                className={`hideOnMobile${item.id === "contact" ? " nav-right" : ""}`}
+                key={item.label}
+              >
                 <a href={`#${item.id}`} onClick={(e) => handleNavClick(item.id, e)}>{item.label}</a>
               </li>
             ))}

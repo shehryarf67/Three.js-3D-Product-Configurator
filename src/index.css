@@ -805,10 +805,10 @@ header nav .hideOnMobile a.active {
 /* Per-card hover placement keeps the visible PNG content centered while still
    letting it scale past the card edges for the pop-out effect. */
 .card:nth-child(1) .card__hover-image {
-  --hover-x: -16%;
-  --hover-y: -18%;
-  --hover-scale-x: 1.36;
-  --hover-scale-y: 1.36;
+  --hover-x: -6%;
+  --hover-y: -27%;
+  --hover-scale-x: 1.55;
+  --hover-scale-y: 1.55;
 }
 
 .card:nth-child(2) .card__hover-image {
@@ -818,10 +818,10 @@ header nav .hideOnMobile a.active {
 }
 
 .card:nth-child(3) .card__hover-image {
-  --hover-x: 16%;
-  --hover-y: -18%;
-  --hover-scale-x: 1.36;
-  --hover-scale-y: 1.36;
+  --hover-x: 6%;
+  --hover-y: -27%;
+  --hover-scale-x: 1.55;
+  --hover-scale-y: 1.55;
 }
 
 .card-grid:hover>.card:not(:hover) .card__background {

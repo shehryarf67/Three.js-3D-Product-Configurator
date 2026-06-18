@@ -1,9 +1,9 @@
 import camerasBase from "../assets/CARDS/CAM 1.webp";
-import camerasHover from "../assets/CARDS/CAM 2 (1).webp";
+import camerasHover from "../assets/CARDS/2.webp";
 import filmsBase from "../assets/CARDS/FILM 1.webp";
 import filmsHover from "../assets/CARDS/FILM 2 (1).webp";
 import accessoriesBase from "../assets/CARDS/ACC 1.webp";
-import accessoriesHover from "../assets/CARDS/ACC 2 (1).webp";
+import accessoriesHover from "../assets/CARDS/1.webp";
 
 const cards = [
   {

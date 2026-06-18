@@ -66,6 +66,13 @@ const HERO_BALLS = [
   { src: ballPurple, className: "hero-ball hero-ball--purple" },
   { src: ballMint, className: "hero-ball hero-ball--mint" },
   { src: ballWhite, className: "hero-ball hero-ball--white" },
+  // Smaller accent balls filling the empty corners/edges (desktop only — see
+  // the CSS, which hides them ≤768px in favour of the compact mobile layout).
+  { src: ballMint, className: "hero-ball hero-ball--mint-2" },
+  { src: ballWhite, className: "hero-ball hero-ball--white-2" },
+  { src: ballPink, className: "hero-ball hero-ball--pink-2" },
+  { src: ballPurple, className: "hero-ball hero-ball--purple-2" },
+  { src: ballBlue, className: "hero-ball hero-ball--blue-2" },
 ];
 
 const Hero = () => {

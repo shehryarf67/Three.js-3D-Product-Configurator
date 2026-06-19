@@ -381,40 +381,42 @@ header nav .hideOnMobile a.active {
   margin: 0;
   opacity: 1;
   pointer-events: none;
+  overflow: visible;
   transform-style: preserve-3d;
+  --hero-camera-art-width: 13.67%;
+  --hero-camera-art-left: 50.04%;
+  --hero-camera-art-top: 53.84%;
   transition:
-    left 950ms cubic-bezier(0.22, 1, 0.36, 1),
-    right 950ms cubic-bezier(0.22, 1, 0.36, 1),
-    top 950ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 950ms cubic-bezier(0.22, 1, 0.36, 1),
-    width 950ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 850ms cubic-bezier(0.22, 1, 0.36, 1),
     opacity 450ms ease;
-  /* Only `transform` actually changes between position states (left/top/width
-     are constant across the modifiers, and the frame cross-fade opacity lives
-     on .hero-camera-frame). left/top/width also aren't compositable, so hinting
-     them just reserves GPU resources for nothing across all 5 always-rendered
-     camera layers. */
+  /* Only transform is hinted: each camera now renders one active rotation image. */
   will-change: transform;
 }
 
-.hero-camera-frame {
+.hero-camera-img {
   position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 360ms ease;
-}
-
-.hero-camera-frame.is-active {
-  opacity: 1;
-}
-
-.hero-camera-frame img {
-  width: 100%;
-  height: 100%;
+  left: var(--hero-camera-art-left);
+  top: var(--hero-camera-art-top);
+  width: var(--hero-camera-art-width);
+  height: auto;
+  max-width: none;
   display: block;
   object-fit: contain;
   filter: var(--camera-filter, none);
   user-select: none;
+  transform: translate3d(-50%, -50%, 0);
+  transform-origin: center;
+  /* The fan position now lives on these three properties (driven by the
+     --hero-camera-art-* vars the modifier classes set). They are what must
+     animate — without this they snapped instantly, which read as "too fast"
+     and, because only the figure's tiny transform delta was tweening, the
+     motion looked different left-to-right vs right-to-left. One shared
+     duration/easing here makes every rotation smooth and symmetric. */
+  transition:
+    left 850ms cubic-bezier(0.22, 1, 0.36, 1),
+    top 850ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 850ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: left, top, width;
 }
 
 .hero-camera-stage {
@@ -425,18 +427,27 @@ header nav .hideOnMobile a.active {
 
 .hero-camera--center {
   width: clamp(1270px, 108vw, 1950px);
+  --hero-camera-art-width: 13.67%;
+  --hero-camera-art-left: 50.04%;
+  --hero-camera-art-top: 53.84%;
   transform: translate3d(-50%, -50%, 0);
   z-index: 4;
 }
 
 .hero-camera--left {
   width: clamp(1270px, 108vw, 1950px);
+  --hero-camera-art-width: 12.59%;
+  --hero-camera-art-left: 42.23%;
+  --hero-camera-art-top: 59.93%;
   transform: translate3d(-50%, -55%, 0);
   z-index: 2;
 }
 
 .hero-camera--top-left {
   width: clamp(1270px, 108vw, 1950px);
+  --hero-camera-art-width: 11.99%;
+  --hero-camera-art-left: 44.26%;
+  --hero-camera-art-top: 42.53%;
   transform: translate3d(-50%, -53%, 0);
   opacity: 1;
   z-index: 1;
@@ -444,6 +455,9 @@ header nav .hideOnMobile a.active {
 
 .hero-camera--top-right {
   width: clamp(1270px, 108vw, 1950px);
+  --hero-camera-art-width: 12.58%;
+  --hero-camera-art-left: 55.02%;
+  --hero-camera-art-top: 40.07%;
   transform: translate3d(-50%, -50%, 0);
   opacity: 1;
   z-index: 1;
@@ -451,6 +465,9 @@ header nav .hideOnMobile a.active {
 
 .hero-camera--right {
   width: clamp(1270px, 108vw, 1950px);
+  --hero-camera-art-width: 12.5%;
+  --hero-camera-art-left: 58.76%;
+  --hero-camera-art-top: 57.12%;
   transform: translate3d(-52%, -50%, 0);
   z-index: 3;
 }
@@ -2989,7 +3006,7 @@ button:focus-visible {
     font-size: 18px;
   }
 
-  /* Fix hero camera widths — base clamp has a 760px minimum which breaks mobile */
+  /* Keep the old logical canvas size; .hero-camera-img supplies the inner art. */
   .hero-camera--center,
   .hero-camera--left,
   .hero-camera--top-left,
@@ -3556,10 +3573,7 @@ button:focus-visible {
   .hero-camera--top-left,
   .hero-camera--top-right,
   .hero-camera--right {
-    /* Bumped up — only the center camera shows at this width, and the 16/9
-       frame's transparent padding made the actual camera art read as small.
-       A wider frame enlarges the visible camera; horizontal overflow is
-       absorbed by body { overflow-x: clip } so it never adds a scrollbar. */
+    /* Only the center camera shows at this width. */
     width: clamp(640px, 195vw, 920px);
   }
 
@@ -3758,7 +3772,7 @@ button:focus-visible {
   }
 }
 
-/* Large screens — 1400px and above */
+/* Large screens: 1400px and above */
 @media (min-width: 1400px) {
 
   .hero-camera {
@@ -3807,10 +3821,7 @@ button:focus-visible {
   }
 }
 
-/* Surface-class laptops (~1400–1680px CSS width): nudge the hero cameras
-   slightly larger. Base sizing resolves to 108vw here; this bumps it to 117vw
-   (~8% bigger). Capped below 1680px so wider desktop monitors — handled by the
-   1680px block below — are unaffected. */
+/* Surface-class laptops (~1400-1680px CSS width). */
 @media (min-width: 1400px) and (max-width: 1679px) {
   .hero-camera--center,
   .hero-camera--left,
@@ -3851,9 +3862,7 @@ button:focus-visible {
   .hero-camera--top-left,
   .hero-camera--top-right,
   .hero-camera--right {
-    /* Large laptops (Omen/Victus ~1920px) and external monitors. Grows with the
-       viewport (104vw) instead of capping at 1760px. The 1950px floor matches the
-       cap of the Surface band above, so cameras don't shrink crossing 1680px. */
+    /* Large laptops (Omen/Victus ~1920px) and external monitors. */
     width: clamp(1950px, 104vw, 2300px);
   }
 }

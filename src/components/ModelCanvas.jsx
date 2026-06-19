@@ -14,11 +14,9 @@ import {
     useMediaQuery,
 } from "../imports.js";
 import { Model as Model } from "./Instax12.jsx";
-import ballBlue from "../assets/balls/balls/1.webp";
-import ballPink from "../assets/balls/balls/2.webp";
-import ballPurple from "../assets/balls/balls/3.webp";
-import ballMint from "../assets/balls/balls/4.webp";
-import ballWhite from "../assets/balls/balls/5.webp";
+// New hi-res balls (balls_hd 6-10 are the "lower sections" set): 6=purple 8=pink.
+import ballPink from "../assets/balls_hd/8.webp";
+import ballPurple from "../assets/balls_hd/6.webp";
 
 const INSTAX_COLORS = [
     { name: "Lilac Purple", value: "#C8A2C8" },
@@ -28,12 +26,11 @@ const INSTAX_COLORS = [
     { name: "Baby Blue", value: "#89CFF0" },
 ];
 
+// Mockup shows two balls in this section: a large purple on the left and a
+// pink bleeding off the bottom-right. (The blue/mint/white were removed.)
 const MODEL_BALLS = [
-    { src: ballBlue, className: "model-ball model-ball--blue" },
-    { src: ballPink, className: "model-ball model-ball--pink" },
     { src: ballPurple, className: "model-ball model-ball--purple" },
-    { src: ballMint, className: "model-ball model-ball--mint" },
-    { src: ballWhite, className: "model-ball model-ball--white" },
+    { src: ballPink, className: "model-ball model-ball--pink" },
 ];
 
 const getDragStartThreshold = (pointerType) => (pointerType === "touch" ? 12 : 4);

@@ -3,9 +3,10 @@ import { gsap, ScrollTrigger, useGSAP } from "../imports.js";
 import layer2nd from "../assets/features main/2ND LAYER - 1.webp";
 import layerTop from "../assets/features main/TOP LAYER-2.webp";
 import layer3rd from "../assets/features main/3RD LAYER - 3.webp";
-import ballBlue from "../assets/balls/balls/1.webp";
-import ballPink from "../assets/balls/balls/2.webp";
-import ballMint from "../assets/balls/balls/4.webp";
+// New hi-res balls (balls_hd 6-10 = lower-section set): 7=blue 8=pink 9=mint.
+import ballBlue from "../assets/balls_hd/7.webp";
+import ballPink from "../assets/balls_hd/8.webp";
+import ballMint from "../assets/balls_hd/9.webp";
 
 gsap.registerPlugin(ScrollTrigger);
 

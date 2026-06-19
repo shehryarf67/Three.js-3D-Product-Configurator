@@ -30,11 +30,14 @@ import leftWhite from "../assets/HERO_WEBPS_1/E3.webp";
 import leftMint from "../assets/HERO_WEBPS_1/E4.webp";
 import leftPink from "../assets/HERO_WEBPS_1/E5.webp";
 
-import ballBlue from "../assets/balls/balls/1.webp";
-import ballPink from "../assets/balls/balls/2.webp";
-import ballPurple from "../assets/balls/balls/3.webp";
-import ballMint from "../assets/balls/balls/4.webp";
-import ballWhite from "../assets/balls/balls/5.webp";
+// New hi-res balls (balls_hd 1-5 are the hero set, normalised to the old
+// content ratio so existing positions/sizes hold). 1=white 2=blue 3=mint
+// 4=pink 5=purple.
+import ballBlue from "../assets/balls_hd/2.webp";
+import ballPink from "../assets/balls_hd/4.webp";
+import ballPurple from "../assets/balls_hd/5.webp";
+import ballMint from "../assets/balls_hd/3.webp";
+import ballWhite from "../assets/balls_hd/1.webp";
 
 const CAMERA_IMAGES = {
   "Lilac Purple": { front: frontLilac, left: leftLilac, topLeft: topLeftLilac, topRight: topRightLilac, right: rightLilac },
@@ -59,19 +62,14 @@ const POSITION_IMAGE_KEYS = {
   "top-right": "topRight",
 };
 
+// The hero shows exactly the five balls from the mockup (blue, purple, pink,
+// mint, white). The old smaller "-2" accent balls were removed.
 const HERO_BALLS = [
   { src: ballBlue, className: "hero-ball hero-ball--blue" },
   { src: ballPink, className: "hero-ball hero-ball--pink" },
   { src: ballPurple, className: "hero-ball hero-ball--purple" },
   { src: ballMint, className: "hero-ball hero-ball--mint" },
   { src: ballWhite, className: "hero-ball hero-ball--white" },
-  // Smaller accent balls filling the empty corners/edges on desktop.
-  // The CSS hides them on tablet and below for the compact mobile layout.
-  { src: ballMint, className: "hero-ball hero-ball--mint-2" },
-  { src: ballWhite, className: "hero-ball hero-ball--white-2" },
-  { src: ballPink, className: "hero-ball hero-ball--pink-2" },
-  { src: ballPurple, className: "hero-ball hero-ball--purple-2" },
-  { src: ballBlue, className: "hero-ball hero-ball--blue-2" },
 ];
 
 const Hero = () => {

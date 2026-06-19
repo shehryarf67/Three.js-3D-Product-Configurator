@@ -1,12 +1,13 @@
 import { Cards } from "./index.js";
-import ballPurple from "../assets/balls/balls/3.webp";
-import ballMint from "../assets/balls/balls/4.webp";
-import ballWhite from "../assets/balls/balls/5.webp";
+// New hi-res balls (balls_hd 6-10 = lower-section set): 6=purple 10=white.
+// Mockup shows two: a white bleeding off the top-right and a purple off the
+// bottom-left. (Mint was removed.)
+import ballPurple from "../assets/balls_hd/6.webp";
+import ballWhite from "../assets/balls_hd/10.webp";
 
 const ABOUT_BALLS = [
-  { src: ballMint, className: "about-ball about-ball--mint" },
-  { src: ballPurple, className: "about-ball about-ball--purple" },
   { src: ballWhite, className: "about-ball about-ball--white" },
+  { src: ballPurple, className: "about-ball about-ball--purple" },
 ];
 
 const About = () => {

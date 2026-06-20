@@ -1408,6 +1408,28 @@ header nav .hideOnMobile a.active {
   color: rgba(255, 255, 255, 0.78);
 }
 
+@media (min-width: 1600px) {
+  #showcase {
+    margin-top: -3px;
+  }
+
+  #showcase::before {
+    top: -2px;
+  }
+
+  #showcase::after {
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: 0;
+    width: 340px;
+    height: 8px;
+    background: var(--secondary_color);
+    z-index: 1;
+    pointer-events: none;
+  }
+}
+
 @media (max-width: 1024px) {
   #showcase {
     min-height: auto;
@@ -2013,6 +2035,12 @@ header nav .hideOnMobile a.active {
   height: auto;
 }
 
+@media (min-width: 1101px) {
+  .details-callout {
+    top: 16%;
+  }
+}
+
 .scroll-indicator {
   position: absolute;
   left: 1.75rem;
@@ -2149,23 +2177,56 @@ header nav .hideOnMobile a.active {
   }
 }
 
-/* Portrait tablets & phones — stack: copy on top (centered), the teal pipe
-   becomes a bottom band (still slides in from the right), camera comp in front. */
+/* Portrait tablets & phones — a compact version of the desktop scrub: the stage
+   pins and ONE teal card pops in at a time (timeline in Details.jsx). The base
+   pinned/overlay structure is kept (.details min-height:100svh, .details-stage
+   height:100svh, .details-scenes inset:0); each scene becomes a centred card
+   that GSAP autoAlpha pops in/out. */
 @media (max-width: 768px) {
-  .details-pipe {
-    top: auto;
-    bottom: 0;
-    right: 0;
+  /* The single shared pipe and the desktop scroll cue aren't used on mobile. */
+  .details-pipe,
+  .scroll-indicator {
+    display: none;
+  }
+
+  /* Overlay + vertically centre the scenes via grid (all share one cell). Doing
+     it with alignment rather than a transform leaves the scene's transform free
+     for GSAP's pop (scale/translate). Top padding clears the sticky navbar. */
+  .details-scenes {
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    padding: 4.5rem 1rem 1.25rem;
+    box-sizing: border-box;
+  }
+
+  /* Each scene is an auto-height card centred in the pinned viewport, so its
+     height follows its own content (a small-camera card like the intro stays
+     short instead of stretching full-height). Stays opacity:0/hidden from the
+     base rule — the timeline pops it in. */
+  .details-scene {
+    position: relative;
+    grid-area: 1 / 1;
     width: 100%;
-    height: 50%;
-    border-radius: 160px 160px 0 0;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--secondary_color);
+    border-radius: 32px;
+    /* No bottom padding: the camera comps have zero bottom transparency, so a
+       flush img bottom lands the visible camera flush against the card edge. */
+    padding: 1.75rem 1.25rem 0;
+    overflow: hidden;
+    will-change: transform, opacity;
   }
 
   .details-scene-copy {
-    top: 5%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(90%, 560px);
+    position: static;
+    transform: none;
+    width: 100%;
+    max-width: 540px;
+    margin: 0 auto;
     text-align: center;
   }
 
@@ -2174,7 +2235,7 @@ header nav .hideOnMobile a.active {
   }
 
   .details-scene-title {
-    font-size: clamp(1.6rem, 6vw, 2.4rem);
+    font-size: clamp(1.5rem, 5.5vw, 2.2rem);
   }
 
   .details-scene-description {
@@ -2192,44 +2253,69 @@ header nav .hideOnMobile a.active {
     width: clamp(74px, 20vw, 110px);
   }
 
+  /* Camera sits below the copy, flush with the card's bottom edge. */
   .details-scene-art {
-    top: auto;
-    bottom: 0;
-    left: 0;
+    position: relative;
+    inset: auto;
     width: 100%;
-    height: 54%;
+    height: auto;
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
   }
 
-  /* Re-center every camera within the full-width bottom band (desktop nudges
-     used percentages tuned to the narrow right column). */
   .details-cam,
+  .details-art--intro .details-cam,
+  .details-art--photos .details-cam,
   .details-art--on .details-cam,
   .details-art--closeup .details-cam,
   .details-art--selfie .details-cam {
-    top: 50%;
-    left: 50%;
-    height: 90%;
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    width: auto;
+    height: auto;
+    max-width: 64%;
+    max-height: 300px;
+    display: block;
   }
 
-  .details-art--intro .details-cam,
+  /* Static per-card camera sizes (the comps fill their square differently, so a
+     single size reads inconsistently). Each is the knob for that card's camera —
+     raise/lower the % to resize just that one. */
+  .details-art--intro .details-cam {
+    max-width: 72%;
+    /* The comps are square, so on wider phones the shared max-height (300px) was
+       the binding limit — raising only max-width did nothing. Lift the height
+       cap too so the intro camera can actually grow. */
+    max-height: 440px;
+  }
   .details-art--photos .details-cam {
-    height: 96%;
+    max-width: 62%;
+  }
+  .details-art--on .details-cam,
+  .details-art--closeup .details-cam {
+    max-width: 64%;
+  }
+  .details-art--selfie .details-cam {
+    max-width: 60%;
   }
 
+  /* Callout + ball cluster overlay the camera area (scene-art is their frame). */
   .details-callout {
-    top: 0;
+    top: 4%;
     right: 2%;
-    width: clamp(150px, 40vw, 240px);
+    bottom: auto;
+    width: clamp(120px, 34vw, 200px);
   }
 
   .details-art-balls {
+    top: auto;
     right: 0;
-    bottom: 2%;
-    width: clamp(150px, 36vw, 240px);
-  }
-
-  .scroll-indicator {
-    display: none;
+    bottom: 4%;
+    width: clamp(120px, 32vw, 190px);
   }
 }
 
@@ -2254,20 +2340,22 @@ header nav .hideOnMobile a.active {
     line-height: 1.5;
   }
 
+  /* Stacked cards (see the ≤768 block) — keep the camera a normal capped image. */
   .details-scene-art {
-    height: 52%;
+    height: auto;
+    margin-top: 1.25rem;
   }
 
+  /* Keep the per-card max-width from the ≤768 block; just cap the height a touch
+     lower on small phones. */
   .details-cam,
+  .details-art--intro .details-cam,
+  .details-art--photos .details-cam,
   .details-art--on .details-cam,
   .details-art--closeup .details-cam,
   .details-art--selfie .details-cam {
-    height: 84%;
-  }
-
-  .details-art--intro .details-cam,
-  .details-art--photos .details-cam {
-    height: 90%;
+    height: auto;
+    max-height: 250px;
   }
 
   .details-demo {
@@ -2881,22 +2969,16 @@ button:focus-visible {
     padding: 1rem 1.5rem 3rem;
   }
 
-  .about-ball--mint {
-    left: -22%;
-    top: 4%;
-    width: clamp(160px, 38vw, 280px);
+  .about-ball--white {
+    right: -22%;
+    top: -2%;
+    width: clamp(190px, 40vw, 320px);
   }
 
   .about-ball--purple {
-    right: -24%;
-    top: 18%;
-    width: clamp(170px, 40vw, 300px);
-  }
-
-  .about-ball--white {
-    left: 33%;
-    bottom: -14%;
-    width: clamp(140px, 32vw, 240px);
+    left: -22%;
+    bottom: 0%;
+    width: clamp(210px, 44vw, 340px);
   }
 
   .about h1 {
@@ -3050,7 +3132,9 @@ button:focus-visible {
 
   .hero-camera--center {
     left: 50%;
-    top: 50%;
+    /* Pulled up from 50% — the camera was reading too low with a big empty gap
+       above it. */
+    top: 40%;
     opacity: 1;
   }
 
@@ -3279,22 +3363,16 @@ button:focus-visible {
     padding: 0.75rem 1rem 2.5rem;
   }
 
-  .about-ball--mint {
-    left: -38%;
-    top: 2%;
-    width: 185px;
+  .about-ball--white {
+    right: -22%;
+    top: -2%;
+    width: 210px;
   }
 
   .about-ball--purple {
-    right: -40%;
-    top: 20%;
-    width: 195px;
-  }
-
-  .about-ball--white {
-    left: 35%;
-    bottom: -12%;
-    width: 145px;
+    left: -22%;
+    bottom: 0%;
+    width: 230px;
   }
 }
 
@@ -3322,7 +3400,7 @@ button:focus-visible {
   }
 
   .hero-camera-stage {
-    height: 380px;
+    height: 440px;
   }
 
   .hero-camera-controls {
@@ -3334,74 +3412,57 @@ button:focus-visible {
   .hero-camera--top-left,
   .hero-camera--top-right,
   .hero-camera--right {
-    width: clamp(700px, 144vw, 955px);
+    width: clamp(950px, 230vw, 1320px);
   }
 
+  /* Tablet hero balls — same edge arrangement as phones, scaled up. */
   .hero-ball--blue {
-    left: -18%;
+    left: -10%;
     bottom: 7rem;
-    width: clamp(250px, 38vw, 430px);
+    width: clamp(280px, 40vw, 440px);
   }
 
   .hero-ball--pink {
     left: auto;
-    right: -18%;
+    right: -10%;
     bottom: 6rem;
-    width: clamp(230px, 34vw, 390px);
+    width: clamp(280px, 40vw, 440px);
   }
 
   .hero-ball--purple {
     left: auto;
-    right: -13%;
-    top: 9%;
-    width: clamp(230px, 34vw, 400px);
+    right: -14%;
+    top: 24%;
+    width: clamp(260px, 36vw, 420px);
   }
 
   .hero-ball--mint {
-    right: 2%;
-    top: 31%;
-    width: clamp(230px, 34vw, 400px);
+    right: -4%;
+    top: 5%;
+    width: clamp(250px, 34vw, 400px);
   }
 
   .hero-ball--white {
     right: auto;
-    left: -19%;
-    bottom: 19rem;
-    width: clamp(205px, 27vw, 330px);
+    left: -16%;
+    top: 38%;
+    width: clamp(240px, 32vw, 380px);
   }
 
   .model-ball {
     opacity: 1;
   }
 
-  .model-ball--blue {
-    left: -24%;
-    bottom: 9%;
-    width: clamp(260px, 42vw, 420px);
+  .model-ball--purple {
+    left: -16%;
+    top: 9%;
+    width: clamp(240px, 38vw, 400px);
   }
 
   .model-ball--pink {
-    right: -24%;
+    right: -16%;
     bottom: 8%;
-    width: clamp(245px, 39vw, 390px);
-  }
-
-  .model-ball--purple {
-    right: -19%;
-    top: 14%;
-    width: clamp(220px, 35vw, 360px);
-  }
-
-  .model-ball--mint {
-    left: -19%;
-    top: 14%;
-    width: clamp(220px, 35vw, 360px);
-  }
-
-  .model-ball--white {
-    left: 43%;
-    top: -6%;
-    width: clamp(205px, 33vw, 340px);
+    width: clamp(240px, 38vw, 400px);
   }
 
   .model-canvas {
@@ -3516,11 +3577,11 @@ button:focus-visible {
   }
 
   .hero-3d {
-    min-height: 300px;
+    min-height: 360px;
   }
 
   .hero-camera-stage {
-    height: 300px;
+    height: 360px;
   }
 
   .hero-camera--center,
@@ -3528,44 +3589,51 @@ button:focus-visible {
   .hero-camera--top-left,
   .hero-camera--top-right,
   .hero-camera--right {
-    /* Only the center camera shows at this width. */
-    width: clamp(640px, 195vw, 920px);
+    /* Only the center camera shows at this width. Enlarged: the art is 13.67%
+       of this frame, so ~310vw lands the visible camera at ~170px on a phone. */
+    width: clamp(900px, 310vw, 1250px);
+  }
+
+  /* Phone hero balls — all top-anchored for predictable placement (the short
+     hero + large transparent ball boxes make bottom-anchoring jump around).
+     mint top-right, blue upper-left under the logo, purple right edge, white
+     left lower edge, pink lower-right near the camera. Modest bleed so none is
+     cut to a sliver. */
+  .hero-ball--mint {
+    display: block;
+    left: auto;
+    right: -5%;
+    top: 2%;
+    width: 200px;
   }
 
   .hero-ball--blue {
-    left: -20%;
-    bottom: 6.2rem;
-    width: 190px;
-  }
-
-  .hero-ball--pink {
-    display: block;
-    left: auto;
-    right: -20%;
-    bottom: 6.8rem;
-    width: 190px;
+    left: -9%;
+    top: 1%;
+    width: 185px;
   }
 
   .hero-ball--purple {
     left: auto;
-    right: -18%;
-    top: 11%;
-    width: 185px;
-  }
-
-  .hero-ball--mint {
-    display: block;
-    right: -7%;
-    top: 31%;
-    width: 185px;
+    right: -9%;
+    top: 44%;
+    width: 205px;
   }
 
   .hero-ball--white {
     display: block;
     right: auto;
-    left: -18%;
-    bottom: 14rem;
-    width: 175px;
+    left: -15%;
+    top: 55%;
+    width: 195px;
+  }
+
+  .hero-ball--pink {
+    display: block;
+    left: auto;
+    right: 4%;
+    top: 70%;
+    width: 200px;
   }
 
   .model-canvas {
@@ -3651,34 +3719,16 @@ button:focus-visible {
     opacity: 1;
   }
 
-  .model-ball--blue {
-    left: -46%;
-    bottom: 10%;
-    width: 280px;
+  .model-ball--purple {
+    left: -18%;
+    top: 8%;
+    width: 270px;
   }
 
   .model-ball--pink {
-    right: -46%;
-    bottom: 11%;
-    width: 260px;
-  }
-
-  .model-ball--purple {
-    right: -36%;
-    top: 16%;
-    width: 235px;
-  }
-
-  .model-ball--mint {
-    left: -36%;
-    top: 15%;
-    width: 235px;
-  }
-
-  .model-ball--white {
-    left: 42%;
-    top: -9%;
-    width: 215px;
+    right: -18%;
+    bottom: 8%;
+    width: 270px;
   }
 }
 
@@ -3686,34 +3736,37 @@ button:focus-visible {
    Without this, the default margin-left: 8rem on hero-content causes the flex
    items to overflow and wrap at these viewport sizes. */
 @media (max-width: 380px) {
+  /* Smallest phones — same edge arrangement, slightly smaller balls. */
   .hero-ball--blue {
-    left: -16%;
-    bottom: 6rem;
-    width: 178px;
+    left: -12%;
+    bottom: 6.5rem;
+    width: 210px;
   }
 
   .hero-ball--pink {
-    right: -16%;
-    bottom: 6.6rem;
-    width: 178px;
+    right: -12%;
+    bottom: 6.5rem;
+    width: 210px;
   }
 
   .hero-ball--purple {
-    right: -16%;
-    top: 11%;
-    width: 174px;
+    left: auto;
+    right: -18%;
+    top: 25%;
+    width: 205px;
   }
 
   .hero-ball--mint {
-    right: -9%;
-    top: 31%;
-    width: 174px;
+    right: -8%;
+    top: 4%;
+    width: 195px;
   }
 
   .hero-ball--white {
-    left: -17%;
-    bottom: 14rem;
-    width: 166px;
+    right: auto;
+    left: -20%;
+    top: 40%;
+    width: 190px;
   }
 }
 

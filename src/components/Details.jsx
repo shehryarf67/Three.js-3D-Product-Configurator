@@ -116,83 +116,141 @@ const Details = () => {
 
             if (!stage || !node || sceneEls.length === 0) return;
 
-            gsap.set(pipe, { autoAlpha: 1, xPercent: 112 });
-            gsap.set(scrollIndicator, { autoAlpha: 0 });
-            gsap.set(sceneEls, { autoAlpha: 0 });
-            gsap.set(allCopy, { autoAlpha: 0, y: 36 });
-            gsap.set(allArt, { autoAlpha: 0, yPercent: 7, scale: 0.94 });
+            const mm = gsap.matchMedia();
 
-            const tl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: node,
-                    start: "top top",
-                    end: () => `+=${getDetailsScrollDistance()}`,
-                    scrub: 0.35,
-                    pin: stage,
-                    pinSpacing: true,
-                    anticipatePin: 1,
-                    fastScrollEnd: true,
-                    invalidateOnRefresh: true,
-                },
+            // Desktop / landscape tablet: the pinned, scrubbed cinematic version.
+            // Phones get NO timeline — the CSS lays the scenes out as a normal
+            // vertical stack of cards (see the ≤768 block in index.css), which is
+            // far more legible than a cramped pinned crossfade on a small screen.
+            // matchMedia auto-reverts these sets/timeline when crossing 768px.
+            mm.add("(min-width: 769px)", () => {
+                gsap.set(pipe, { autoAlpha: 1, xPercent: 112 });
+                gsap.set(scrollIndicator, { autoAlpha: 0 });
+                gsap.set(sceneEls, { autoAlpha: 0 });
+                gsap.set(allCopy, { autoAlpha: 0, y: 36 });
+                gsap.set(allArt, { autoAlpha: 0, yPercent: 7, scale: 0.94 });
+
+                const tl = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: node,
+                        start: "top top",
+                        end: () => `+=${getDetailsScrollDistance()}`,
+                        scrub: 0.35,
+                        pin: stage,
+                        pinSpacing: true,
+                        anticipatePin: 1,
+                        fastScrollEnd: true,
+                        invalidateOnRefresh: true,
+                    },
+                });
+
+                const revealScene = (i, pos) => {
+                    const scene = sceneEls[i];
+                    const copy = scene.querySelectorAll(".details-anim");
+                    const art = scene.querySelector(".details-scene-art");
+                    tl.set(scene, { autoAlpha: 1 }, pos);
+                    tl.to(
+                        art,
+                        { autoAlpha: 1, yPercent: 0, scale: 1, duration: SCENE_IN_DURATION, ease: "power2.out" },
+                        pos
+                    );
+                    tl.to(
+                        copy,
+                        { autoAlpha: 1, y: 0, duration: SCENE_IN_DURATION, ease: "power2.out", stagger: 0.08 },
+                        pos + 0.08
+                    );
+                };
+
+                const hideScene = (i, pos) => {
+                    const scene = sceneEls[i];
+                    const copy = scene.querySelectorAll(".details-anim");
+                    const art = scene.querySelector(".details-scene-art");
+                    tl.to(copy, { autoAlpha: 0, y: -26, duration: SCENE_OUT_DURATION, ease: "power2.in" }, pos);
+                    tl.to(
+                        art,
+                        { autoAlpha: 0, yPercent: -5, scale: 0.97, duration: SCENE_OUT_DURATION, ease: "power2.in" },
+                        pos
+                    );
+                    tl.set(scene, { autoAlpha: 0 }, pos + SCENE_OUT_DURATION);
+                };
+
+                const PIPE_IN_AT = PIN_BLANK;
+                const FIRST_SCENE_AT = PIPE_IN_AT + PIPE_REVEAL_DURATION - FIRST_SCENE_OVERLAP;
+
+                tl.to({}, { duration: PIN_BLANK }, 0);
+                tl.to(pipe, { xPercent: 0, duration: PIPE_REVEAL_DURATION, ease: "power3.out" }, PIPE_IN_AT);
+                tl.to(scrollIndicator, { autoAlpha: 1, duration: 0.5, ease: "none" }, PIPE_IN_AT + 0.35);
+
+                revealScene(0, FIRST_SCENE_AT);
+                let cursor = FIRST_SCENE_AT;
+                for (let i = 1; i < scenes.length; i++) {
+                    cursor += SCENE_IN_DURATION + SCENE_DWELL;
+                    hideScene(i - 1, cursor);
+                    cursor += SCENE_OUT_DURATION + SCENE_GAP;
+                    revealScene(i, cursor);
+                }
+
+                cursor += SCENE_IN_DURATION + FINAL_DWELL;
+                hideScene(scenes.length - 1, cursor);
+                tl.to(scrollIndicator, { autoAlpha: 0, duration: RELEASE_OUT_DURATION, ease: "none" }, cursor);
+                tl.to(
+                    pipe,
+                    { autoAlpha: 0, xPercent: 24, duration: RELEASE_OUT_DURATION, ease: "power2.in" },
+                    cursor
+                );
+                tl.to({}, { duration: 0.15 });
+
+                requestAnimationFrame(() => ScrollTrigger.refresh());
             });
 
-            const revealScene = (i, pos) => {
-                const scene = sceneEls[i];
-                const copy = scene.querySelectorAll(".details-anim");
-                const art = scene.querySelector(".details-scene-art");
-                tl.set(scene, { autoAlpha: 1 }, pos);
-                tl.to(
-                    art,
-                    { autoAlpha: 1, yPercent: 0, scale: 1, duration: SCENE_IN_DURATION, ease: "power2.out" },
-                    pos
-                );
-                tl.to(
-                    copy,
-                    { autoAlpha: 1, y: 0, duration: SCENE_IN_DURATION, ease: "power2.out", stagger: 0.08 },
-                    pos + 0.08
-                );
-            };
+            // Phones / portrait tablets: a compact version of the desktop scrub.
+            // The stage pins and ONE card pops in at a time; scrolling pops the
+            // current card out and the next one in. Because it's scrubbed, the
+            // user controls the pace and actually sees each pop (the old
+            // scroll-into-view reveal fired too early to notice).
+            mm.add("(max-width: 768px)", () => {
+                gsap.set(scrollIndicator, { autoAlpha: 0 });
+                gsap.set(sceneEls, { autoAlpha: 0, scale: 0.88, y: 26 });
 
-            const hideScene = (i, pos) => {
-                const scene = sceneEls[i];
-                const copy = scene.querySelectorAll(".details-anim");
-                const art = scene.querySelector(".details-scene-art");
-                tl.to(copy, { autoAlpha: 0, y: -26, duration: SCENE_OUT_DURATION, ease: "power2.in" }, pos);
-                tl.to(
-                    art,
-                    { autoAlpha: 0, yPercent: -5, scale: 0.97, duration: SCENE_OUT_DURATION, ease: "power2.in" },
-                    pos
-                );
-                tl.set(scene, { autoAlpha: 0 }, pos + SCENE_OUT_DURATION);
-            };
+                const tl = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: node,
+                        start: "top top",
+                        end: () => `+=${getDetailsScrollDistance()}`,
+                        scrub: 0.3,
+                        pin: stage,
+                        pinSpacing: true,
+                        anticipatePin: 1,
+                        fastScrollEnd: true,
+                        invalidateOnRefresh: true,
+                    },
+                });
 
-            const PIPE_IN_AT = PIN_BLANK;
-            const FIRST_SCENE_AT = PIPE_IN_AT + PIPE_REVEAL_DURATION - FIRST_SCENE_OVERLAP;
+                const LEAD = 0.35;   // brief blank hold once pinned
+                const POP_IN = 0.55;
+                const DWELL = 1.1;   // how long a card stays before the next
+                const POP_OUT = 0.4;
+                const GAP = 0.12;
 
-            tl.to({}, { duration: PIN_BLANK }, 0);
-            tl.to(pipe, { xPercent: 0, duration: PIPE_REVEAL_DURATION, ease: "power3.out" }, PIPE_IN_AT);
-            tl.to(scrollIndicator, { autoAlpha: 1, duration: 0.5, ease: "none" }, PIPE_IN_AT + 0.35);
+                let cursor = LEAD;
+                sceneEls.forEach((scene, i) => {
+                    tl.to(
+                        scene,
+                        { autoAlpha: 1, scale: 1, y: 0, duration: POP_IN, ease: "back.out(1.5)" },
+                        cursor
+                    );
+                    cursor += POP_IN + DWELL;
+                    tl.to(
+                        scene,
+                        { autoAlpha: 0, scale: 0.9, y: -24, duration: POP_OUT, ease: "power2.in" },
+                        cursor
+                    );
+                    cursor += POP_OUT + GAP;
+                });
+                tl.to({}, { duration: 0.3 });
 
-            revealScene(0, FIRST_SCENE_AT);
-            let cursor = FIRST_SCENE_AT;
-            for (let i = 1; i < scenes.length; i++) {
-                cursor += SCENE_IN_DURATION + SCENE_DWELL;
-                hideScene(i - 1, cursor);
-                cursor += SCENE_OUT_DURATION + SCENE_GAP;
-                revealScene(i, cursor);
-            }
-
-            cursor += SCENE_IN_DURATION + FINAL_DWELL;
-            hideScene(scenes.length - 1, cursor);
-            tl.to(scrollIndicator, { autoAlpha: 0, duration: RELEASE_OUT_DURATION, ease: "none" }, cursor);
-            tl.to(
-                pipe,
-                { autoAlpha: 0, xPercent: 24, duration: RELEASE_OUT_DURATION, ease: "power2.in" },
-                cursor
-            );
-            tl.to({}, { duration: 0.15 });
-
-            requestAnimationFrame(() => ScrollTrigger.refresh());
+                requestAnimationFrame(() => ScrollTrigger.refresh());
+            });
         },
         { scope: sectionRef, revertOnUpdate: true }
     );

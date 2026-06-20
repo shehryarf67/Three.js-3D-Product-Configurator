@@ -144,7 +144,10 @@ const ModelCanvas = () => {
     const modelSize = [0.45, 0.45, 0.45];
     const [hoveredPart, setHoveredPart] = useState(null);
     const activePart = hoveredPart;
-    const isTouch = useMediaQuery({ query: '(hover: none), (pointer: coarse)' });
+    // Treat tablets as touch (tap-to-select the model parts). The width clause
+    // covers tablets that report a fine pointer / DevTools emulation where
+    // (hover:none)/(pointer:coarse) don't fire — matches the ≤1399 tablet range.
+    const isTouch = useMediaQuery({ query: '(hover: none), (pointer: coarse), (max-width: 1399px)' });
 
     useEffect(() => {
         hoveredPartRef.current = hoveredPart;

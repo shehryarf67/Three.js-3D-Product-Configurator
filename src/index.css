@@ -218,10 +218,13 @@ body {
   position: absolute;
   top: calc(100% - 2px);
   left: 0;
-  width: 300px;
-  height: 300px;
+  /* Smaller lobe so its curve matches the site's other corner radii (the hero's
+     bottom-left ~220px, etc.) rather than reading oversized. clip-path control
+     point scales with the box: 100.73 × 220/300 ≈ 73.87. */
+  width: 220px;
+  height: 220px;
   background: var(--secondary_color);
-  clip-path: path('M0,300 V0 H300 C100.73,0 0,100.73 0,300 Z');
+  clip-path: path('M0,220 V0 H220 C73.87,0 0,73.87 0,220 Z');
   z-index: 110;
   pointer-events: none;
 }
@@ -318,6 +321,13 @@ header nav .hideOnMobile a.active {
 }
 
 .hero {
+  /* Hero copy/camera positioning knobs:
+     --hero-copy-x: larger = text moves right.
+     --hero-copy-y: smaller = text moves up.
+     --hero-camera-cluster-y: larger = camera cluster moves down. */
+  --hero-copy-x: 12rem;
+  --hero-copy-y: 3rem;
+  --hero-camera-cluster-y: 42%;
   display: flex;
   justify-content: space-between;
   flex-direction: row;
@@ -342,8 +352,8 @@ header nav .hideOnMobile a.active {
 .hero-content {
   max-width: 300px;
   z-index: 5;
-  margin-left: 12rem;
-  margin-top: 6rem;
+  margin-left: var(--hero-copy-x);
+  margin-top: var(--hero-copy-y);
   align-items: flex-start;
   justify-content: space-between;
 }
@@ -373,10 +383,47 @@ header nav .hideOnMobile a.active {
   z-index: 4;
 }
 
+/* Tablet (between the mobile ≤768 layout and the ≥1024 desktop tuning). The base
+   margin-left:12rem + 64%-wide 3D column overflow and wrap into a column here.
+   Force the desktop side-by-side row: tighten the copy's left margin, shrink the
+   3D column, and disable wrapping so the cameras stay to the right of the copy. */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .hero {
+    --hero-copy-x: 3.75rem;
+    --hero-copy-y: -2.4rem;
+    --hero-camera-cluster-y: 43%;
+    flex-wrap: nowrap;
+    padding: 1rem 2rem;
+    align-items: center;
+  }
+
+  .hero-content {
+    margin-left: var(--hero-copy-x);
+    margin-top: var(--hero-copy-y);
+    flex-shrink: 0;
+  }
+
+  .hero-3d {
+    width: 52%;
+    min-height: 460px;
+    margin-top: 0;
+  }
+
+  /* ModelCanvas read "too thin": the 9vw side padding + the pink panel inset
+     (--model-panel-x) left only a narrow strip. Pull both in so the panel and
+     the model fill the width like desktop. */
+  .model-canvas {
+    --model-panel-x: clamp(1rem, 3vw, 2.25rem);
+    padding-left: clamp(1.25rem, 3vw, 2.5rem);
+    padding-right: clamp(1.25rem, 3vw, 2.5rem);
+    grid-template-columns: minmax(70px, 0.26fr) minmax(340px, 1fr) minmax(104px, 0.3fr);
+  }
+}
+
 .hero-camera {
   position: absolute;
   left: 50%;
-  top: 37%;
+  top: var(--hero-camera-cluster-y);
   aspect-ratio: 16 / 9;
   margin: 0;
   opacity: 1;
@@ -634,6 +681,18 @@ header nav .hideOnMobile a.active {
   z-index: 2;
 }
 
+/* Mobile: remove every decorative ball image across the whole site. */
+@media (max-width: 768px) {
+  .hero-ball,
+  .model-ball,
+  .pipe-ball,
+  .details-ball,
+  .about-ball,
+  .details-art-balls {
+    display: none !important;
+  }
+}
+
 /* Five balls placed to match the hero mockup: blue top-left-of-centre, mint
    top-right, purple in the centre over the cameras, pink lower-left (the
    largest), white lower-right. The ball image is a small disc centred in a
@@ -691,7 +750,9 @@ header nav .hideOnMobile a.active {
   }
 }
 
-@media(min-width: 960px) {
+/* From tablet up, all three cards sit in a single row (smaller) like desktop,
+   instead of the 2-then-1 wrap that read as a 3-type grid. */
+@media(min-width: 769px) {
   .card-grid {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -1213,10 +1274,10 @@ header nav .hideOnMobile a.active {
   background: var(--main_bg_color);
   overflow: hidden;
   padding: 0 2rem 1rem;
-  /* Overlap the section above by 1px so the pink page background can't show
-     through a sub-pixel seam where the ModelCanvas's teal bottom meets the
-     Showcase's teal lobe (the hairline pink line). */
-  margin-top: -1px;
+  /* Overlap the section above so the pink page background can't show through a
+     sub-pixel seam where the ModelCanvas's teal bottom meets the Showcase's teal
+     lobe (the hairline). Bumped to 2px — 1px still left a faint line on some DPRs. */
+  margin-top: -2px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -1230,12 +1291,14 @@ header nav .hideOnMobile a.active {
 #showcase::before {
   content: "";
   position: absolute;
-  top: 0;
+  /* Pulled up a few px so this teal lobe overlaps the ModelCanvas's teal bottom,
+     hiding the hairline seam where the two teal areas meet. */
+  top: -3px;
   left: 0;
   width: 340px;
-  height: 340px;
+  height: 343px;
   background: var(--secondary_color);
-  clip-path: path('M0,340 V0 H340 C114.2,0 0,114.2 0,340 Z');
+  clip-path: path('M0,343 V0 H340 C114.2,0 0,114.2 0,343 Z');
   z-index: 2;
   pointer-events: none;
 }
@@ -1978,44 +2041,47 @@ header nav .hideOnMobile a.active {
   will-change: transform, opacity;
 }
 
+/* The camera is BOTTOM-anchored to the pipe bottom (pipe is top:26%/bottom:26%,
+   so its bottom edge is at 26% from the stage bottom). Anchoring by `bottom`
+   rather than `top` keeps every scene's camera flush with the pipe bottom no
+   matter its height — a single `top` couldn't, because the scenes are different
+   heights (72/66/62%). */
 .details-cam {
   position: absolute;
-  --details-cam-bleed-y: clamp(6px, 0.7vh, 10px);
-  top: 38%;
-  left: 42%;
-  transform: translate(-50%, calc(-50.85% + var(--details-cam-bleed-y)));
-  width: auto;
-  height: 66%;
-  max-width: 92%;
+  bottom: 26%;
+  left: 46%;
+  transform: translateX(-50%);
+  /* Sized by WIDTH with height:auto. The comps are square, so the element box
+     matches the image and object-fit never letterboxes — that letterbox (a tall
+     box around a width-capped square image) was the empty gap below the camera
+     on tall viewports. Bottom-anchored, the camera base lands on the pipe bottom
+     at every viewport height. */
+  width: 67%;
+  height: auto;
   object-fit: contain;
   filter: drop-shadow(0 26px 40px rgba(0, 0, 0, 0.22));
 }
 
 .details-art--intro .details-cam,
 .details-art--photos .details-cam {
-  height: 72%;
+  width: 73%;
 }
 
+/* Per-scene knobs: `left` shifts horizontally, `width` resizes just that scene.
+   Vertical alignment is handled by the shared bottom-anchor above. */
 .details-art--selfie .details-cam {
-  height: 62%;
-  top: 43%;
-  left: 48%;
+  width: 63%;
+  left: 52%;
 }
 
-/* Per-scene camera position knobs. Each rule targets one scene's wrapper class,
-   so you can move a single camera without touching the others. Raise `top` to
-   lower the camera (it's centered at top:50%); change `left` to shift it
-   horizontally; change `height` to resize just that scene. */
 .details-art--on .details-cam {
-  top: 41%;
-  left: 40%;
+  left: 44%;
 }
 
-/* Scene 03 — close-up mode. Defaults match the base; edit to reposition. */
+/* Scene 03 — close-up mode. */
 .details-art--closeup .details-cam {
-  top: 41%;
-  left: 40%;
-  height: 66%;
+  left: 44%;
+  width: 67%;
 }
 
 .details-art-balls {
@@ -2029,10 +2095,14 @@ header nav .hideOnMobile a.active {
 
 .details-callout {
   position: absolute;
+  /* Raises the baked-in pointer so the circle lands on the selfie mirror/glass.
+     Increase to point higher; decrease to lower it. */
+  --details-callout-lift: clamp(64px, 12vh, 96px);
   top: 20%;
   right: -3%;
   width: clamp(240px, 28vw, 460px);
   height: auto;
+  transform: translateY(calc(-1 * var(--details-callout-lift)));
 }
 
 @media (min-width: 1101px) {
@@ -2114,66 +2184,130 @@ header nav .hideOnMobile a.active {
   }
 
   /* The intro (first card) camera was reading small in all that space — blow it
-     up so it clearly overflows the pipe. Because it's so tall (94%), centering
-     it at top:47% dropped its bottom edge to ~94% — ~20% below the pipe bottom
-     (74%). Pull it up so the camera's base sits at the pipe bottom and it pops
-     out the TOP instead. Lower `top` to raise the camera further. */
+     up so it clearly overflows the pipe. It's bottom-anchored + width-sized, so
+     it pops out the TOP as it grows. */
   .details-art--intro .details-cam {
-    height: 94%;
-    top: 30%;
+    width: 88%;
   }
 
   /* Pull every camera toward the centre of the (now 50%-wide) pipe. The art
      column is right-anchored at 52%, so left:52% lands a camera at ~75vw — the
      pipe's horizontal centre. Per-scene rules are restated to win specificity. */
   .details-cam {
-    left: 52%;
+    left: 56%;
   }
 
   /* 2nd card ("01") camera nudged slightly left of the shared 52% centre. */
   .details-art--photos .details-cam {
-    left: 48%;
+    left: 52%;
   }
 
   .details-art--on .details-cam,
   .details-art--closeup .details-cam {
-    left: 50%;
+    left: 54%;
   }
 
   .details-art--selfie .details-cam {
-    left: 56%;
+    left: 60%;
   }
 }
 
 /* Small laptops / large tablets (landscape) — still side-by-side. */
 @media (max-width: 1100px) {
+  /* Copy + pipe were 48% + 58% = 106% → the text overlapped the pipe. Shrink
+     both so the columns clear each other. */
   .details-scene-copy {
-    width: min(48%, 520px);
+    width: min(40%, 440px);
     left: clamp(2rem, 5vw, 5rem);
   }
 
+  .details-scene-art {
+    width: 54%;
+  }
+
   .details-pipe {
-    width: 58%;
+    width: 54%;
   }
 }
 
 @media (max-width: 900px) {
   .details-scene-copy {
-    width: min(50%, 460px);
-    left: clamp(1.5rem, 4vw, 3.5rem);
+    width: min(40%, 360px);
+    left: clamp(1.25rem, 3.5vw, 3rem);
   }
 
   .details-scene-art {
-    width: 56%;
+    width: 54%;
   }
 
   .details-pipe {
-    width: 60%;
+    width: 54%;
     border-radius: 220px 0 0 220px;
   }
 
+  /* Camera bottom-alignment is handled by the shared bottom-anchor rule now,
+     so no per-width `top` nudges are needed here. */
+
   .details-demo-img {
     width: clamp(84px, 11vw, 120px);
+  }
+}
+
+/* TABLET-only Details tweaks (the pinned desktop pipe layout runs here too).
+   Placed after the ≤900 block so it wins where the ranges overlap. */
+@media (min-width: 769px) and (max-width: 1399px) {
+  /* 2. Shorter teal pipe. */
+  .details-pipe {
+    top: 31%;
+    bottom: 31%;
+  }
+
+  /* Keep every camera's base on the raised pipe bottom (so it stays aligned),
+     and 3. nudge them right so the bottom-left corner doesn't poke out. */
+  .details-cam {
+    bottom: 31%;
+    left: 52%;
+  }
+
+  /* 02/03 cameras nudged a bit further right. */
+  .details-art--on .details-cam,
+  .details-art--closeup .details-cam {
+    left: 52%;
+  }
+
+  .details-art--selfie .details-cam {
+    left: 54%;
+  }
+
+  /* 1. Intro camera bigger (still bottom-aligned to the pipe via the anchor). */
+  .details-art--intro .details-cam {
+    width: 94%;
+  }
+
+  /* Ball cluster (02/03): bigger and pushed to the top-right of the pipe. */
+  .details-art-balls {
+    top: 30%;
+    right: 4%;
+    bottom: auto;
+    left: auto;
+    width: clamp(200px, 24vw, 360px);
+  }
+
+  /* 04 selfie callout — bottom-anchored so the pointer tracks the camera, then
+     lifted by --details-callout-lift so the circle lands on the glass. */
+  .details-callout {
+    bottom: 43%;
+    top: auto;
+    right: 2%;
+    left: auto;
+    width: clamp(180px, 22vw, 320px);
+  }
+
+  /* ModelCanvas (tablet): centre the model (drop the right-nudge) and push the
+     spec text rightward (wider copy gutter). */
+  .model-canvas {
+    --model-center-nudge: 0px;
+    --model-copy-gutter: clamp(3.5rem, 9vw, 10rem);
   }
 }
 
@@ -2273,6 +2407,7 @@ header nav .hideOnMobile a.active {
   .details-art--selfie .details-cam {
     position: relative;
     top: auto;
+    bottom: auto;
     left: auto;
     transform: none;
     width: auto;
@@ -2305,6 +2440,7 @@ header nav .hideOnMobile a.active {
 
   /* Callout + ball cluster overlay the camera area (scene-art is their frame). */
   .details-callout {
+    --details-callout-lift: clamp(18px, 4vh, 34px);
     top: 4%;
     right: 2%;
     bottom: auto;
@@ -2379,6 +2515,9 @@ header nav .hideOnMobile a.active {
   }
 
   .details-callout {
+    /* Negative lift lowers the baked-in pointer on phones so it lands on the
+       selfie mirror/glass again. Make this more negative to push it lower. */
+    --details-callout-lift: clamp(-22px, -4vh, -12px);
     width: clamp(130px, 42vw, 200px);
   }
 
@@ -2396,12 +2535,12 @@ header nav .hideOnMobile a.active {
   }
 
   .details-cam {
-    height: 78%;
+    width: 60%;
   }
 
   .details-art--intro .details-cam,
   .details-art--photos .details-cam {
-    height: 82%;
+    width: 66%;
   }
 }
 
@@ -2800,6 +2939,9 @@ button:focus-visible {
   }
 
   .hero {
+    --hero-copy-x: 3.5rem;
+    --hero-copy-y: -1.1rem;
+    --hero-camera-cluster-y: 44%;
     flex-direction: column;
     align-items: center;
     padding: 1rem 1.5rem;
@@ -2812,8 +2954,8 @@ button:focus-visible {
   }
 
   .hero-content {
-    margin-left: 2rem;
-    margin-top: 3rem;
+    margin-left: var(--hero-copy-x);
+    margin-top: var(--hero-copy-y);
     max-width: 100%;
     text-align: left;
   }
@@ -2831,32 +2973,32 @@ button:focus-visible {
   /* Match desktop scattered layout on tablet */
   .hero-camera--center {
     left: 56%;
-    top: 40%;
+    top: var(--hero-camera-cluster-y);
     transform: translate3d(-50%, -50%, 0);
   }
 
   .hero-camera--left {
     left: 57%;
-    top: 37%;
+    top: var(--hero-camera-cluster-y);
     transform: translate3d(-50%, -55%, 0);
   }
 
   .hero-camera--top-left {
     left: 57%;
-    top: 37%;
+    top: var(--hero-camera-cluster-y);
     transform: translate3d(-50%, -53%, 0);
   }
 
   .hero-camera--top-right {
     left: 57%;
-    top: 37%;
+    top: var(--hero-camera-cluster-y);
     transform: translate3d(-50%, -50%, 0);
   }
 
   .hero-camera--right {
     left: 57%;
     right: auto;
-    top: 37%;
+    top: var(--hero-camera-cluster-y);
     transform: translate3d(-55%, -50%, 0);
   }
 
@@ -3084,7 +3226,7 @@ button:focus-visible {
   }
 
   .hero-content {
-    margin-top: 2rem;
+    margin-top: var(--hero-copy-y);
   }
 
   .hero-content h1 {
@@ -3132,9 +3274,7 @@ button:focus-visible {
 
   .hero-camera--center {
     left: 50%;
-    /* Pulled up from 50% — the camera was reading too low with a big empty gap
-       above it. */
-    top: 40%;
+    top: var(--hero-camera-cluster-y);
     opacity: 1;
   }
 
@@ -3378,6 +3518,9 @@ button:focus-visible {
 
 @media (max-width: 768px) {
   .hero {
+    --hero-copy-x: 3.5rem;
+    --hero-copy-y: -1.1rem;
+    --hero-camera-cluster-y: 44%;
     display: grid;
     grid-template-columns: 1fr;
     padding: 5rem 1.5rem 2rem;
@@ -3387,8 +3530,8 @@ button:focus-visible {
   }
 
   .hero-content {
-    margin-top: 0;
-    margin-left: 2rem;
+    margin-top: var(--hero-copy-y);
+    margin-left: var(--hero-copy-x);
     justify-self: start;
     max-width: 260px;
   }
@@ -3467,9 +3610,12 @@ button:focus-visible {
 
   .model-canvas {
     display: grid;
-    grid-template-columns: 1fr;
-    min-height: 760px;
-    padding: 3rem 1.25rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(430px, 1fr) auto;
+    column-gap: clamp(0.75rem, 2vw, 1.5rem);
+    min-height: 820px;
+    padding: 3rem 1.25rem 4.5rem;
+    align-items: center;
   }
 
   .model-canvas-bg {
@@ -3478,12 +3624,16 @@ button:focus-visible {
   }
 
   .model-canvas-content {
-    grid-column: 1;
+    position: relative;
+    left: auto;
+    top: auto;
+    translate: none;
+    grid-column: 1 / -1;
     grid-row: 1;
     align-self: start;
     justify-self: center;
     max-width: min(360px, calc(100% - 6rem));
-    margin-top: 2.5rem;
+    margin-top: 0;
     margin-left: 0;
     text-align: center;
   }
@@ -3536,19 +3686,29 @@ button:focus-visible {
   }
 
   .model-3d {
+    position: relative;
+    left: auto;
+    top: auto;
+    translate: none;
     grid-column: 1;
-    grid-row: 1;
+    grid-row: 2;
     justify-self: center;
-    width: calc(100% - 8.4rem);
-    height: 430px;
-    margin-top: 8rem;
+    width: min(100%, 620px);
+    height: min(56vh, 470px);
+    min-height: 410px;
+    margin-top: 0;
   }
 
   .model-color-picker {
-    grid-column: 1;
-    grid-row: 1;
+    position: relative;
+    right: auto;
+    top: auto;
+    translate: none;
+    grid-column: 2;
+    grid-row: 2;
     justify-self: end;
-    margin-right: 5rem;
+    align-self: center;
+    margin-right: 0;
   }
 
   .model-canvas-instruction {
@@ -3564,8 +3724,18 @@ button:focus-visible {
 
 @media (max-width: 480px) {
   .hero {
+    --hero-copy-x: auto;
+    --hero-copy-y: -0.8rem;
+    --hero-camera-cluster-y: 46%;
     padding: 4.5rem 1rem 1.5rem;
     border-bottom-right-radius: 0;
+  }
+
+  .hero-content {
+    justify-self: center;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
   }
 
   .hero-content h1 {
@@ -3589,9 +3759,19 @@ button:focus-visible {
   .hero-camera--top-left,
   .hero-camera--top-right,
   .hero-camera--right {
-    /* Only the center camera shows at this width. Enlarged: the art is 13.67%
-       of this frame, so ~310vw lands the visible camera at ~170px on a phone. */
-    width: clamp(900px, 310vw, 1250px);
+    /* Full 5-camera fan on phones. Smaller frame than the single-camera size so
+       the whole cluster fits the width (art is 13.67% of this frame → ~120px per
+       camera at ~210vw). */
+    width: clamp(620px, 210vw, 900px);
+  }
+
+  /* Reveal the side cameras so all 5 show as a fan (was opacity:0 = centre only).
+     The spread comes from each camera's art-position vars (same as desktop). */
+  .hero-camera--left,
+  .hero-camera--top-left,
+  .hero-camera--top-right,
+  .hero-camera--right {
+    opacity: 1;
   }
 
   /* Phone hero balls — all top-anchored for predictable placement (the short
@@ -3639,6 +3819,7 @@ button:focus-visible {
   .model-canvas {
     min-height: 700px;
     padding: 2.5rem 0.8rem 4.5rem;
+    grid-template-columns: 1fr;
     grid-template-rows: auto auto auto;
   }
 
@@ -3648,6 +3829,7 @@ button:focus-visible {
   }
 
   .model-canvas-content {
+    grid-column: 1;
     max-width: min(260px, calc(100% - 4rem));
     margin-left: 0;
     padding: 0 0.5rem;
@@ -3680,6 +3862,7 @@ button:focus-visible {
   }
 
   .model-3d {
+    grid-column: 1;
     grid-row: 2;
     width: calc(100% - 4.8rem);
     height: 360px;
@@ -3687,6 +3870,7 @@ button:focus-visible {
   }
 
   .model-color-picker {
+    grid-column: 1;
     grid-row: 3;
     justify-self: center;
     margin-right: 0;
@@ -3770,9 +3954,115 @@ button:focus-visible {
   }
 }
 
+/* Tablet landscape / small desktop ModelCanvas. These widths are too wide for
+   the portrait stack, but too narrow for the desktop absolute overlay. Put the
+   copy, model, and picker in real grid tracks so the copy cannot sit on top of
+   the camera. */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .model-canvas {
+    --model-panel-x: clamp(1.25rem, 3vw, 2.5rem);
+    display: grid;
+    /* Symmetric side columns so the middle (model) column is centred in the
+       section (was 0.55fr | 1fr | 0.24fr, which pushed the model left). */
+    grid-template-columns: minmax(180px, 1fr) minmax(340px, 1.4fr) minmax(180px, 1fr);
+    grid-template-rows: minmax(520px, 1fr) auto;
+    column-gap: clamp(1rem, 2.2vw, 2rem);
+    min-height: 820px;
+    padding: clamp(2.75rem, 4vw, 4rem) clamp(1.25rem, 3vw, 2.5rem) clamp(3rem, 4vw, 4.5rem);
+    align-items: center;
+  }
+
+  .model-canvas-content {
+    position: relative;
+    left: auto;
+    top: auto;
+    translate: none;
+    grid-column: 1;
+    grid-row: 1;
+    align-self: center;
+    /* end-aligned so the copy sits at the right of its column (pushed toward the
+       model). max-width trimmed so it fits the column instead of overflowing left
+       and getting clipped. */
+    justify-self: end;
+    width: 100%;
+    max-width: 260px;
+    margin: 0;
+    text-align: left;
+  }
+
+  .model-canvas-title {
+    font-size: clamp(2.2rem, 4vw, 3rem);
+  }
+
+  .model-canvas-description,
+  .default-specs-text,
+  .body-specs-text,
+  .lens-specs-text,
+  .sockel-specs-text,
+  .battery-cover-specs-text,
+  .flashlight-specs-text,
+  .shutter-button-specs-text,
+  .polaroid-image-specs-text {
+    font-size: clamp(0.95rem, 1.9vw, 1.08rem);
+  }
+
+  .model-3d {
+    position: relative;
+    left: auto;
+    top: auto;
+    translate: none;
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+    width: min(100%, 540px);
+    height: clamp(540px, 62vh, 680px);
+    margin: 0;
+  }
+
+  .model-color-picker {
+    position: relative;
+    right: auto;
+    top: auto;
+    translate: none;
+    grid-column: 3;
+    grid-row: 1;
+    align-self: center;
+    /* Hug the right edge so widening column 3 (for centering the model) doesn't
+       pull the picker toward the centre. */
+    justify-self: end;
+    margin: 0;
+  }
+
+  .model-color-picker .swatch {
+    width: clamp(44px, 5.6vw, 56px);
+    height: clamp(44px, 5.6vw, 56px);
+  }
+
+  .model-color-picker span {
+    font-size: clamp(1.6rem, 3.6vw, 2.4rem);
+  }
+
+  .model-canvas-instruction {
+    position: relative;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    align-self: end;
+    justify-self: center;
+    margin: 0;
+  }
+}
+
 @media (min-width: 1024px) and (max-width: 1399px) {
+  .hero {
+    --hero-copy-x: 8.75rem;
+    --hero-copy-y: 2.75rem;
+  }
+
   .hero-content {
-    margin-left: 6rem;
+    margin-left: var(--hero-copy-x);
   }
 
   .hero-3d {
@@ -3783,8 +4073,10 @@ button:focus-visible {
 /* Large screens: 1400px and above */
 @media (min-width: 1400px) {
 
-  .hero-camera {
-    top: 39%;
+  .hero {
+    --hero-copy-x: 12.75rem;
+    --hero-copy-y: 2.75rem;
+    --hero-camera-cluster-y: 43%;
   }
 
   .about-content {
@@ -3843,12 +4135,15 @@ button:focus-visible {
 /* Hero large-screen composition: kept above common Surface laptop widths. */
 @media (min-width: 1680px) {
   .hero {
+    --hero-copy-x: clamp(9rem, 13vw, 23rem);
+    --hero-copy-y: 2.75rem;
+    --hero-camera-cluster-y: 43%;
     padding-left: max(4rem, calc((100vw - var(--width-content)) / 2));
     padding-right: max(4rem, calc((100vw - var(--width-content)) / 2));
   }
 
   .hero-content {
-    margin-left: clamp(8rem, 12vw, 22rem);
+    margin-left: var(--hero-copy-x);
     max-width: 420px;
   }
 

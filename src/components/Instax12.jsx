@@ -34,7 +34,9 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, in
   const { actions, mixer } = useAnimations(animations, group)
   const flashGlassMaterial = React.useMemo(() => materials['eevee glass 1'].clone(), [materials])
   const flashDoorMaterial = React.useMemo(() => materials['Material.007'].clone(), [materials])
-  const isTouch = useMediaQuery({ query: '(hover: none), (pointer: coarse)' })
+  // Tablets use tap-to-select parts (no hover). Width clause matches the ≤1399
+  // tablet range so it works even when (hover:none)/(pointer:coarse) don't fire.
+  const isTouch = useMediaQuery({ query: '(hover: none), (pointer: coarse), (max-width: 1399px)' })
 
   const setPartHover = (part) => (e) => {
     if (!interactive) return

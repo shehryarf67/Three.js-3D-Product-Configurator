@@ -44,7 +44,7 @@ const CAMERA_IMAGES = {
   "Clay White": { front: frontWhite, left: leftWhite, topLeft: topLeftWhite, topRight: topRightWhite, right: rightWhite },
   "Mint Green": { front: frontMint, left: leftMint, topLeft: topLeftMint, topRight: topRightMint, right: rightMint },
   "Blossom Pink": { front: frontPink, left: leftPink, topLeft: topLeftPink, topRight: topRightPink, right: rightPink },
-  "Baby Blue": { front: frontBlue, left: leftBlue, topLeft: topLeftBlue, topRight: topRightBlue, right: rightBlue },
+  "Pastel Blue": { front: frontBlue, left: leftBlue, topLeft: topLeftBlue, topRight: topRightBlue, right: rightBlue },
 };
 
 const COLORS = Object.keys(CAMERA_IMAGES);
@@ -134,6 +134,7 @@ const Hero = () => {
           Fill Your<br />World<br />With Joy
         </h1>
         <p className="hero-description">Instax Mini 12</p>
+        <p className="hero-subtext">A 3D Interactive Experience</p>
       </div>
 
       <div className="hero-3d">

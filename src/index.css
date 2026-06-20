@@ -326,7 +326,7 @@ header nav .hideOnMobile a.active {
      --hero-copy-y: smaller = text moves up.
      --hero-camera-cluster-y: larger = camera cluster moves down. */
   --hero-copy-x: 12rem;
-  --hero-copy-y: 3rem;
+  --hero-copy-y: 0rem;
   --hero-camera-cluster-y: 42%;
   display: flex;
   justify-content: space-between;
@@ -353,6 +353,10 @@ header nav .hideOnMobile a.active {
   max-width: 300px;
   z-index: 5;
   margin-left: var(--hero-copy-x);
+  /* Vertically centred in the hero's single row on desktop; on mobile the hero
+     wraps so each item is alone on its line and align-self is a no-op there.
+     --hero-copy-y is the nudge from centre (negative = up). */
+  align-self: center;
   margin-top: var(--hero-copy-y);
   align-items: flex-start;
   justify-content: space-between;
@@ -369,6 +373,15 @@ header nav .hideOnMobile a.active {
   margin: 0.5rem 0 1rem 0;
   margin-left: 1rem;
   color: rgba(255, 255, 255, 0.78);
+}
+
+/* Small tagline under "Instax Mini 12". */
+.hero-subtext {
+  margin-top: -0.6rem;
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .hero-3d {
@@ -531,36 +544,60 @@ header nav .hideOnMobile a.active {
 .hero-camera-pill {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.6rem 1.4rem;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
   border-radius: 999px;
-  border: 0;
-  background: transparent;
-  backdrop-filter: none;
+  /* Frosted-glass pill so the control reads as a polished UI element on the
+     pink hero rather than bare text + arrows. */
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.25);
   color: white;
   font-weight: 700;
-  letter-spacing: 0.1em;
-  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  font-size: 0.82rem;
+}
+
+/* Fixed-width label so the pill doesn't resize as colour names change length
+   (e.g. "BLOSSOM PINK" vs "BABY BLUE"). */
+.hero-camera-pill span {
+  /* Fixed width, not min-width: the longest names ("LILAC PURPLE",
+     "BLOSSOM PINK") are 12 chars and with letter-spacing exceeded 11ch, so the
+     pill still grew. A flat width sized for the longest label keeps it static. */
+  width: 9.5rem;
+  text-align: center;
+  user-select: none;
 }
 
 .hero-camera-pill button {
-  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.18);
   border: none;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1.1rem;
+  border-radius: 50%;
+  color: white;
+  font-size: 0.95rem;
+  line-height: 1;
   cursor: pointer;
-  padding: 0 0.3rem;
-  transition: color 0.6s ease;
-  width: auto;
-  height: auto;
-  border-radius: 0;
+  padding: 0;
+  transition: background 0.25s ease, transform 0.25s ease;
   z-index: 999;
 }
 
 .hero-camera-pill button:hover {
   color: white;
-  background: none;
-  border-color: transparent;
+  background: rgba(255, 255, 255, 0.38);
+  transform: scale(1.12);
+}
+
+.hero-camera-pill button:active {
+  transform: scale(0.96);
 }
 
 .hero-marquee {
@@ -702,13 +739,13 @@ header nav .hideOnMobile a.active {
    overflow:visible + .hero-bg z-index). Mobile/tablet keep their own positions
    in the responsive blocks below. */
 .hero-ball--blue {
-  left: 8%;
-  top: -7%;
+  left: -2%;
+  top: -28%;
   width: clamp(330px, 38vw, 640px);
 }
 
 .hero-ball--pink {
-  left: 8%;
+  left: -2%;
   top: 28%;
   width: clamp(400px, 46vw, 780px);
 }
@@ -864,11 +901,21 @@ header nav .hideOnMobile a.active {
 
 /* Per-card hover placement keeps the visible PNG content centered while still
    letting it scale past the card edges for the pop-out effect. */
-.card:nth-child(1) .card__hover-image {
-  --hover-x: -6%;
-  --hover-y: -27.5%;
+/* Cards 1 & 3 popouts (product sits at the image bottom). Bottom-anchored via
+   object-position + transform-origin so the product stays flush with the card
+   bottom at ANY size/zoom. The old approach used a translate-% tuned per
+   breakpoint, which jumped (and broke the alignment) when zooming between them. */
+.card:nth-child(1) .card__hover-image,
+.card:nth-child(3) .card__hover-image {
+  --hover-y: 0%;
   --hover-scale-x: 1.55;
   --hover-scale-y: 1.55;
+  object-position: center bottom;
+  transform-origin: center bottom;
+}
+
+.card:nth-child(1) .card__hover-image {
+  --hover-x: -6%;
 }
 
 .card:nth-child(2) .card__hover-image {
@@ -879,29 +926,6 @@ header nav .hideOnMobile a.active {
 
 .card:nth-child(3) .card__hover-image {
   --hover-x: 6%;
-  --hover-y: -27.5%;
-  --hover-scale-x: 1.55;
-  --hover-scale-y: 1.55;
-}
-
-/* On large screens the card grid switches to a taller aspect ratio, which drops
-   the popout slightly below the card's bottom edge. Nudge the left + right
-   popouts up a touch so they sit flush with the bottom again. */
-@media (min-width: 1600px) {
-  .card:nth-child(1) .card__hover-image,
-  .card:nth-child(3) .card__hover-image {
-    --hover-y: -30%;
-  }
-}
-
-/* On the largest screens the cards are taller still, so the left + right
-   pop-outs drop below the card's bottom edge again. Raise them a touch more so
-   they sit flush. Make this more negative to lift them higher. */
-@media (min-width: 1800px) {
-  .card:nth-child(1) .card__hover-image,
-  .card:nth-child(3) .card__hover-image {
-    --hover-y: -34%;
-  }
 }
 
 .card-grid:hover>.card:not(:hover) .card__background {
@@ -2048,8 +2072,12 @@ header nav .hideOnMobile a.active {
    heights (72/66/62%). */
 .details-cam {
   position: absolute;
-  bottom: 26%;
-  left: 46%;
+  /* Anchored to the pipe's inner bottom (26%) minus 1px, so the camera base
+     overlaps the pipe edge by a hair and closes the thin pink hairline without
+     visibly sinking below the pipe. */
+  bottom: calc(26% - 1px);
+  /* Nudged left slightly on laptop/desktop (≥1400px; tablet overrides this). */
+  left: 44%;
   transform: translateX(-50%);
   /* Sized by WIDTH with height:auto. The comps are square, so the element box
      matches the image and object-fit never letterboxes — that letterbox (a tall
@@ -2071,38 +2099,46 @@ header nav .hideOnMobile a.active {
    Vertical alignment is handled by the shared bottom-anchor above. */
 .details-art--selfie .details-cam {
   width: 63%;
-  left: 52%;
+  left: 50%;
 }
 
 .details-art--on .details-cam {
-  left: 44%;
+  left: 42%;
 }
 
 /* Scene 03 — close-up mode. */
 .details-art--closeup .details-cam {
-  left: 44%;
+  left: 42%;
   width: 67%;
 }
 
 .details-art-balls {
   position: absolute;
-  right: -13%;
+  /* Moved left (less off the right edge). */
+  right: -2%;
   bottom: 10%;
-  width: clamp(280px, 32vw, 560px);
+  /* Sized up a little from the smaller pass, still below the original. The vw
+     term keeps it scaling with the viewport. (Laptop/desktop ≥1400px; tablet
+     overrides this.) */
+  width: clamp(230px, 26vw, 470px);
   height: auto;
   filter: drop-shadow(0 16px 26px rgba(0, 0, 0, 0.18));
 }
 
 .details-callout {
   position: absolute;
-  /* Raises the baked-in pointer so the circle lands on the selfie mirror/glass.
-     Increase to point higher; decrease to lower it. */
-  --details-callout-lift: clamp(64px, 12vh, 96px);
+  /* The dotted line + circle are baked into the image, so we move the whole
+     callout to aim the circle. --lift raises it (increase = higher), --shift-x
+     pushes it right (increase = further right). Tuned so the circle lands
+     directly on the selfie-mirror glass beside the lens. Both use vw/vh clamps
+     so the aim holds across viewport sizes. */
+  --details-callout-lift: clamp(-58px, -4vh, -36px);
+  --details-callout-shift-x: clamp(4px, 1.4vw, 26px);
   top: 20%;
   right: -3%;
   width: clamp(240px, 28vw, 460px);
   height: auto;
-  transform: translateY(calc(-1 * var(--details-callout-lift)));
+  transform: translate(var(--details-callout-shift-x), calc(-1 * var(--details-callout-lift)));
 }
 
 @media (min-width: 1101px) {
@@ -2265,7 +2301,8 @@ header nav .hideOnMobile a.active {
   /* Keep every camera's base on the raised pipe bottom (so it stays aligned),
      and 3. nudge them right so the bottom-left corner doesn't poke out. */
   .details-cam {
-    bottom: 31%;
+    /* Raised pipe bottom (31%) minus 1px — same hairline-closing nudge. */
+    bottom: calc(31% - 1px);
     left: 52%;
   }
 
@@ -2296,6 +2333,9 @@ header nav .hideOnMobile a.active {
   /* 04 selfie callout — bottom-anchored so the pointer tracks the camera, then
      lifted by --details-callout-lift so the circle lands on the glass. */
   .details-callout {
+    /* Pin the tablet pointer to its own value so the laptop/desktop push-down
+       (base --details-callout-lift) doesn't drag the tablet pointer with it. */
+    --details-callout-lift: clamp(2px, 0.6vh, 10px);
     bottom: 43%;
     top: auto;
     right: 2%;
@@ -2441,6 +2481,9 @@ header nav .hideOnMobile a.active {
   /* Callout + ball cluster overlay the camera area (scene-art is their frame). */
   .details-callout {
     --details-callout-lift: clamp(18px, 4vh, 34px);
+    /* Stacked-card layout has its own tuned overlay position — keep the new
+       horizontal shift off here so it isn't pushed sideways. */
+    --details-callout-shift-x: 0px;
     top: 4%;
     right: 2%;
     bottom: auto;
@@ -3759,10 +3802,9 @@ button:focus-visible {
   .hero-camera--top-left,
   .hero-camera--top-right,
   .hero-camera--right {
-    /* Full 5-camera fan on phones. Smaller frame than the single-camera size so
-       the whole cluster fits the width (art is 13.67% of this frame → ~120px per
-       camera at ~210vw). */
-    width: clamp(620px, 210vw, 900px);
+    /* Full 5-camera fan on phones, enlarged (art is 13.67% of this frame →
+       ~165px per camera at ~290vw, fan cluster ~350px so it still fits). */
+    width: clamp(800px, 290vw, 1220px);
   }
 
   /* Reveal the side cameras so all 5 show as a fan (was opacity:0 = centre only).
@@ -4058,7 +4100,7 @@ button:focus-visible {
 @media (min-width: 1024px) and (max-width: 1399px) {
   .hero {
     --hero-copy-x: 8.75rem;
-    --hero-copy-y: 2.75rem;
+    --hero-copy-y: 0rem;
   }
 
   .hero-content {
@@ -4075,7 +4117,7 @@ button:focus-visible {
 
   .hero {
     --hero-copy-x: 12.75rem;
-    --hero-copy-y: 2.75rem;
+    --hero-copy-y: 0rem;
     --hero-camera-cluster-y: 43%;
   }
 
@@ -4136,7 +4178,7 @@ button:focus-visible {
 @media (min-width: 1680px) {
   .hero {
     --hero-copy-x: clamp(9rem, 13vw, 23rem);
-    --hero-copy-y: 2.75rem;
+    --hero-copy-y: 0rem;
     --hero-camera-cluster-y: 43%;
     padding-left: max(4rem, calc((100vw - var(--width-content)) / 2));
     padding-right: max(4rem, calc((100vw - var(--width-content)) / 2));

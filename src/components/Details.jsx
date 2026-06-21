@@ -2,8 +2,7 @@ import camIntro from "../assets/Features_WebP/6.webp";
 import camPhotos from "../assets/Features_WebP/4.webp";
 import camOn from "../assets/Features_WebP/1.webp";
 import camCloseup from "../assets/Features_WebP/2.webp";
-import camSelfie from "../assets/Features_WebP/5.webp";
-import selfieCallout from "../assets/Features_WebP/9.webp";
+import camSelfie from "../assets/Features_WebP/selfie-combined.webp";
 import polaroidOff from "../assets/Features_WebP/7.webp";
 import polaroidOn from "../assets/Features_WebP/8.webp";
 import ballsCluster from "../assets/Features_WebP/3.webp";
@@ -69,7 +68,6 @@ const scenes = [
             "Use the selfie mirror to line up your shot. Flash adjusts automatically, even in Close-up mode! Get just the right amount of light without overexposing the photo.",
         image: camSelfie,
         artClass: "details-art--selfie",
-        callout: true,
     },
 ];
 
@@ -324,16 +322,9 @@ const Details = () => {
                                         decoding="async"
                                     />
                                 )}
-                                {scene.callout && (
-                                    <img
-                                        className="details-callout"
-                                        src={selfieCallout}
-                                        alt=""
-                                        aria-hidden="true"
-                                        loading="lazy"
-                                        decoding="async"
-                                    />
-                                )}
+                                {/* Selfie scene: the pointer/callout is baked into
+                                    selfie-combined.webp (the camera image), so no
+                                    separate overlay element is needed. */}
                             </div>
                         </div>
                     ))}

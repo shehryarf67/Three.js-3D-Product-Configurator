@@ -2173,8 +2173,16 @@ header nav .hideOnMobile a.active {
 /* Per-scene knobs: `left` shifts horizontally, `width` resizes just that scene.
    Vertical alignment is handled by the shared bottom-anchor above. */
 .details-art--selfie .details-cam {
-  width: 70%;
-  left: 50%;
+  /* This scene's image is the combined camera+pointer (selfie-combined.webp,
+     1395x1080): the camera fills the left ~77% and the baked-in pointer extends
+     to the right. Width is bumped ~×1395/1080 from the old 70% so the CAMERA
+     portion renders at the same size as before, and left is shifted right so the
+     camera's centre stays put (~50%) while the pointer reaches off to the right —
+     exactly where the separate callout used to sit. The bottom-anchor is
+     unchanged (the camera's base IS the image's bottom edge), so it still sits
+     flush on the pipe bottom. */
+  width: 90%;
+  left: 60%;
 }
 
 .details-art--on .details-cam {
@@ -2324,8 +2332,10 @@ header nav .hideOnMobile a.active {
     left: 48%;
   }
 
+  /* +10% vs the camera-only 54%: keeps the camera centre in place now that the
+     selfie image is the wider combined camera+pointer. */
   .details-art--selfie .details-cam {
-    left: 54%;
+    left: 64%;
   }
 
   /* Selfie pointer follows its camera left (was +1.4vw right in the base rule;
@@ -2400,8 +2410,10 @@ header nav .hideOnMobile a.active {
     left: 52%;
   }
 
+  /* +10% vs the camera-only 54%: keeps the camera centre in place now that the
+     selfie image is the wider combined camera+pointer. */
   .details-art--selfie .details-cam {
-    left: 54%;
+    left: 64%;
   }
 
   /* 1. Intro camera bigger (still bottom-aligned to the pipe via the anchor). */
@@ -2578,8 +2590,10 @@ header nav .hideOnMobile a.active {
   .details-art--closeup .details-cam {
     max-width: 54%;
   }
+  /* Combined camera+pointer image is wider, so bump the cap ~×1.3 to keep the
+     CAMERA portion the same width as the other cards' cameras. */
   .details-art--selfie .details-cam {
-    max-width: 50%;
+    max-width: 65%;
   }
 
   /* Callout overlays the camera area (scene-art is its frame). vw-based offsets

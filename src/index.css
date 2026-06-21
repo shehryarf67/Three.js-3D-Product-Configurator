@@ -110,22 +110,33 @@ nav ul {
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 
-.crossburger {
-  position: relative;
-  top: 0;
+/* Compact circular close button, pinned to the top-right of the drawer (was a
+   full-width bar because .sidebar li forced width:100%). The higher-specificity
+   selector wins over the generic .sidebar > li width rule. */
+.sidebar .crossburger {
+  flex: 0 0 auto;
+  align-self: flex-end;
+  width: 42px;
+  height: 42px;
   cursor: pointer;
-  right: 0px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.22);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(6px);
-  transition: background 0.2s ease;
-  margin-bottom: 0.5rem;
+  border-radius: 50%;
+  color: var(--secondary_color);
+  background: var(--main_bg_color);
+  border: none;
+  box-shadow: 0 4px 14px rgba(200, 90, 135, 0.35);
+  transition: background 0.2s ease, transform 0.2s ease;
+  margin: 0 0 0.6rem 0;
+}
+
+.sidebar .crossburger:hover {
+  background: #b54e78;
+}
+
+.sidebar .crossburger:active {
+  transform: scale(0.92);
 }
 
 .hamburger:hover {
@@ -133,39 +144,67 @@ nav ul {
   border-color: rgba(255, 255, 255, 0.55);
 }
 
-.crossburger:hover {
-  background: rgba(255, 255, 255, 0.38);
-}
-
 .sidebar {
   position: fixed;
   top: 0;
   right: 0;
   height: 100vh;
-  width: 250px;
+  height: 100dvh;
+  /* Narrow floating drawer (was 250px, and 100% on small phones — covering the
+     whole screen). Teal panel + pink links match the header; rounded left edge
+     and soft shadow read as a drawer, not a full sheet. */
+  width: min(82vw, 300px);
   z-index: 999;
-  background-color: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: -10px 0 10px rgba(0, 0, 0, 0.1);
+  background: var(--secondary_color);
+  box-shadow: -18px 0 50px rgba(0, 0, 0, 0.22);
+  border-radius: 26px 0 0 26px;
   display: none;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: flex-start;
-  padding: 1rem 0;
+  padding: 1rem 0.85rem 1.5rem;
+  box-sizing: border-box;
   list-style: none;
   margin: 0;
+  gap: 0.12rem;
+  animation: sidebarIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+@keyframes sidebarIn {
+  from { transform: translateX(105%); opacity: 0.4; }
+  to { transform: translateX(0); opacity: 1; }
+}
 
-.sidebar li,
 a {
   width: 100%;
 }
 
+/* Each row's <a> fills the entire row and carries the padding, so tapping
+   anywhere in the row navigates — with a pill highlight on hover/tap. */
 .sidebar > li {
-  padding: 0.5rem 1.5rem;
+  width: 100%;
+  padding: 0;
   box-sizing: border-box;
+}
+
+.sidebar > li a {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.95rem 1.15rem;
+  border-radius: 14px;
+  color: var(--main_bg_color);
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.sidebar > li a:hover,
+.sidebar > li a:active,
+.sidebar > li a:focus-visible {
+  background: var(--main_bg_color);
+  color: var(--secondary_color);
 }
 
 header {
@@ -377,11 +416,13 @@ header nav .hideOnMobile a.active {
 
 /* Small tagline under "Instax Mini 12". */
 .hero-subtext {
-  margin-top: -0.6rem;
-  font-size: 0.9rem;
-  font-weight: 400;
+  margin-top: -0.4rem;
+  /* Scales with the viewport (was a flat 0.9rem that read as barely-there on
+     large screens). Bumped size + opacity for legibility. */
+  font-size: clamp(0.95rem, 1vw, 1.5rem);
+  font-weight: 500;
   letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .hero-3d {
@@ -1507,7 +1548,13 @@ header nav .hideOnMobile a.active {
   #showcase::after {
     content: "";
     position: absolute;
-    top: -4px;
+    /* Seam-bridge strip behind the lobe. Kept ENTIRELY above the seam (bottom
+       edge at y:0, where the lobe's top edge is still full-width) so it only
+       ever sits over the ModelCanvas's teal bottom — teal-on-teal, invisible.
+       Previously it ran to +4px, poking below the seam into the area where the
+       lobe's curve has receded, which exposed a teal edge against the pink when
+       the window resized. */
+    top: -8px;
     left: 0;
     width: 340px;
     height: 8px;
@@ -1570,7 +1617,8 @@ header nav .hideOnMobile a.active {
   #showcase .media {
     width: 96%;
     height: 50vh;
-    margin-top: clamp(2rem, 6vh, 4rem);
+    /* Pushed lower on phone so it sits further below the navbar/lobe. */
+    margin-top: clamp(4.5rem, 12vh, 8rem);
   }
 
   #showcase::before {
@@ -1808,89 +1856,105 @@ header nav .hideOnMobile a.active {
 }
 
 @media (max-width: 768px) {
+  /* Let the section collapse to the (shorter) frame instead of reserving a full
+     screen height — otherwise a big pink gap opens below the now-smaller pipe. */
   .features-pipe-section {
-    min-height: 100vh;
-    min-height: 100svh;
+    min-height: auto;
   }
 
   @supports (min-height: 100dvh) {
     .features-pipe-section {
-      min-height: 100dvh;
+      min-height: auto;
     }
   }
 
+  /* Shorter than the viewport so the pipe no longer covers the whole screen.
+     This frame height is the lever that thins the teal channel (the 115vh frame
+     was what made the pipe taller-than-screen). */
+  .features-pipe-frame {
+    height: 72vh;
+    height: 72svh;
+  }
+
   .features-pipe {
-    --pipe-top-bar-height: clamp(7rem, 18vh, 12rem);
-    --pipe-top-left-radius: clamp(6rem, 30vw, 11rem);
-    --pipe-top-right-radius: clamp(110px, 26vw, 200px);
-    --pipe-bottom-fill-height: clamp(3.25rem, 7.5vh, 4.75rem);
+    /* Bars + bulge radii scaled down to stay proportional to the shorter pipe —
+       the curves still exist, just smaller. */
+    --pipe-top-bar-height: clamp(4.5rem, 12vh, 7rem);
+    --pipe-top-left-radius: clamp(4rem, 22vw, 7rem);
+    --pipe-top-right-radius: clamp(85px, 20vw, 150px);
+    --pipe-bottom-fill-height: clamp(2.5rem, 5vh, 3.5rem);
     width: 100vw;
     height: 100%;
     margin-left: calc(-1 * ((100vw - 100%) / 2));
   }
 
   .features-pipe-heading-wrap {
-    padding: 1.45rem 3.25rem 1.45rem 2rem;
+    padding: 1.1rem 2.5rem 1.1rem 1.6rem;
   }
 
   .features-pipe-heading {
-    font-size: clamp(2.3rem, 12vw, 5rem);
+    font-size: clamp(1.9rem, 10vw, 4rem);
   }
 
   .pipe-ball--blue {
     left: -18%;
-    top: 12%;
-    width: clamp(150px, 30vw, 255px);
+    top: 10%;
+    width: clamp(120px, 24vw, 200px);
   }
 
   .pipe-ball--pink {
     right: -20%;
-    bottom: 12%;
-    width: clamp(160px, 32vw, 275px);
+    bottom: 10%;
+    width: clamp(130px, 26vw, 220px);
   }
 
   .pipe-ball--mint {
     right: 8%;
-    top: 4%;
-    width: clamp(105px, 22vw, 190px);
+    top: 3%;
+    width: clamp(85px, 18vw, 150px);
   }
 }
 
 @media (max-width: 480px) {
+  .features-pipe-frame {
+    height: 64vh;
+    height: 64svh;
+  }
+
   .features-pipe {
-    --pipe-top-bar-height: clamp(5.5rem, 15vh, 9rem);
-    --pipe-top-left-radius: clamp(5rem, 38vw, 8.5rem);
-    --pipe-top-right-radius: clamp(85px, 32vw, 150px);
-    --pipe-bottom-fill-height: clamp(2.75rem, 6.5vh, 3.75rem);
+    --pipe-top-bar-height: clamp(3.5rem, 10vh, 5.5rem);
+    --pipe-top-left-radius: clamp(3rem, 26vw, 5.5rem);
+    --pipe-top-right-radius: clamp(65px, 24vw, 110px);
+    --pipe-bottom-fill-height: clamp(2rem, 4.5vh, 3rem);
     width: 100vw;
     height: 100%;
     margin-left: calc(-1 * ((100vw - 100%) / 2));
   }
 
   .features-pipe-heading-wrap {
-    padding: 1rem 2.25rem 1rem 1.5rem;
+    padding: 0.8rem 1.8rem 0.8rem 1.2rem;
   }
 
   .features-pipe-heading {
-    font-size: clamp(1.85rem, 12vw, 3.6rem);
+    font-size: clamp(1.5rem, 9.5vw, 2.8rem);
   }
 
   .pipe-ball--blue {
-    left: -28%;
-    top: 15%;
-    width: 155px;
+    left: -26%;
+    top: 13%;
+    width: 125px;
   }
 
   .pipe-ball--pink {
-    right: -30%;
-    bottom: 15%;
-    width: 165px;
+    right: -28%;
+    bottom: 13%;
+    width: 135px;
   }
 
   .pipe-ball--mint {
     right: 2%;
-    top: 8%;
-    width: 118px;
+    top: 6%;
+    width: 95px;
   }
 }
 
@@ -1900,6 +1964,8 @@ header nav .hideOnMobile a.active {
 
 .details {
   position: relative;
+  /* No z-index: stays below the FeaturesPipe (z-index:3) so the Details teal
+     pipe slides up UNDER the FeaturesPipe rather than painting over it. */
   width: 100%;
   min-height: 100vh;
   min-height: 100svh;
@@ -1934,8 +2000,11 @@ header nav .hideOnMobile a.active {
    its left edge — the right edge bleeds off the viewport. */
 .details-pipe {
   position: absolute;
-  top: 26%;
-  bottom: 26%;
+  /* Nudged down 3% from a true 26%/26% centre. Geometrically centred looks too
+     high because the navbar occupies the top of the viewport, so the optical
+     centre is lower. Same 48% height, just shifted down. */
+  top: 29%;
+  bottom: 23%;
   right: 0;
   width: 56%;
   background: var(--secondary_color);
@@ -2072,10 +2141,11 @@ header nav .hideOnMobile a.active {
    heights (72/66/62%). */
 .details-cam {
   position: absolute;
-  /* Anchored to the pipe's inner bottom (26%) minus 1px, so the camera base
+  /* Anchored to the pipe's inner bottom (now 23%) minus 1px, so the camera base
      overlaps the pipe edge by a hair and closes the thin pink hairline without
-     visibly sinking below the pipe. */
-  bottom: calc(26% - 1px);
+     visibly sinking below the pipe. Tracks the pipe bottom, so lowering the pipe
+     lowers the cameras with it while keeping them attached. */
+  bottom: calc(23% - 1px);
   /* Nudged left slightly on laptop/desktop (≥1400px; tablet overrides this). */
   left: 44%;
   transform: translateX(-50%);
@@ -2083,22 +2153,27 @@ header nav .hideOnMobile a.active {
      matches the image and object-fit never letterboxes — that letterbox (a tall
      box around a width-capped square image) was the empty gap below the camera
      on tall viewports. Bottom-anchored, the camera base lands on the pipe bottom
-     at every viewport height. */
-  width: 67%;
+     at every viewport height. The width is a % of the art column (52vw), so it's
+     inherently viewport-proportional — these enlarged sizes scale up on bigger
+     screens and down on smaller ones rather than staying fixed/small. */
+  width: 75%;
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 26px 40px rgba(0, 0, 0, 0.22));
 }
 
-.details-art--intro .details-cam,
+.details-art--intro .details-cam {
+  width: 88%;
+}
+
 .details-art--photos .details-cam {
-  width: 73%;
+  width: 80%;
 }
 
 /* Per-scene knobs: `left` shifts horizontally, `width` resizes just that scene.
    Vertical alignment is handled by the shared bottom-anchor above. */
 .details-art--selfie .details-cam {
-  width: 63%;
+  width: 70%;
   left: 50%;
 }
 
@@ -2109,17 +2184,17 @@ header nav .hideOnMobile a.active {
 /* Scene 03 — close-up mode. */
 .details-art--closeup .details-cam {
   left: 42%;
-  width: 67%;
+  width: 75%;
 }
 
 .details-art-balls {
   position: absolute;
-  /* Moved left (less off the right edge). */
-  right: -2%;
+  /* Sits to the right of the (left-shifted) camera, but not so far it bleeds
+     off the screen edge. right/width are %/vw, so this relationship to the
+     camera holds the same at every screen size. (Laptop/desktop ≥1400px;
+     tablet overrides this with its own top-right position.) */
+  right: -8%;
   bottom: 10%;
-  /* Sized up a little from the smaller pass, still below the original. The vw
-     term keeps it scaling with the viewport. (Laptop/desktop ≥1400px; tablet
-     overrides this.) */
   width: clamp(230px, 26vw, 470px);
   height: auto;
   filter: drop-shadow(0 16px 26px rgba(0, 0, 0, 0.18));
@@ -2128,22 +2203,29 @@ header nav .hideOnMobile a.active {
 .details-callout {
   position: absolute;
   /* The dotted line + circle are baked into the image, so we move the whole
-     callout to aim the circle. --lift raises it (increase = higher), --shift-x
-     pushes it right (increase = further right). Tuned so the circle lands
-     directly on the selfie-mirror glass beside the lens. Both use vw/vh clamps
-     so the aim holds across viewport sizes. */
-  --details-callout-lift: clamp(-58px, -4vh, -36px);
-  --details-callout-shift-x: clamp(4px, 1.4vw, 26px);
+     callout to aim the circle. --lift raises it (more negative = lower, since
+     it's negated in the transform), --shift-x pushes it right. These are PURE
+     vw/vh (no px clamp on purpose): the camera is positioned/sized in %/vw, so
+     it scales with the viewport — including on ctrl+/- zoom, which changes the
+     effective px-per-vw. A px clamp here would pin the offset at a bound while
+     the lens kept scaling, so the pointer drifted off the glass. Pure vw/vh
+     scales lockstep with the camera, so the aim holds at any zoom. The width is
+     likewise vw (wide clamp bounds that don't bind across normal zoom) so the
+     baked circle's position tracks the lens. */
+  --details-callout-lift: -4.5vh;
+  --details-callout-shift-x: 1.4vw;
   top: 20%;
   right: -3%;
-  width: clamp(240px, 28vw, 460px);
+  width: clamp(240px, 28vw, 600px);
   height: auto;
   transform: translate(var(--details-callout-shift-x), calc(-1 * var(--details-callout-lift)));
 }
 
 @media (min-width: 1101px) {
   .details-callout {
-    top: 16%;
+    /* Follows the pipe/camera down 3% (was 16%) so the pointer stays on the
+       glass after the lens lowered. */
+    top: 19%;
   }
 }
 
@@ -2210,8 +2292,10 @@ header nav .hideOnMobile a.active {
    .details is intentionally full-bleed (the pipe bleeds off the right),
    so instead of padding we just rein in the pipe + copy widths. */
 @media (min-width: 1800px) {
+  /* Pipe extends past the viewport middle, same as normal laptops (left edge at
+     44vw). Was 50% here (left edge exactly at 50vw — only reached the middle). */
   .details-pipe {
-    width: 50%;
+    width: 56%;
   }
 
   .details-scene-copy {
@@ -2219,32 +2303,36 @@ header nav .hideOnMobile a.active {
     width: min(38%, 720px);
   }
 
-  /* The intro (first card) camera was reading small in all that space — blow it
-     up so it clearly overflows the pipe. It's bottom-anchored + width-sized, so
-     it pops out the TOP as it grows. */
-  .details-art--intro .details-cam {
-    width: 88%;
-  }
+  /* Camera widths now come from the (enlarged) base rules, which are %-based and
+     scale with the viewport — so large screens get the same big-but-proportional
+     cameras as laptops, no per-scene size override needed here. */
 
-  /* Pull every camera toward the centre of the (now 50%-wide) pipe. The art
-     column is right-anchored at 52%, so left:52% lands a camera at ~75vw — the
-     pipe's horizontal centre. Per-scene rules are restated to win specificity. */
+  /* Cameras nudged left to re-centre in the now-wider (56%) pipe — its centre
+     moved ~3vw left, so each camera follows. Per-scene rules restated to win
+     specificity. */
   .details-cam {
-    left: 56%;
+    left: 50%;
   }
 
-  /* 2nd card ("01") camera nudged slightly left of the shared 52% centre. */
+  /* 2nd card ("01") camera nudged slightly left of the shared centre. */
   .details-art--photos .details-cam {
-    left: 52%;
+    left: 46%;
   }
 
   .details-art--on .details-cam,
   .details-art--closeup .details-cam {
-    left: 54%;
+    left: 48%;
   }
 
   .details-art--selfie .details-cam {
-    left: 60%;
+    left: 54%;
+  }
+
+  /* Selfie pointer follows its camera left (was +1.4vw right in the base rule;
+     this nets ~3vw left so the circle stays on the glass). Still vw, so it
+     remains zoom-stable. */
+  .details-callout {
+    --details-callout-shift-x: -1.6vw;
   }
 }
 
@@ -2324,7 +2412,8 @@ header nav .hideOnMobile a.active {
   /* Ball cluster (02/03): bigger and pushed to the top-right of the pipe. */
   .details-art-balls {
     top: 30%;
-    right: 4%;
+    /* Nudged left to match the desktop tweak. */
+    right: 8%;
     bottom: auto;
     left: auto;
     width: clamp(200px, 24vw, 360px);
@@ -2370,6 +2459,10 @@ header nav .hideOnMobile a.active {
     display: grid;
     align-items: center;
     justify-items: center;
+    /* center (not the default stretch) so the single implicit row hugs the
+       tallest card's content instead of stretching to the full 100vh stage —
+       that stretch was inflating every card to viewport height. */
+    align-content: center;
     padding: 4.5rem 1rem 1.25rem;
     box-sizing: border-box;
   }
@@ -2383,6 +2476,8 @@ header nav .hideOnMobile a.active {
     grid-area: 1 / 1;
     width: 100%;
     height: auto;
+    /* Hug content height — don't let the grid row stretch the card. */
+    align-self: center;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -2390,7 +2485,7 @@ header nav .hideOnMobile a.active {
     border-radius: 32px;
     /* No bottom padding: the camera comps have zero bottom transparency, so a
        flush img bottom lands the visible camera flush against the card edge. */
-    padding: 1.75rem 1.25rem 0;
+    padding: 1.25rem 1.25rem 0;
     overflow: hidden;
     will-change: transform, opacity;
   }
@@ -2404,12 +2499,21 @@ header nav .hideOnMobile a.active {
     text-align: center;
   }
 
+  /* On mobile the scene becomes a TEAL card, so the desktop teal number/title
+     (color: var(--secondary_color)) were teal-on-teal — invisible, yet still
+     taking up space (the phantom "empty" height). Recolour them light so they
+     read as the card's heading, and trim size/spacing to keep the card compact. */
   .details-number {
-    font-size: clamp(2.4rem, 12vw, 3.6rem);
+    font-size: clamp(1.6rem, 8vw, 2.4rem);
+    color: var(--main_bg_color);
+    opacity: 1;
+    margin-bottom: 0.2rem;
   }
 
   .details-scene-title {
-    font-size: clamp(1.5rem, 5.5vw, 2.2rem);
+    font-size: clamp(1.25rem, 5vw, 1.7rem);
+    color: #ffffff;
+    margin-bottom: 0.6rem;
   }
 
   .details-scene-description {
@@ -2433,7 +2537,7 @@ header nav .hideOnMobile a.active {
     inset: auto;
     width: 100%;
     height: auto;
-    margin-top: 1.5rem;
+    margin-top: 0.9rem;
     display: flex;
     justify-content: center;
     align-items: flex-end;
@@ -2452,38 +2556,38 @@ header nav .hideOnMobile a.active {
     transform: none;
     width: auto;
     height: auto;
-    max-width: 64%;
-    max-height: 300px;
+    max-width: 54%;
+    max-height: 260px;
     display: block;
   }
 
   /* Static per-card camera sizes (the comps fill their square differently, so a
      single size reads inconsistently). Each is the knob for that card's camera —
-     raise/lower the % to resize just that one. */
+     raise/lower the % to resize just that one. Trimmed down so the phone cards
+     stay compact, each by an amount that suits its own comp. */
   .details-art--intro .details-cam {
-    max-width: 72%;
-    /* The comps are square, so on wider phones the shared max-height (300px) was
-       the binding limit — raising only max-width did nothing. Lift the height
-       cap too so the intro camera can actually grow. */
-    max-height: 440px;
+    max-width: 58%;
+    /* The comps are square, so on wider phones the shared max-height was the
+       binding limit — keep a higher cap here so the intro can still breathe. */
+    max-height: 320px;
   }
   .details-art--photos .details-cam {
-    max-width: 62%;
+    max-width: 50%;
   }
   .details-art--on .details-cam,
   .details-art--closeup .details-cam {
-    max-width: 64%;
+    max-width: 54%;
   }
   .details-art--selfie .details-cam {
-    max-width: 60%;
+    max-width: 50%;
   }
 
-  /* Callout + ball cluster overlay the camera area (scene-art is their frame). */
+  /* Callout overlays the camera area (scene-art is its frame). vw-based offsets
+     (the camera is width-sized) so the pointer lands on the selfie mirror up-left
+     of the lens and tracks across phone widths. ≤480 refines these slightly. */
   .details-callout {
-    --details-callout-lift: clamp(18px, 4vh, 34px);
-    /* Stacked-card layout has its own tuned overlay position — keep the new
-       horizontal shift off here so it isn't pushed sideways. */
-    --details-callout-shift-x: 0px;
+    --details-callout-lift: -0.5vw;
+    --details-callout-shift-x: -2vw;
     top: 4%;
     right: 2%;
     bottom: auto;
@@ -2525,8 +2629,8 @@ header nav .hideOnMobile a.active {
     margin-top: 1.25rem;
   }
 
-  /* Keep the per-card max-width from the ≤768 block; just cap the height a touch
-     lower on small phones. */
+  /* Keep the per-card max-width from the ≤768 block; cap the height lower still
+     on small phones so the cards stay compact. */
   .details-cam,
   .details-art--intro .details-cam,
   .details-art--photos .details-cam,
@@ -2534,7 +2638,7 @@ header nav .hideOnMobile a.active {
   .details-art--closeup .details-cam,
   .details-art--selfie .details-cam {
     height: auto;
-    max-height: 250px;
+    max-height: 200px;
   }
 
   .details-demo {
@@ -2558,9 +2662,13 @@ header nav .hideOnMobile a.active {
   }
 
   .details-callout {
-    /* Negative lift lowers the baked-in pointer on phones so it lands on the
-       selfie mirror/glass again. Make this more negative to push it lower. */
-    --details-callout-lift: clamp(-22px, -4vh, -12px);
+    /* The mobile camera is sized by WIDTH (capped square), so the glass position
+       scales with vw — express both pointer offsets in vw so the circle stays on
+       the selfie mirror across every phone width. --lift up (it's negated in the
+       transform), --shift-x left, to land the circle on the small mirror square
+       up-left of the lens (it was sitting on the lens itself). */
+    --details-callout-lift: -0.5vw;
+    --details-callout-shift-x: -2vw;
     width: clamp(130px, 42vw, 200px);
   }
 
@@ -2961,7 +3069,8 @@ button:focus-visible {
 
 @media (max-width: 400px) {
   .sidebar {
-    width: 100%;
+    /* Stay a narrow drawer on small phones too (was 100% — full screen). */
+    width: min(86vw, 290px);
   }
 }
 /* MAKING THE WEBSITE RESPONSIVE*/
@@ -3247,7 +3356,6 @@ button:focus-visible {
   /* Ensure sidebar renders above the dimmer overlay */
   .sidebar {
     z-index: 999;
-    padding: 0.75rem 0;
   }
 
   /* Showcase: single-column layout */
@@ -4119,6 +4227,18 @@ button:focus-visible {
     --hero-copy-x: 12.75rem;
     --hero-copy-y: 0rem;
     --hero-camera-cluster-y: 43%;
+  }
+
+  /* Larger, viewport-scaling hero copy on big screens. The 1400–1679px range
+     previously fell back to the fixed base 3rem/2rem; these clamps grow it and
+     keep it scaling with width. (≥1680px overrides with its own larger clamps.) */
+  .hero-content h1 {
+    font-size: clamp(3.3rem, 3.4vw, 4.5rem);
+    line-height: 1.12;
+  }
+
+  .hero-description {
+    font-size: clamp(2.2rem, 1.9vw, 2.8rem);
   }
 
   .about-content {

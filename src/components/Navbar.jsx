@@ -33,7 +33,9 @@ const Navbar = () => {
             position: 'fixed',
             inset: 0,
             zIndex: 998,
-            background: 'rgba(0,0,0,0.25)',
+            background: 'rgba(0,0,0,0.4)',
+            backdropFilter: 'blur(2px)',
+            WebkitBackdropFilter: 'blur(2px)',
           }}
         />
       )}
@@ -41,8 +43,8 @@ const Navbar = () => {
       {/* Sidebar rendered outside the header so it isn't confined to the
           header's stacking context (position:sticky + z-index:100) */}
       <ul className="sidebar" style={{ display: sidebarOpen ? 'flex' : 'none' }}>
-        <li onClick={handleSidebarToggle} className="crossburger">
-          <svg xmlns="http://www.w3.org/2000/svg" height="34px" viewBox="0 -960 960 960" width="34px" fill="black">
+        <li onClick={handleSidebarToggle} className="crossburger" aria-label="Close menu">
+          <svg xmlns="http://www.w3.org/2000/svg" height="26px" viewBox="0 -960 960 960" width="26px" fill="currentColor">
             <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
           </svg>
         </li>

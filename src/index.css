@@ -3439,6 +3439,8 @@ button:focus-visible {
   .hero-camera-controls {
     gap: 0.6rem;
     margin-top: 0.75rem;
+    /* Tiny left nudge so the pill sits a hair left of the camera-cluster shift. */
+    transform: translateX(-4%);
   }
 
   .hero-camera-controls button {
@@ -3899,6 +3901,10 @@ button:focus-visible {
 
   .hero-3d {
     min-height: 360px;
+    /* Nudge the whole 3D block (camera fan + control pill) right so the cluster
+       reads as centred on phones — the art sits slightly left of the frame
+       centre otherwise. Shifts cameras and the button together. */
+    transform: translateX(5%);
   }
 
   .hero-camera-stage {

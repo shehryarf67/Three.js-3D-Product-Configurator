@@ -14,6 +14,7 @@ import {
     useMediaQuery,
 } from "../imports.js";
 import { Model as Model } from "./Instax12.jsx";
+import CameraCapture from "./CameraCapture.jsx";
 // New hi-res balls (balls_hd 6-10 are the "lower sections" set): 6=purple 8=pink.
 import ballPink from "../assets/balls_hd/8.webp";
 import ballPurple from "../assets/balls_hd/6.webp";
@@ -69,6 +70,9 @@ function ScrollingModel({
     onSelect,
     isDraggingRef,
     invalidateRef,
+    onShutterPress,
+    photoImage,
+    photoNonce,
     ...groupProps
 }) {
     const ref = useRef();
@@ -121,6 +125,9 @@ function ScrollingModel({
                 setHoveredPart={setHoveredPart}
                 onSelect={onSelect}
                 isDraggingRef={isDraggingRef}
+                onShutterPress={onShutterPress}
+                photoImage={photoImage}
+                photoNonce={photoNonce}
                 rotation={[0, 0, 0]}
             />
         </group>
@@ -144,6 +151,32 @@ const ModelCanvas = () => {
     const modelSize = [0.45, 0.45, 0.45];
     const [hoveredPart, setHoveredPart] = useState(null);
     const activePart = hoveredPart;
+    // Webcam selfie -> polaroid print flow.
+    const [captureOpen, setCaptureOpen] = useState(false);
+    const [polaroidPhoto, setPolaroidPhoto] = useState(null);
+    const [photoNonce, setPhotoNonce] = useState(0);
+
+    const handleShutterPress = () => {
+        // The overlay opens on top and steals the pointer, so the model-3d's
+        // pointerup never fires — clear the drag state so the model doesn't keep
+        // following the mouse afterwards (fixes the "moves without holding" bug).
+        isPointerDownRef.current = false;
+        isDraggingRef.current = false;
+        setIsDragging(false);
+        setCaptureOpen(true);
+    };
+    const handleCapture = (canvas) => {
+        // Print on the 3D model (eject + develop). Keep the overlay OPEN so it can
+        // show the result viewer (view / rotate / save); it closes via onClose.
+        setPolaroidPhoto(canvas);
+        setPhotoNonce((n) => n + 1);
+    };
+    const handleUseDefault = () => {
+        setPolaroidPhoto(null); // null -> model prints its built-in default photo
+        setCaptureOpen(false);
+        setPhotoNonce((n) => n + 1);
+    };
+    const handleCloseCapture = () => setCaptureOpen(false); // dismiss the overlay
     // Treat tablets as touch (tap-to-select the model parts). The width clause
     // covers tablets that report a fine pointer / DevTools emulation where
     // (hover:none)/(pointer:coarse) don't fire — matches the ≤1399 tablet range.
@@ -152,6 +185,23 @@ const ModelCanvas = () => {
     useEffect(() => {
         hoveredPartRef.current = hoveredPart;
     }, [hoveredPart]);
+
+    // The capture overlay covers the canvas and steals the pointer, so the
+    // model-3d's pointerup never fires after the shutter click. Clear the drag
+    // state once the overlay is open (runs after render, so it wins the race with
+    // the pointerdown that set it) — otherwise the model keeps rotating with the
+    // mouse afterwards without holding.
+    useEffect(() => {
+        // Opening/closing the overlay: clear any drag state so the model doesn't
+        // keep following the mouse. On close, also clear the hovered part — the
+        // shutter press set it to 'polaroid-image' (for the spec text + develop),
+        // and leaving it set keeps the canvas stuck on the "grab" cursor even
+        // though the pointer is just resting over it.
+        isPointerDownRef.current = false;
+        isDraggingRef.current = false;
+        setIsDragging(false);
+        if (!captureOpen) setHoveredPart(null);
+    }, [captureOpen]);
 
     useEffect(() => {
         const node = model3dRef.current;
@@ -359,6 +409,9 @@ const ModelCanvas = () => {
                             isDraggingRef={isDraggingRef}
                             onSelect={() => { }}
                             invalidateRef={invalidateRef}
+                            onShutterPress={handleShutterPress}
+                            photoImage={polaroidPhoto}
+                            photoNonce={photoNonce}
                         />
                     </Suspense>
                 </Canvas>
@@ -366,6 +419,13 @@ const ModelCanvas = () => {
             <p className="model-canvas-instruction reveal">
                 {isTouch ? "Drag the camera to rotate" : "Drag or scroll to rotate camera"}
             </p>
+            {captureOpen && (
+                <CameraCapture
+                    onCapture={handleCapture}
+                    onUseDefault={handleUseDefault}
+                    onClose={handleCloseCapture}
+                />
+            )}
         </section>
     );
 };

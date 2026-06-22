@@ -10,10 +10,77 @@ selection, flash glow, lens & photo animations — is unchanged and works as-is.
 import React from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useAnimations, useGLTF } from '@react-three/drei'
-import { AdditiveBlending, LoopOnce, LoopRepeat } from 'three'
+import { AdditiveBlending, CanvasTexture, LoopOnce, LoopRepeat, SRGBColorSpace } from 'three'
 import { useMediaQuery } from 'react-responsive'
 
 const TAP_MOVE_TOLERANCE = 12
+
+// Instax "develop" effect: the print fades up from a blank cream sheet to the
+// full, colour-saturated photo over a few seconds. It's drawn onto a 2D canvas
+// whose CanvasTexture is the polaroid's photo map — pure canvas, no shader, so
+// it's robust across GPUs.
+const DEVELOP_DURATION = 3.4 // seconds
+
+// The polaroid plane is a flat rectangle, but its UVs sample a ~20°-rotated
+// rectangle of the texture, so a straight print looks like a neatly tilted card.
+// The only thing that maps onto it correctly is a texture laid out exactly like
+// the model's built-in print — so rather than draw our own card, we use the
+// model's DEFAULT polaroid as the base layer and replace just the photo inside
+// it. PHOTO_QUAD is that photo window, measured from the default texture as
+// fractions of its size (a clean rotated rectangle: origin TL, edges TL->TR and
+// TL->BL).
+const PHOTO_QUAD = {
+  tl: [0.0737, 0.2416],
+  tr: [0.6207, 0.0818],
+  bl: [0.3427, 0.8347],
+}
+
+const drawDevelop = (ctx, baseImg, photo, p) => {
+  const w = ctx.canvas.width
+  const h = ctx.canvas.height
+  ctx.setTransform(1, 0, 0, 1, 0, 0)
+  ctx.globalAlpha = 1
+  ctx.filter = 'none'
+  // Base = the model's own default polaroid (its decoded image holds the correctly
+  // laid-out, tilted card). The plane only samples the card region, so the texture's
+  // transparent surround is never seen.
+  ctx.clearRect(0, 0, w, h)
+  if (baseImg) ctx.drawImage(baseImg, 0, 0, w, h)
+
+  // Work in the photo window's own rotated frame so the fill + photo land squarely
+  // inside it and never spill onto the white border.
+  const TL = [PHOTO_QUAD.tl[0] * w, PHOTO_QUAD.tl[1] * h]
+  const TR = [PHOTO_QUAD.tr[0] * w, PHOTO_QUAD.tr[1] * h]
+  const BL = [PHOTO_QUAD.bl[0] * w, PHOTO_QUAD.bl[1] * h]
+  const ux = TR[0] - TL[0], uy = TR[1] - TL[1]
+  const vx = BL[0] - TL[0], vy = BL[1] - TL[1]
+  const qw = Math.hypot(ux, uy)
+  const qh = Math.hypot(vx, vy)
+  const ang = Math.atan2(uy, ux)
+
+  ctx.save()
+  ctx.translate(TL[0], TL[1])
+  ctx.rotate(ang)
+  ctx.beginPath()
+  ctx.rect(0, 0, qw, qh)
+  ctx.clip()
+  // Blank "undeveloped" film, covering the default photo underneath.
+  ctx.fillStyle = '#e7e0d2'
+  ctx.fillRect(0, 0, qw, qh)
+  if (photo) {
+    const ease = p * p * (3 - 2 * p) // smoothstep
+    ctx.globalAlpha = ease
+    // Cover-fit the square photo into the window (crop the long side), centered.
+    const pw = photo.width, ph = photo.height
+    const ar = qw / qh
+    let sw = pw, sh = ph, sx = 0, sy = 0
+    if (pw / ph > ar) { sw = ph * ar; sx = (pw - sw) / 2 }
+    else { sh = pw / ar; sy = (ph - sh) / 2 }
+    ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, qw, qh)
+  }
+  ctx.restore()
+  ctx.globalAlpha = 1
+}
 
 const getPointerPoint = (event) => {
   const source = event.nativeEvent || event
@@ -23,7 +90,7 @@ const getPointerPoint = (event) => {
   }
 }
 
-export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, interactive = true, ...props }) {
+export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, onShutterPress, photoImage = null, photoNonce = 0, interactive = true, ...props }) {
   const group = React.useRef()
   const shutterButtonRef = React.useRef()
   const flashRef = React.useRef()
@@ -32,9 +99,11 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, in
   const batteryCoverRef = React.useRef()
   const wasLensHovered = React.useRef(false)
   const touchStartRef = React.useRef(null)
+  // Develop-fade state for the printed photo (see drawDevelop / the print effect).
+  const developRef = React.useRef({ active: false, t: 0, ctx: null, texture: null, photo: null, base: null })
   const [photoVisible, setPhotoVisible] = React.useState(false)
   const { nodes, materials, animations } = useGLTF('/models/try-1.glb')
-  const { actions, mixer } = useAnimations(animations, group)
+  const { actions } = useAnimations(animations, group)
   const flashGlassMaterial = React.useMemo(() => materials['eevee glass 1'].clone(), [materials])
   const flashDoorMaterial = React.useMemo(() => materials['Material.007'].clone(), [materials])
   // Tablets use tap-to-select parts (no hover). Width clause matches the ≤1399
@@ -82,7 +151,11 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, in
 
     if (part === 'shutter-button') {
       setHoveredPart('polaroid-image')
-      playPhotoAnimation()
+      // Open the webcam capture flow; ModelCanvas drives capture -> photoNonce,
+      // which triggers the print + develop below. Fall back to the plain eject
+      // animation if no handler is wired (keeps the model usable standalone).
+      if (onShutterPress) onShutterPress()
+      else playPhotoAnimation()
       return
     }
 
@@ -186,17 +259,94 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, in
     wasLensHovered.current = isLensHovered
   }, [hoveredPart, actions, interactive])
 
+  // Print the captured (or default) photo: swap it onto the polaroid's photo
+  // material, eject the print, and run the develop fade. Driven by photoNonce so
+  // each shutter -> capture cycle re-triggers it. The print stays out afterwards
+  // (no auto-hide) so the developed photo remains visible.
   React.useEffect(() => {
-    if (!interactive) return
-    const handleFinished = (e) => {
-      if (e.action.getClip().name === 'Plane.001Action.001') {
-        setPhotoVisible(false)
+    if (!interactive || photoNonce <= 0) return
+
+    const photoMat = materials['Material.004']
+    if (!photoMat) {
+      console.warn('Instax12: polaroid photo material (Material.004) not found; cannot print.')
+    }
+    if (photoMat) {
+      // Remember the model's built-in default print so we can restore it on deny.
+      if (photoMat.userData.defaultMap === undefined) {
+        photoMat.userData.defaultMap = photoMat.map || null
       }
+
+      // Keep the photo material in its normal lit state — defensively reset any
+      // earlier experiment so a hot-reloaded session (cached material) still
+      // renders the print correctly rather than from a stale emissive/unlit setup.
+      photoMat.color.set('#ffffff')
+      if (photoMat.emissive) photoMat.emissive.set('#000000')
+      photoMat.emissiveMap = null
+      photoMat.toneMapped = true
+      photoMat.metalness = 0
+      photoMat.roughness = 0.246
+      photoMat.envMapIntensity = 1
+
+      if (photoImage) {
+        const dev = developRef.current
+        // The default print texture's decoded image is our base layer — it holds
+        // the correctly laid-out (tilted) card. Size the canvas to match it so the
+        // measured photo quad lines up 1:1, draw the card, then develop the selfie
+        // inside the photo window. The material is otherwise untouched, so the
+        // result renders exactly like the built-in print, just with a new photo.
+        const src = photoMat.userData.defaultMap
+        const baseImg = src && src.image ? src.image : null
+        if (!dev.texture) {
+          const canvas = document.createElement('canvas')
+          canvas.width = baseImg ? baseImg.width : 500
+          canvas.height = baseImg ? baseImg.height : 623
+          dev.ctx = canvas.getContext('2d')
+          dev.texture = new CanvasTexture(canvas)
+        }
+        // Mirror the default texture's sampler settings so our canvas maps onto the
+        // (tilted-UV) polaroid plane identically to the built-in print.
+        if (src) {
+          dev.texture.flipY = src.flipY
+          dev.texture.colorSpace = src.colorSpace
+          dev.texture.wrapS = src.wrapS
+          dev.texture.wrapT = src.wrapT
+          dev.texture.center.copy(src.center)
+          dev.texture.rotation = src.rotation
+          dev.texture.repeat.copy(src.repeat)
+          dev.texture.offset.copy(src.offset)
+        } else {
+          dev.texture.flipY = false
+          dev.texture.colorSpace = SRGBColorSpace
+        }
+        dev.base = baseImg
+        dev.photo = photoImage
+        dev.t = 0
+        dev.active = true
+        drawDevelop(dev.ctx, dev.base, dev.photo, 0)
+        dev.texture.needsUpdate = true
+        photoMat.map = dev.texture
+      } else {
+        // Permission denied / fallback: restore the model's built-in default photo.
+        developRef.current.active = false
+        photoMat.map = photoMat.userData.defaultMap
+      }
+      photoMat.needsUpdate = true
     }
 
-    mixer.addEventListener('finished', handleFinished)
-    return () => mixer.removeEventListener('finished', handleFinished)
-  }, [mixer, interactive])
+    playPhotoAnimation()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [photoNonce])
+
+  // Free the develop CanvasTexture's GPU memory when the model unmounts.
+  React.useEffect(() => {
+    return () => {
+      const dev = developRef.current
+      if (dev.texture) {
+        dev.texture.dispose()
+        dev.texture = null
+      }
+    }
+  }, [])
 
   React.useEffect(() => {
     if (!flashGlassMaterial.emissive) return
@@ -213,6 +363,17 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, in
   useFrame((state, delta) => {
     if (!interactive) return
     let dirty = false
+
+    // Advance the instax develop fade (redraws the print canvas each frame).
+    const dev = developRef.current
+    if (dev.active && dev.ctx) {
+      dev.t += delta
+      const p = Math.min(1, dev.t / DEVELOP_DURATION)
+      drawDevelop(dev.ctx, dev.base, dev.photo, p)
+      dev.texture.needsUpdate = true
+      dirty = true
+      if (p >= 1) dev.active = false
+    }
 
     if (shutterButtonRef.current) {
       const targetZ = hoveredPart === 'shutter-button' ? 0.9 : 0.944

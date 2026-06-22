@@ -4546,3 +4546,226 @@ button:focus-visible {
     max-width: var(--width-content);
   }
 }
+
+/* ============================================================
+   Webcam capture overlay (shutter -> selfie -> polaroid print).
+   Client-side only; the photo never leaves the browser.
+   ============================================================ */
+.camera-capture {
+  position: fixed;
+  inset: 0;
+  z-index: 1200; /* above the sticky navbar (z-index:100) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+
+/* Buttons don't inherit font-family by default — they fall back to the browser's
+   button font. Match the site's text (system-ui, like every other button on the
+   page) so the popup copy is visually consistent. */
+.camera-capture button {
+  font-family: inherit;
+}
+
+.camera-capture__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 8, 16, 0.62);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.camera-capture__panel {
+  position: relative;
+  z-index: 1;
+  width: min(92vw, 440px);
+  /* Cap to the viewport so the shutter/buttons stay reachable on short or
+     landscape screens; scroll inside the panel if content is taller. */
+  max-height: calc(100svh - 2rem);
+  overflow-y: auto;
+  background: var(--secondary_color);
+  border-radius: 28px;
+  padding: 1.5rem 1.5rem 1.75rem;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  animation: cameraCaptureIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes cameraCaptureIn {
+  from { transform: translateY(14px) scale(0.96); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.camera-capture__close {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  z-index: 3; /* above the video stage / result viewer, which otherwise covers it */
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: var(--main_bg_color);
+  color: var(--secondary_color);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(200, 90, 135, 0.4);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.camera-capture__close:hover { background: #b54e78; }
+.camera-capture__close:active { transform: scale(0.92); }
+
+.camera-capture__stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #1c1118;
+}
+
+.camera-capture__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scaleX(-1); /* mirror for a natural selfie preview */
+}
+
+.camera-capture__frame {
+  position: absolute;
+  inset: 8%;
+  border: 2px dashed rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.camera-capture__loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+}
+
+.camera-capture__hint {
+  margin: 0;
+  color: var(--main_bg_color);
+  font-weight: 600;
+  font-size: 0.92rem;
+  text-align: center;
+}
+
+.camera-capture__shutter {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: none;
+  background: var(--main_bg_color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 22px rgba(200, 90, 135, 0.45);
+  transition: transform 0.15s ease, opacity 0.2s ease;
+}
+.camera-capture__shutter:hover { transform: scale(1.05); }
+.camera-capture__shutter:active { transform: scale(0.94); }
+.camera-capture__shutter:disabled { opacity: 0.5; cursor: default; transform: none; }
+
+.camera-capture__shutter-ring {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid var(--secondary_color);
+  background: transparent;
+}
+
+/* --- Choose step --- */
+.camera-capture__choose {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.25rem 0.5rem 0.5rem;
+  text-align: center;
+}
+
+.camera-capture__title {
+  margin: 0;
+  color: var(--main_bg_color);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.camera-capture__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.camera-capture__btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.7rem 1.3rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background: rgba(200, 90, 135, 0.14);
+  color: var(--main_bg_color);
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+.camera-capture__btn:hover { transform: translateY(-1px); }
+.camera-capture__btn:active { transform: scale(0.96); }
+
+.camera-capture__btn--primary {
+  background: var(--main_bg_color);
+  color: var(--secondary_color);
+  box-shadow: 0 6px 18px rgba(200, 90, 135, 0.4);
+}
+
+/* --- Result step (view / rotate the polaroid) --- */
+.camera-capture__viewer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 0 0.25rem;
+  perspective: 900px;
+}
+
+.camera-capture__polaroid {
+  width: min(58%, 230px);
+  cursor: grab;
+  transform-style: preserve-3d;
+  transition: transform 0.05s linear;
+  filter: drop-shadow(0 18px 32px rgba(0, 0, 0, 0.4));
+  touch-action: none;
+}
+.camera-capture__polaroid:active { cursor: grabbing; }
+.camera-capture__polaroid img {
+  width: 100%;
+  display: block;
+  border-radius: 4px;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.camera-capture__actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}

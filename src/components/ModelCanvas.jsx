@@ -21,7 +21,7 @@ import ballPurple from "../assets/balls_hd/6.webp";
 const INSTAX_COLORS = [
     { name: "Lilac Purple", value: "#C8A2C8" },
     { name: "Clay White", value: "#E2E1D3" },
-    { name: "Mint Green", value: "#98FF98" },
+    { name: "Mint Green", value: "#84E8BD" },
     { name: "Blossom Pink", value: "#F0AABA" },
     { name: "Baby Blue", value: "#89CFF0" },
 ];

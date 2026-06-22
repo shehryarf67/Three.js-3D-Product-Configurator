@@ -1,7 +1,10 @@
 /*
 Auto-generated base by: https://github.com/pmndrs/gltfjsx
-Command: npx gltfjsx@6.5.3 public/models/instaxmini12.glb -o src/components/Instax12.jsx -r public
-Interaction layer adapted from the previous Instax12 component.
+Command: npx gltfjsx@6.5.3 public/models/try-1.glb -o src/components/Instax12.jsx -r public
+Model swapped to try-1.glb. Its gltfjsx extraction is structurally identical to
+the previous instaxmini12.glb (same node/mesh/material/animation names and node
+transforms), so the interaction layer below — colour change, drag, hover/tap part
+selection, flash glow, lens & photo animations — is unchanged and works as-is.
 */
 
 import React from 'react'
@@ -30,7 +33,7 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, in
   const wasLensHovered = React.useRef(false)
   const touchStartRef = React.useRef(null)
   const [photoVisible, setPhotoVisible] = React.useState(false)
-  const { nodes, materials, animations } = useGLTF('/models/instaxmini12.glb')
+  const { nodes, materials, animations } = useGLTF('/models/try-1.glb')
   const { actions, mixer } = useAnimations(animations, group)
   const flashGlassMaterial = React.useMemo(() => materials['eevee glass 1'].clone(), [materials])
   const flashDoorMaterial = React.useMemo(() => materials['Material.007'].clone(), [materials])
@@ -391,4 +394,4 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, in
   )
 }
 
-useGLTF.preload('/models/instaxmini12.glb')
+useGLTF.preload('/models/try-1.glb')

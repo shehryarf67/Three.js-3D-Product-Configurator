@@ -1319,17 +1319,20 @@ header nav .hideOnMobile a.active {
 }
 
 /* Mockup: a large purple bleeding off the upper-left and a pink bleeding off
-   the lower-right. */
+   the lower-right. Bigger + pushed further out along each diagonal. Offsets are
+   % (of the section) and widths are clamp(vw), so both the size and the push
+   scale with the viewport automatically — no per-breakpoint values needed. */
 .model-ball--purple {
-  left: -12%;
-  top: -13%;
-  width: clamp(340px, 44vw, 720px);
+  left: -21%;
+  top: -31%;
+  width: clamp(440px, 56vw, 920px);
 }
 
 .model-ball--pink {
-  right: -14%;
-  bottom: -10%;
-  width: clamp(330px, 42vw, 690px);
+  right: -20%;
+  bottom: -19%;
+  /* Same size as the purple ball. */
+  width: clamp(440px, 56vw, 920px);
 }
 
 #showcase {
@@ -2155,19 +2158,25 @@ header nav .hideOnMobile a.active {
      on tall viewports. Bottom-anchored, the camera base lands on the pipe bottom
      at every viewport height. The width is a % of the art column (52vw), so it's
      inherently viewport-proportional — these enlarged sizes scale up on bigger
-     screens and down on smaller ones rather than staying fixed/small. */
-  width: 75%;
+     screens and down on smaller ones rather than staying fixed/small.
+     The min(…, vh) caps the width by viewport HEIGHT: the camera is sized by
+     WIDTH but bottom-anchored to the (height-positioned) pipe, so on a WIDE
+     screen (16:9+) the width-driven camera grows taller than on a 16:10 laptop
+     and shoves the polaroid up into the navbar. Each vh cap equals that scene's
+     16:10-laptop proportion, so it never binds on the laptop (identical there)
+     and only kicks in on wider viewports — automatically, no breakpoint. */
+  width: min(75%, 62vh);
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 26px 40px rgba(0, 0, 0, 0.22));
 }
 
 .details-art--intro .details-cam {
-  width: 88%;
+  width: min(88%, 73vh);
 }
 
 .details-art--photos .details-cam {
-  width: 80%;
+  width: min(80%, 67vh);
 }
 
 /* Per-scene knobs: `left` shifts horizontally, `width` resizes just that scene.
@@ -2181,7 +2190,7 @@ header nav .hideOnMobile a.active {
      exactly where the separate callout used to sit. The bottom-anchor is
      unchanged (the camera's base IS the image's bottom edge), so it still sits
      flush on the pipe bottom. */
-  width: 90%;
+  width: min(90%, 75vh);
   left: 60%;
 }
 
@@ -2192,7 +2201,7 @@ header nav .hideOnMobile a.active {
 /* Scene 03 — close-up mode. */
 .details-art--closeup .details-cam {
   left: 42%;
-  width: 75%;
+  width: min(75%, 62vh);
 }
 
 .details-art-balls {
@@ -2785,17 +2794,24 @@ header nav .hideOnMobile a.active {
 }
 
 /* Mockup: a white bleeding off the top-right and a purple bleeding off the
-   bottom-left. */
+   bottom-left. Bigger + pushed further out along each diagonal. Offsets are %
+   (of the section) and widths are clamp(vw), so both size and push scale with
+   the viewport automatically — no per-breakpoint values needed. */
 .about-ball--white {
-  right: -8%;
-  top: -10%;
-  width: clamp(300px, 40vw, 560px);
+  right: -20%;
+  /* Pushed further up to reach the ACCESSORIES card's TOP-right corner — needs a
+     larger move than the purple ball because the top corner sits high. */
+  top: -47%;
+  /* Same size as the purple ball. */
+  width: clamp(450px, 56vw, 900px);
 }
 
 .about-ball--purple {
-  left: -10%;
-  bottom: -12%;
-  width: clamp(360px, 46vw, 720px);
+  left: -22%;
+  /* Pushed further down to reach the CAMERAS card's BOTTOM-left corner (it was
+     already close, so a smaller move). */
+  bottom: -41%;
+  width: clamp(450px, 56vw, 900px);
 }
 
 .about h1 {

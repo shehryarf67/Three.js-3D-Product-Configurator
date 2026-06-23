@@ -2565,11 +2565,14 @@ header nav .hideOnMobile a.active {
     width: min(80vw, 58vh);
   }
 
+  /* Ball cluster (02/03): tucked into the bottom-right corner of the teal pipe
+     instead of floating over the camera. */
   .details-art-balls {
     top: auto;
-    right: 0;
-    bottom: 4%;
-    width: clamp(140px, 34vw, 220px);
+    left: auto;
+    right: -3%;
+    bottom: -1%;
+    width: clamp(120px, 30vw, 180px);
   }
 
   /* A small scroll cue tucked into the bottom-right corner. Shrunk down (smaller
@@ -2653,7 +2656,7 @@ header nav .hideOnMobile a.active {
   }
 
   .details-art-balls {
-    width: clamp(130px, 40vw, 200px);
+    width: clamp(110px, 34vw, 170px);
   }
 }
 

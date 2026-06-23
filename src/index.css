@@ -821,7 +821,7 @@ header nav .hideOnMobile a.active {
   z-index: 2;
 }
 
-@media(min-width: 540px) {
+@media(min-width: 701px) {
   .card-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -2554,7 +2554,7 @@ header nav .hideOnMobile a.active {
     left: 50%;
     right: auto;
     transform: translateX(-50%);
-    width: min(82vw, 64vh);
+    width: min(66vw, 50vh);
     height: auto;
     max-width: none;
   }
@@ -2562,7 +2562,7 @@ header nav .hideOnMobile a.active {
   /* The combined camera+pointer comp is wider, so bump it so the CAMERA portion
      reads at a comparable size to the other scenes' cameras. */
   .details-art--selfie .details-cam {
-    width: min(98vw, 72vh);
+    width: min(80vw, 58vh);
   }
 
   .details-art-balls {
@@ -2625,11 +2625,11 @@ header nav .hideOnMobile a.active {
   .details-art--on .details-cam,
   .details-art--closeup .details-cam,
   .details-art--selfie .details-cam {
-    width: min(88vw, 58vh);
+    width: min(72vw, 48vh);
   }
 
   .details-art--selfie .details-cam {
-    width: min(98vw, 68vh);
+    width: min(82vw, 56vh);
   }
 
   .details-demo {
@@ -3459,7 +3459,9 @@ button:focus-visible {
 }
 
 /* Mobile — 480px and below */
-@media (max-width: 480px) {
+/* Phone tier — also covers the 481–700 portrait range (the old separate portrait
+   block was removed) so mid-width portrait devices use the same mobile layout. */
+@media (max-width: 700px) {
   .hero {
     padding: 1rem;
   }
@@ -3962,7 +3964,9 @@ button:focus-visible {
   }
 }
 
-@media (max-width: 480px) {
+/* Phone hero + model-canvas layout — extended up to 700px (replaces the old
+   481–700 portrait block) so the whole portrait range matches the phone. */
+@media (max-width: 700px) {
   .hero {
     --hero-copy-x: auto;
     --hero-copy-y: -0.8rem;
@@ -4156,118 +4160,6 @@ button:focus-visible {
     right: -18%;
     bottom: 8%;
     width: 270px;
-  }
-}
-
-/* Mid-range laptops — 1024px to 1399px
-   Without this, the default margin-left: 8rem on hero-content causes the flex
-   items to overflow and wrap at these viewport sizes. */
-@media (min-width: 540px) and (max-width: 700px) {
-  .hero {
-    --hero-copy-x: auto;
-    --hero-copy-y: -0.6rem;
-    --hero-camera-cluster-y: 46%;
-    padding: 4.75rem 1.5rem 1.75rem;
-    display: grid;
-    grid-template-columns: 1fr;
-    min-height: auto;
-  }
-
-  .hero-content {
-    justify-self: center;
-    max-width: min(430px, 100%);
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-  }
-
-  .hero-content h1 {
-    font-size: clamp(3rem, 8.5vw, 3.65rem);
-    line-height: 1.12;
-  }
-
-  .hero-description {
-    font-size: clamp(1.6rem, 4.8vw, 2rem);
-  }
-
-  .hero-3d {
-    width: 100%;
-    min-height: 420px;
-    margin-top: -1rem;
-    transform: none;
-  }
-
-  .hero-camera-stage {
-    height: 390px;
-  }
-
-  .hero-camera-controls {
-    margin-top: -3.25rem;
-  }
-
-  .hero-camera--center,
-  .hero-camera--left,
-  .hero-camera--top-left,
-  .hero-camera--top-right,
-  .hero-camera--right {
-    width: clamp(860px, 185vw, 1180px);
-  }
-
-  .model-canvas {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
-    min-height: 760px;
-    padding: 2.75rem 1rem 4rem;
-  }
-
-  .model-canvas-bg {
-    inset: 2rem 3.25rem 2.2rem;
-    border-radius: 4.2rem;
-  }
-
-  .model-canvas-content {
-    grid-column: 1;
-    grid-row: 1;
-    max-width: min(340px, calc(100% - 5rem));
-    padding: 0 0.5rem;
-  }
-
-  .model-3d {
-    grid-column: 1;
-    grid-row: 2;
-    width: min(460px, calc(100% - 5rem));
-    height: 390px;
-    min-height: 390px;
-    margin: 1rem auto 0;
-  }
-
-  .model-color-picker {
-    grid-column: 1;
-    grid-row: 3;
-    justify-self: center;
-    align-self: center;
-    margin: 0.75rem 0 0;
-    flex-direction: row;
-    gap: 0;
-  }
-
-  .model-color-picker .color-palette {
-    flex-direction: row;
-    gap: 0.7rem;
-  }
-
-  .model-color-picker .swatch {
-    width: 38px;
-    height: 38px;
-    border-width: 3px;
-  }
-
-  .model-color-picker span {
-    display: none;
-  }
-
-  .model-canvas-instruction {
-    bottom: 2.8rem;
   }
 }
 

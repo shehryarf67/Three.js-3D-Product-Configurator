@@ -35,6 +35,12 @@ const PHOTO_QUAD = {
   bl: [0.3427, 0.8347],
 }
 
+// Fine rotation nudge (radians, + = clockwise) applied to the PHOTO ONLY (not the
+// clip/cream fill) to square the developed selfie inside the polaroid: the measured
+// quad's tilt is a hair off how the photo reads, so the selfie looked slightly
+// rotated. Keep this small; tweak/flip the sign here if it's ever off.
+const PHOTO_TILT_FIX = 0.02
+
 const drawDevelop = (ctx, baseImg, photo, p) => {
   const w = ctx.canvas.width
   const h = ctx.canvas.height
@@ -56,6 +62,8 @@ const drawDevelop = (ctx, baseImg, photo, p) => {
   const vx = BL[0] - TL[0], vy = BL[1] - TL[1]
   const qw = Math.hypot(ux, uy)
   const qh = Math.hypot(vx, vy)
+  // Clip + cream fill use the EXACT measured angle so they cover the default
+  // photo window underneath perfectly (no default peeking out at the corners).
   const ang = Math.atan2(uy, ux)
 
   ctx.save()
@@ -70,6 +78,15 @@ const drawDevelop = (ctx, baseImg, photo, p) => {
   if (photo) {
     const ease = p * p * (3 - 2 * p) // smoothstep
     ctx.globalAlpha = ease
+    // Nudge ONLY the selfie by PHOTO_TILT_FIX about the window's centre. The clip
+    // above stays put, so the cream still hides the default; a small overscale
+    // keeps the rotated photo filling the window with no cream triangles at the
+    // corners.
+    const over = 1.06
+    ctx.translate(qw / 2, qh / 2)
+    ctx.rotate(PHOTO_TILT_FIX)
+    ctx.scale(over, over)
+    ctx.translate(-qw / 2, -qh / 2)
     // Cover-fit the square photo into the window (crop the long side), centered.
     const pw = photo.width, ph = photo.height
     const ar = qw / qh

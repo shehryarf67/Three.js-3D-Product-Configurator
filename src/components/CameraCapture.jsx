@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 /*
   Webcam capture flow for the "press the shutter, print a polaroid" feature.
@@ -205,7 +206,11 @@ const CameraCapture = ({ onCapture, onUseDefault, onClose }) => {
     rotDragRef.current = null;
   };
 
-  return (
+  // Portal to <body> so the fixed-position overlay covers the whole viewport.
+  // Rendered in-place it would sit inside the ModelCanvas <section>, whose
+  // transform/pin context makes position:fixed resolve against the section box
+  // (leaving the navbar and other sections uncovered behind the popup).
+  return createPortal(
     <div className="camera-capture" role="dialog" aria-modal="true" aria-label="Take a photo">
       <div className="camera-capture__backdrop" onClick={dismiss} />
 
@@ -282,7 +287,8 @@ const CameraCapture = ({ onCapture, onUseDefault, onClose }) => {
           </>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

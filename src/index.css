@@ -765,8 +765,7 @@ header nav .hideOnMobile a.active {
   .model-ball,
   .pipe-ball,
   .details-ball,
-  .about-ball,
-  .details-art-balls {
+  .about-ball {
     display: none !important;
   }
 }
@@ -824,7 +823,7 @@ header nav .hideOnMobile a.active {
 
 @media(min-width: 540px) {
   .card-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -960,9 +959,13 @@ header nav .hideOnMobile a.active {
 }
 
 .card:nth-child(2) .card__hover-image {
-  --hover-y: 12%;
-  --hover-scale-x: 1.72;
-  --hover-scale-y: 1.5;
+  --hover-y: 0%;
+  --hover-scale-x: 1.9;
+  --hover-scale-y: 1.9;
+  /* Bottom-anchored like cards 1 & 3 so the film stack stays flush with the card
+     bottom at any size/zoom (6.webp has its content flush at the image bottom). */
+  object-position: center bottom;
+  transform-origin: center bottom;
 }
 
 .card:nth-child(3) .card__hover-image {
@@ -2461,80 +2464,58 @@ header nav .hideOnMobile a.active {
   }
 }
 
-/* Portrait tablets & phones — a compact version of the desktop scrub: the stage
-   pins and ONE teal card pops in at a time (timeline in Details.jsx). The base
-   pinned/overlay structure is kept (.details min-height:100svh, .details-stage
-   height:100svh, .details-scenes inset:0); each scene becomes a centred card
-   that GSAP autoAlpha pops in/out. */
+/* Portrait tablets & phones — the immersive full-screen layout. The same pinned
+   cinematic timeline (Details.jsx) drives every width; here each scene is
+   re-stacked to fill the viewport (copy near the top, camera anchored to the
+   bottom band over the teal pipe). The base .details-scene (position:absolute;
+   inset:0) and the autoAlpha crossfade are reused — we only reposition the parts. */
 @media (max-width: 768px) {
-  /* The single shared pipe and the desktop scroll cue aren't used on mobile. */
-  .details-pipe,
-  .scroll-indicator {
-    display: none;
-  }
-
-  /* Overlay + vertically centre the scenes via grid (all share one cell). Doing
-     it with alignment rather than a transform leaves the scene's transform free
-     for GSAP's pop (scale/translate). Top padding clears the sticky navbar. */
-  .details-scenes {
-    display: grid;
-    align-items: center;
-    justify-items: center;
-    /* center (not the default stretch) so the single implicit row hugs the
-       tallest card's content instead of stretching to the full 100vh stage —
-       that stretch was inflating every card to viewport height. */
-    align-content: center;
-    padding: 4.5rem 1rem 1.25rem;
-    box-sizing: border-box;
-  }
-
-  /* Each scene is an auto-height card centred in the pinned viewport, so its
-     height follows its own content (a small-camera card like the intro stays
-     short instead of stretching full-height). Stays opacity:0/hidden from the
-     base rule — the timeline pops it in. */
-  .details-scene {
-    position: relative;
-    grid-area: 1 / 1;
+  /* Small teal arc peeking out behind the camera (~1/4 the old half-height). */
+  .details-pipe {
+    top: auto;
+    bottom: 0;
+    right: 0;
     width: 100%;
-    height: auto;
-    /* Hug content height — don't let the grid row stretch the card. */
-    align-self: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: var(--secondary_color);
-    border-radius: 32px;
-    /* No bottom padding: the camera comps have zero bottom transparency, so a
-       flush img bottom lands the visible camera flush against the card edge. */
-    padding: 1.25rem 1.25rem 0;
-    overflow: hidden;
-    will-change: transform, opacity;
+    height: 13%;
+    border-radius: 160px 160px 0 0;
+    /* The desktop reveal slides the pipe in from the right (GSAP xPercent). On a
+       full-width mobile pipe that parks it off-screen, so the teal never showed —
+       pin its transform so it stays in place, visible behind the camera as the
+       teal "popout". (autoAlpha still fades it in/out with the section.) */
+    transform: none !important;
   }
 
+  /* Copy sits below the navbar, lowered so it isn't crammed against the top.
+     (top clears the sticky navbar — the old layout's one issue.) */
   .details-scene-copy {
-    position: static;
-    transform: none;
-    width: 100%;
-    max-width: 540px;
-    margin: 0 auto;
+    top: 16%;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: min(90%, 560px);
     text-align: center;
   }
 
-  /* On mobile the scene becomes a TEAL card, so the desktop teal number/title
-     (color: var(--secondary_color)) were teal-on-teal — invisible, yet still
-     taking up space (the phantom "empty" height). Recolour them light so they
-     read as the card's heading, and trim size/spacing to keep the card compact. */
+  /* 01 / 04 have lots of empty space, so drop their copy noticeably lower. The
+     close-up scenes (02/03) carry the demo polaroids, so they keep the base
+     higher position (16%) to stay clear of the camera. */
+  .details-scene--bright .details-scene-copy,
+  .details-scene--selfie .details-scene-copy {
+    top: 24%;
+  }
+
+  /* The intro is just a title + tagline, so centre it lower (near the middle) for
+     a clean hero-style intro card. */
+  .details-scene--intro .details-scene-copy {
+    top: 40%;
+  }
+
   .details-number {
-    font-size: clamp(1.6rem, 8vw, 2.4rem);
-    color: var(--main_bg_color);
-    opacity: 1;
-    margin-bottom: 0.2rem;
+    font-size: clamp(2.4rem, 12vw, 3.6rem);
   }
 
   .details-scene-title {
-    font-size: clamp(1.25rem, 5vw, 1.7rem);
-    color: #ffffff;
-    margin-bottom: 0.6rem;
+    font-size: clamp(1.6rem, 6vw, 2.4rem);
   }
 
   .details-scene-description {
@@ -2552,16 +2533,14 @@ header nav .hideOnMobile a.active {
     width: clamp(74px, 20vw, 110px);
   }
 
-  /* Camera sits below the copy, flush with the card's bottom edge. */
+  /* Camera fills the bottom band of the viewport, flush with the bottom edge. */
   .details-scene-art {
-    position: relative;
-    inset: auto;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: auto;
     width: 100%;
-    height: auto;
-    margin-top: 0.9rem;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
+    height: 55%;
   }
 
   .details-cam,
@@ -2570,65 +2549,55 @@ header nav .hideOnMobile a.active {
   .details-art--on .details-cam,
   .details-art--closeup .details-cam,
   .details-art--selfie .details-cam {
-    position: relative;
     top: auto;
-    bottom: auto;
-    left: auto;
-    transform: none;
-    width: auto;
+    bottom: 0;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: min(82vw, 64vh);
     height: auto;
-    max-width: 54%;
-    max-height: 260px;
-    display: block;
+    max-width: none;
   }
 
-  /* Static per-card camera sizes (the comps fill their square differently, so a
-     single size reads inconsistently). Each is the knob for that card's camera —
-     raise/lower the % to resize just that one. Trimmed down so the phone cards
-     stay compact, each by an amount that suits its own comp. */
-  .details-art--intro .details-cam {
-    max-width: 58%;
-    /* The comps are square, so on wider phones the shared max-height was the
-       binding limit — keep a higher cap here so the intro can still breathe. */
-    max-height: 320px;
-  }
-  .details-art--photos .details-cam {
-    max-width: 50%;
-  }
-  .details-art--on .details-cam,
-  .details-art--closeup .details-cam {
-    max-width: 54%;
-  }
-  /* Combined camera+pointer image is wider, so bump the cap ~×1.3 to keep the
-     CAMERA portion the same width as the other cards' cameras. */
+  /* The combined camera+pointer comp is wider, so bump it so the CAMERA portion
+     reads at a comparable size to the other scenes' cameras. */
   .details-art--selfie .details-cam {
-    max-width: 65%;
-  }
-
-  /* Callout overlays the camera area (scene-art is its frame). vw-based offsets
-     (the camera is width-sized) so the pointer lands on the selfie mirror up-left
-     of the lens and tracks across phone widths. ≤480 refines these slightly. */
-  .details-callout {
-    --details-callout-lift: -0.5vw;
-    --details-callout-shift-x: -2vw;
-    top: 4%;
-    right: 2%;
-    bottom: auto;
-    width: clamp(120px, 34vw, 200px);
+    width: min(98vw, 72vh);
   }
 
   .details-art-balls {
     top: auto;
     right: 0;
     bottom: 4%;
-    width: clamp(120px, 32vw, 190px);
+    width: clamp(140px, 34vw, 220px);
+  }
+
+  /* A small scroll cue tucked into the bottom-right corner. Shrunk down (smaller
+     word + shorter line) so it clears the copy above and sits below the
+     camera/callout artwork instead of overlapping either. */
+  .scroll-indicator {
+    display: flex;
+    left: auto;
+    right: 0.6rem;
+    top: auto;
+    bottom: 16%;
+    transform: none;
+    gap: 0.35rem;
+  }
+
+  .scroll-indicator-text {
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+  }
+
+  .scroll-indicator-line {
+    height: 24px;
   }
 }
 
 /* Phones. */
 @media (max-width: 480px) {
   .details-scene-copy {
-    top: 4%;
     width: 92%;
   }
 
@@ -2646,22 +2615,21 @@ header nav .hideOnMobile a.active {
     line-height: 1.5;
   }
 
-  /* Stacked cards (see the ≤768 block) — keep the camera a normal capped image. */
   .details-scene-art {
-    height: auto;
-    margin-top: 1.25rem;
+    height: 52%;
   }
 
-  /* Keep the per-card max-width from the ≤768 block; cap the height lower still
-     on small phones so the cards stay compact. */
   .details-cam,
   .details-art--intro .details-cam,
   .details-art--photos .details-cam,
   .details-art--on .details-cam,
   .details-art--closeup .details-cam,
   .details-art--selfie .details-cam {
-    height: auto;
-    max-height: 200px;
+    width: min(88vw, 58vh);
+  }
+
+  .details-art--selfie .details-cam {
+    width: min(98vw, 68vh);
   }
 
   .details-demo {
@@ -2682,17 +2650,6 @@ header nav .hideOnMobile a.active {
 
   .details-pill-state {
     font-size: 0.8rem;
-  }
-
-  .details-callout {
-    /* The mobile camera is sized by WIDTH (capped square), so the glass position
-       scales with vw — express both pointer offsets in vw so the circle stays on
-       the selfie mirror across every phone width. --lift up (it's negated in the
-       transform), --shift-x left, to land the circle on the small mirror square
-       up-left of the lens (it was sitting on the lens itself). */
-    --details-callout-lift: -0.5vw;
-    --details-callout-shift-x: -2vw;
-    width: clamp(130px, 42vw, 200px);
   }
 
   .details-art-balls {
@@ -3327,20 +3284,19 @@ button:focus-visible {
   }
 
   .card-grid {
-    /* 720px (was 320px, which crushed the active 2-column layout to ~148px
-       tiles). Lets the 540-768 band render comfortably sized cards; below 540
-       it is single-column and clamps down to fit. */
-    max-width: 720px;
+    max-width: min(100%, 720px);
     margin-left: auto;
     margin-right: auto;
+    grid-column-gap: clamp(0.8rem, 2vw, 1.2rem);
+    grid-row-gap: clamp(0.8rem, 2vw, 1.2rem);
   }
 
   .card:before {
-    padding-bottom: 118%;
+    padding-bottom: 132%;
   }
 
   .card__heading {
-    font-size: clamp(1.35rem, 5vw, 1.9rem);
+    font-size: clamp(1rem, 3.8vw, 1.55rem);
     letter-spacing: 0.07em;
   }
 
@@ -3633,10 +3589,6 @@ button:focus-visible {
   .feature-card-description {
     font-size: 0.9rem;
     line-height: 1.5;
-  }
-
-  .scroll-indicator {
-    display: none;
   }
 
   .card-grid {
@@ -4210,6 +4162,115 @@ button:focus-visible {
 /* Mid-range laptops — 1024px to 1399px
    Without this, the default margin-left: 8rem on hero-content causes the flex
    items to overflow and wrap at these viewport sizes. */
+@media (min-width: 540px) and (max-width: 700px) {
+  .hero {
+    --hero-copy-x: auto;
+    --hero-copy-y: -0.6rem;
+    --hero-camera-cluster-y: 46%;
+    padding: 4.75rem 1.5rem 1.75rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .hero-content {
+    justify-self: center;
+    max-width: min(430px, 100%);
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+
+  .hero-content h1 {
+    font-size: clamp(3rem, 8.5vw, 3.65rem);
+    line-height: 1.12;
+  }
+
+  .hero-description {
+    font-size: clamp(1.6rem, 4.8vw, 2rem);
+  }
+
+  .hero-3d {
+    width: 100%;
+    min-height: 420px;
+    margin-top: -1rem;
+    transform: none;
+  }
+
+  .hero-camera-stage {
+    height: 390px;
+  }
+
+  .hero-camera-controls {
+    margin-top: -3.25rem;
+  }
+
+  .hero-camera--center,
+  .hero-camera--left,
+  .hero-camera--top-left,
+  .hero-camera--top-right,
+  .hero-camera--right {
+    width: clamp(860px, 185vw, 1180px);
+  }
+
+  .model-canvas {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    min-height: 760px;
+    padding: 2.75rem 1rem 4rem;
+  }
+
+  .model-canvas-bg {
+    inset: 2rem 3.25rem 2.2rem;
+    border-radius: 4.2rem;
+  }
+
+  .model-canvas-content {
+    grid-column: 1;
+    grid-row: 1;
+    max-width: min(340px, calc(100% - 5rem));
+    padding: 0 0.5rem;
+  }
+
+  .model-3d {
+    grid-column: 1;
+    grid-row: 2;
+    width: min(460px, calc(100% - 5rem));
+    height: 390px;
+    min-height: 390px;
+    margin: 1rem auto 0;
+  }
+
+  .model-color-picker {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: center;
+    align-self: center;
+    margin: 0.75rem 0 0;
+    flex-direction: row;
+    gap: 0;
+  }
+
+  .model-color-picker .color-palette {
+    flex-direction: row;
+    gap: 0.7rem;
+  }
+
+  .model-color-picker .swatch {
+    width: 38px;
+    height: 38px;
+    border-width: 3px;
+  }
+
+  .model-color-picker span {
+    display: none;
+  }
+
+  .model-canvas-instruction {
+    bottom: 2.8rem;
+  }
+}
+
 @media (max-width: 380px) {
   /* Smallest phones — same edge arrangement, slightly smaller balls. */
   .hero-ball--blue {

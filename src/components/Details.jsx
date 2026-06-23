@@ -116,12 +116,12 @@ const Details = () => {
 
             const mm = gsap.matchMedia();
 
-            // Desktop / landscape tablet: the pinned, scrubbed cinematic version.
-            // Phones get NO timeline — the CSS lays the scenes out as a normal
-            // vertical stack of cards (see the ≤768 block in index.css), which is
-            // far more legible than a cramped pinned crossfade on a small screen.
-            // matchMedia auto-reverts these sets/timeline when crossing 768px.
-            mm.add("(min-width: 769px)", () => {
+            // One pinned, scrubbed cinematic timeline for ALL widths. On phones the
+            // ≤768 CSS re-stacks each scene into a full-screen panel (copy on top,
+            // camera anchored to the bottom band over the teal pipe) so the same
+            // crossfade reads as an immersive per-feature panel instead of the
+            // desktop two-column layout.
+            mm.add("(min-width: 1px)", () => {
                 gsap.set(pipe, { autoAlpha: 1, xPercent: 112 });
                 gsap.set(scrollIndicator, { autoAlpha: 0 });
                 gsap.set(sceneEls, { autoAlpha: 0 });
@@ -197,55 +197,6 @@ const Details = () => {
                     cursor
                 );
                 tl.to({}, { duration: 0.15 });
-
-                requestAnimationFrame(() => ScrollTrigger.refresh());
-            });
-
-            // Phones / portrait tablets: a compact version of the desktop scrub.
-            // The stage pins and ONE card pops in at a time; scrolling pops the
-            // current card out and the next one in. Because it's scrubbed, the
-            // user controls the pace and actually sees each pop (the old
-            // scroll-into-view reveal fired too early to notice).
-            mm.add("(max-width: 768px)", () => {
-                gsap.set(scrollIndicator, { autoAlpha: 0 });
-                gsap.set(sceneEls, { autoAlpha: 0, scale: 0.88, y: 26 });
-
-                const tl = gsap.timeline({
-                    scrollTrigger: {
-                        trigger: node,
-                        start: "top top",
-                        end: () => `+=${getDetailsScrollDistance()}`,
-                        scrub: 0.3,
-                        pin: stage,
-                        pinSpacing: true,
-                        anticipatePin: 1,
-                        fastScrollEnd: true,
-                        invalidateOnRefresh: true,
-                    },
-                });
-
-                const LEAD = 0.35;   // brief blank hold once pinned
-                const POP_IN = 0.55;
-                const DWELL = 1.1;   // how long a card stays before the next
-                const POP_OUT = 0.4;
-                const GAP = 0.12;
-
-                let cursor = LEAD;
-                sceneEls.forEach((scene, i) => {
-                    tl.to(
-                        scene,
-                        { autoAlpha: 1, scale: 1, y: 0, duration: POP_IN, ease: "back.out(1.5)" },
-                        cursor
-                    );
-                    cursor += POP_IN + DWELL;
-                    tl.to(
-                        scene,
-                        { autoAlpha: 0, scale: 0.9, y: -24, duration: POP_OUT, ease: "power2.in" },
-                        cursor
-                    );
-                    cursor += POP_OUT + GAP;
-                });
-                tl.to({}, { duration: 0.3 });
 
                 requestAnimationFrame(() => ScrollTrigger.refresh());
             });

@@ -13,7 +13,7 @@ extra animation we deliberately don't drive yet.)
 */
 
 import React from 'react'
-import { useFrame } from '@react-three/fiber'
+import { useFrame, useThree } from '@react-three/fiber'
 import { Html, useAnimations, useGLTF } from '@react-three/drei'
 import { AdditiveBlending, Box3, CanvasTexture, Euler, LoopOnce, LoopRepeat, Quaternion, SRGBColorSpace, Vector3 } from 'three'
 import { useMediaQuery } from 'react-responsive'
@@ -23,8 +23,8 @@ const TAP_MOVE_TOLERANCE = 12
 // On-canvas close button placement, as multiples of the polaroid's half-size from
 // its centre (+x = right, +y = up). Tune these to move the ✕ — they're applied in
 // the JSX, so edits take effect on hot-reload without re-entering viewing mode.
-const CLOSE_BTN_MX = 2.0
-const CLOSE_BTN_MY = 1.7
+const CLOSE_BTN_MX = 1.25
+const CLOSE_BTN_MY = 1.15
 
 // Instax "develop" effect: the print fades up from a blank cream sheet to the
 // full, colour-saturated photo over a few seconds. It's drawn onto a 2D canvas
@@ -118,11 +118,14 @@ export function Model({
   const [polaroidBtnAnchor, setPolaroidBtnAnchor] = React.useState(null)
   const { nodes, materials, animations } = useGLTF('/models/INSTAX_FINAL.glb')
   const { actions } = useAnimations(animations, group)
+  const { camera } = useThree()
   const flashGlassMaterial = React.useMemo(() => materials['eevee glass 1'].clone(), [materials])
   const flashDoorMaterial = React.useMemo(() => materials['Material.007'].clone(), [materials])
   // Tablets use tap-to-select parts (no hover). Width clause matches the ≤1399
   // tablet range so it works even when (hover:none)/(pointer:coarse) don't fire.
-  const isTouch = useMediaQuery({ query: '(hover: none), (pointer: coarse), (max-width: 1399px)' })
+  // Touch vs mouse by INPUT capability, not width (landscape tablets at desktop
+  // widths still get tap-to-select; mice keep hover). Mirrors ModelCanvas.jsx.
+  const isTouch = useMediaQuery({ query: '(hover: none), (pointer: coarse)' })
 
   const setPartHover = (part) => (e) => {
     if (!interactive) return
@@ -398,22 +401,30 @@ export function Model({
         // Polaroid bbox centre, in the polaroid's PARENT space (same space as
         // pol.position) so the rigid spin about it in useFrame is exact.
         const centerL = pol.parent.worldToLocal(centerW.clone())
+        // Centre the polaroid in the camera's view: a point straight ahead of the
+        // camera (screen centre), at the same distance the ejected polaroid was, so
+        // it keeps its size but sits dead-centre instead of wherever the eject ended.
+        const fwd = new Vector3(0, 0, -1).applyQuaternion(camera.quaternion)
+        const dist = camera.position.distanceTo(centerW)
+        const targetW = camera.position.clone().add(fwd.multiplyScalar(dist))
+        const targetCenterL = pol.parent.worldToLocal(targetW)
         viewRef.current = {
           active: true,
           center: centerL,
+          targetCenter: targetCenterL,
           pePos: pol.position.clone(),
           peQuat: pol.quaternion.clone(),
         }
-        // Close-button anchor: store the polaroid's centre + half-extent in PARENT
-        // space (the actual offset is applied in the JSX so it's hot-reload tunable).
-        // Convert a world corner to local to get the half-extent in the same space.
+        // Close-button anchor: store the (re-centred) polaroid centre + half-extent
+        // in PARENT space. The actual offset is applied in the JSX (CLOSE_BTN_*) so
+        // it's hot-reload tunable. Convert a world corner to local for the half-extent.
         const halfCornerL = pol.parent.worldToLocal(
           centerW.clone().add(new Vector3(sizeW.x * 0.5, sizeW.y * 0.5, 0))
         )
         setPolaroidBtnAnchor({
-          cx: centerL.x,
-          cy: centerL.y,
-          cz: centerL.z,
+          cx: targetCenterL.x,
+          cy: targetCenterL.y,
+          cz: targetCenterL.z,
           hx: halfCornerL.x - centerL.x,
           hy: halfCornerL.y - centerL.y,
         })
@@ -500,8 +511,10 @@ export function Model({
       cur.x += (tx - cur.x) * s
       cur.y += (ty - cur.y) * s
       const R = new Quaternion().setFromEuler(new Euler(cur.x, cur.y, 0))
+      // Spin rigidly about the polaroid's centre, but place that centre at the
+      // re-centred target so the card sits dead-centre in view while it rotates.
       const rel = view.pePos.clone().sub(view.center).applyQuaternion(R)
-      polaroidRef.current.position.copy(view.center).add(rel)
+      polaroidRef.current.position.copy(view.targetCenter || view.center).add(rel)
       polaroidRef.current.quaternion.copy(R).multiply(view.peQuat)
       if (Math.abs(tx - cur.x) > 0.0002 || Math.abs(ty - cur.y) > 0.0002) dirty = true
     }

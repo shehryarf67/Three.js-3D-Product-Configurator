@@ -821,7 +821,7 @@ header nav .hideOnMobile a.active {
   z-index: 2;
 }
 
-@media(min-width: 701px) {
+@media(min-width: 769px) {
   .card-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -1342,6 +1342,8 @@ header nav .hideOnMobile a.active {
 }
 
 .model-ball {
+  /* Beneath the pink panel (.model-canvas-bg, z-2): the balls read as background
+     accents that peek out from behind the panel's edges/corners. */
   z-index: 1;
   opacity: 1;
 }
@@ -1352,6 +1354,8 @@ header nav .hideOnMobile a.active {
    scale with the viewport automatically — no per-breakpoint values needed. */
 .model-ball--purple {
   left: -21%;
+  /* Original (desktop / >1200) position — left unchanged. ≤1200 nudges it up to
+     the panel's top-left corner (see the model-canvas grid block). */
   top: -31%;
   width: clamp(440px, 56vw, 920px);
 }
@@ -2427,7 +2431,9 @@ header nav .hideOnMobile a.active {
 /* TABLET-only Details tweaks (the pinned desktop pipe layout runs here too).
    Placed after the ≤900 block so it wins where the ranges overlap. */
 @media (min-width: 769px) and (max-width: 1399px) {
-  /* 2. Shorter teal pipe. */
+  /* 2. Shorter teal pipe. (≤1024 is overridden by the bottom-anchored Details
+     panel below; this governs the 1025–1399 landscape range + the model-canvas
+     spacing vars for >1200, which must stay at their original values.) */
   .details-pipe {
     top: 31%;
     bottom: 31%;
@@ -2493,8 +2499,10 @@ header nav .hideOnMobile a.active {
    cinematic timeline (Details.jsx) drives every width; here each scene is
    re-stacked to fill the viewport (copy near the top, camera anchored to the
    bottom band over the teal pipe). The base .details-scene (position:absolute;
-   inset:0) and the autoAlpha crossfade are reused — we only reposition the parts. */
-@media (max-width: 768px) {
+   inset:0) and the autoAlpha crossfade are reused — we only reposition the parts.
+   Extended to ≤1024 (incl. tablets): the landscape mid-height pipe left the camera
+   floating/un-anchored on tall screens, so ≤1024 uses this bottom-anchored panel. */
+@media (max-width: 1024px) {
   /* Small teal arc peeking out behind the camera (~1/4 the old half-height). */
   .details-pipe {
     top: auto;
@@ -3487,9 +3495,10 @@ button:focus-visible {
 }
 
 /* Mobile — 480px and below */
-/* Phone tier — also covers the 481–700 portrait range (the old separate portrait
-   block was removed) so mid-width portrait devices use the same mobile layout. */
-@media (max-width: 700px) {
+/* Phone tier — also covers the 481–768 portrait range (the old separate portrait
+   block was removed) so mid-width portrait devices use the same mobile layout.
+   Boundary is 768 (matches the other mobile blocks) so 701–768 acts like mobile. */
+@media (max-width: 768px) {
   .hero {
     padding: 1rem;
   }
@@ -3992,9 +4001,9 @@ button:focus-visible {
   }
 }
 
-/* Phone hero + model-canvas layout — extended up to 700px (replaces the old
-   481–700 portrait block) so the whole portrait range matches the phone. */
-@media (max-width: 700px) {
+/* Phone hero + model-canvas layout — extended up to 768px so the whole phone +
+   portrait range (≤768) shares the mobile layout (701–768 included). */
+@media (max-width: 768px) {
   .hero {
     --hero-copy-x: auto;
     --hero-copy-y: -0.8rem;
@@ -4230,18 +4239,28 @@ button:focus-visible {
    the portrait stack, but too narrow for the desktop absolute overlay. Put the
    copy, model, and picker in real grid tracks so the copy cannot sit on top of
    the camera. */
-@media (min-width: 769px) and (max-width: 1199px) {
+/* ModelCanvas — 3-column GRID for 769–1200 only. The base ABSOLUTE layout
+   overlapped the spec copy with the model in 1024–1200 (same failure as portrait);
+   the grid keeps copy | model | picker in separate tracks so they never collide.
+   >1200px is intentionally LEFT ALONE — it uses the original desktop implementation
+   (base absolute layout + the ≥1400 tuning), unchanged. */
+@media (min-width: 769px) and (max-width: 1200px) {
   .model-canvas {
     --model-panel-x: clamp(1.25rem, 3vw, 2.5rem);
     display: grid;
-    /* Symmetric side columns so the middle (model) column is centred in the
-       section (was 0.55fr | 1fr | 0.24fr, which pushed the model left). */
-    grid-template-columns: minmax(180px, 1fr) minmax(340px, 1.4fr) minmax(180px, 1fr);
+    /* Middle (model) track is minmax(0,…) so it can shrink — a hard floor made the
+       three mins + gaps + padding overflow on the narrowest tablets. */
+    grid-template-columns: minmax(150px, 0.8fr) minmax(0, 1.6fr) minmax(140px, 0.75fr);
     grid-template-rows: minmax(520px, 1fr) auto;
-    column-gap: clamp(1rem, 2.2vw, 2rem);
-    min-height: 820px;
-    padding: clamp(2.75rem, 4vw, 4rem) clamp(1.25rem, 3vw, 2.5rem) clamp(3rem, 4vw, 4.5rem);
+    column-gap: clamp(0.75rem, 2vw, 2.25rem);
+    min-height: clamp(820px, 86vh, 960px);
+    padding: clamp(2.75rem, 4vw, 4.5rem) clamp(1.25rem, 3vw, 3rem) clamp(3rem, 4vw, 5rem);
     align-items: center;
+  }
+
+  /* Purple ball nudged up to the pink panel's top-left corner (≤1200 only). */
+  .model-ball--purple {
+    top: -14%;
   }
 
   .model-canvas-content {
@@ -4286,8 +4305,10 @@ button:focus-visible {
     grid-column: 2;
     grid-row: 1;
     justify-self: center;
-    width: min(100%, 540px);
-    height: clamp(540px, 62vh, 680px);
+    /* Fluid so the model grows smoothly across the range and meets the ≥1400
+       block's 660px without a jump at 1400. */
+    width: min(100%, clamp(500px, 48vw, 660px));
+    height: clamp(540px, 64vh, 760px);
     margin: 0;
   }
 
@@ -4324,6 +4345,18 @@ button:focus-visible {
     align-self: end;
     justify-self: center;
     margin: 0;
+  }
+
+  /* Hero camera cluster: the base width clamp pinned the camera "figure" at its
+     1270px floor below ~1176px viewport, so the art (a % of that figure) stayed a
+     fixed ~173px and never grew on bigger tablets. A higher, vw-driven clamp scales
+     the whole fan UP with the screen (always >= the old size, larger as width grows). */
+  .hero-camera--center,
+  .hero-camera--left,
+  .hero-camera--top-left,
+  .hero-camera--top-right,
+  .hero-camera--right {
+    width: clamp(1380px, 138vw, 1850px);
   }
 }
 
@@ -4753,4 +4786,82 @@ button:focus-visible {
   gap: 0.6rem;
   flex-wrap: wrap;
   justify-content: center;
+}
+
+/* ====================================================================
+   FeaturesPipe — tablet range (769–1024).
+   The full 115vh "scroll-through wall" is a DESKTOP (>1024) feature. From
+   769–1024 the pipe is a compact section like mobile, just scaled up, so it
+   doesn't swallow the whole screen on tablets (portrait OR landscape).
+   ==================================================================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .features-pipe-section {
+    min-height: auto;
+  }
+
+  @supports (min-height: 100dvh) {
+    .features-pipe-section {
+      min-height: auto;
+    }
+  }
+
+  .features-pipe-frame {
+    height: 88vh;
+    height: 88svh;
+  }
+
+  .features-pipe {
+    --pipe-top-bar-height: clamp(6rem, 13vh, 11rem);
+    --pipe-top-left-radius: clamp(5rem, 14vw, 12rem);
+    --pipe-top-right-radius: clamp(130px, 16vw, 260px);
+    --pipe-bottom-fill-height: clamp(3rem, 6vh, 5.5rem);
+  }
+}
+
+/* ====================================================================
+   FLUID HERO — one continuous layout for the whole 769px → XL range.
+   Replaces the old stepped tablet / 1024–1399 / 1400+ / 1680+ blocks (which
+   jumped the copy position and SHRANK the camera cluster at 1024). Everything
+   here scales smoothly with the viewport, so growing the window only ever
+   scales the same layout UP — never down, never a layout swap. (Mobile ≤768
+   keeps its own stacked layout.) Appended last to win source order. */
+@media (min-width: 769px) {
+  .hero {
+    --hero-copy-x: clamp(3.5rem, 7vw, 13rem);
+    --hero-copy-y: 0rem;
+    --hero-camera-cluster-y: 43%;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
+  .hero-content {
+    margin-left: var(--hero-copy-x);
+    margin-top: var(--hero-copy-y);
+    max-width: clamp(300px, 24vw, 460px);
+    flex-shrink: 0;
+  }
+
+  .hero-content h1 {
+    font-size: clamp(3rem, 3.2vw, 4.6rem);
+    line-height: 1.12;
+  }
+
+  .hero-description {
+    font-size: clamp(2rem, 2vw, 2.8rem);
+  }
+
+  .hero-3d {
+    width: min(56%, 940px);
+    margin-top: 0;
+  }
+
+  /* The camera "figure" width drives the visible art size (art = 13.67% of it).
+     One clamp across the whole range = continuous growth, no 1024/1200 shrink. */
+  .hero-camera--center,
+  .hero-camera--left,
+  .hero-camera--top-left,
+  .hero-camera--top-right,
+  .hero-camera--right {
+    width: clamp(1240px, 132vw, 2100px);
+  }
 }

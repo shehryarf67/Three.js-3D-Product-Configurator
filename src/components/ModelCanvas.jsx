@@ -226,7 +226,10 @@ const ModelCanvas = () => {
     // Treat tablets as touch (tap-to-select the model parts). The width clause
     // covers tablets that report a fine pointer / DevTools emulation where
     // (hover:none)/(pointer:coarse) don't fire — matches the ≤1399 tablet range.
-    const isTouch = useMediaQuery({ query: '(hover: none), (pointer: coarse), (max-width: 1399px)' });
+    // Touch vs mouse by INPUT capability, not width: a landscape tablet at
+    // 1024–1200px (touch) gets tap-to-select, while a same-width laptop (mouse)
+    // keeps hover. (Was width-gated at ≤1399, which forced tap on 1024–1399 mice.)
+    const isTouch = useMediaQuery({ query: '(hover: none), (pointer: coarse)' });
 
     useEffect(() => {
         hoveredPartRef.current = hoveredPart;

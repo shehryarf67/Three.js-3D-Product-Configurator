@@ -116,32 +116,8 @@ export function Model({
   // The close button's <Html> offset from this is applied in the JSX (CLOSE_BTN_*),
   // so the button tracks the polaroid and its offset stays hot-reload tunable.
   const [polaroidBtnAnchor, setPolaroidBtnAnchor] = React.useState(null)
-  const { nodes, materials, animations, scene } = useGLTF('/models/INSTAX_FINAL.glb')
+  const { nodes, materials, animations } = useGLTF('/models/INSTAX_FINAL.glb')
   const { actions } = useAnimations(animations, group)
-
-  // The model ships TWO materials both named "BASE_TEXTURE": one samples its maps
-  // via UV0 (lens, buttons, covers…), the other via UV1 — the MAIN BODY, whose
-  // printed decals/branding are laid out on the 2nd UV set. drei's `materials` dict
-  // keys by name, so the two collapse into one; assigning that single instance to
-  // the body sampled the wrong UV set and the decals vanished. Recover both here by
-  // their base-map's UV channel and assign the UV1 one to the body in the JSX.
-  const { baseMatUV0, baseMatUV1 } = React.useMemo(() => {
-    let uv0 = null
-    let uv1 = null
-    scene?.traverse((o) => {
-      if (!o.isMesh) return
-      const list = Array.isArray(o.material) ? o.material : [o.material]
-      list.forEach((m) => {
-        if (!m || m.name !== 'BASE_TEXTURE') return
-        if (m.map && m.map.channel === 1) uv1 = m
-        else uv0 = m
-      })
-    })
-    return {
-      baseMatUV0: uv0 || materials.BASE_TEXTURE,
-      baseMatUV1: uv1 || uv0 || materials.BASE_TEXTURE,
-    }
-  }, [scene, materials])
   const flashGlassMaterial = React.useMemo(() => materials['eevee glass 1'].clone(), [materials])
   const flashDoorMaterial = React.useMemo(() => materials['Material.007'].clone(), [materials])
   // Tablets use tap-to-select parts (no hover). Width clause matches the ≤1399
@@ -635,21 +611,21 @@ export function Model({
             parenting); the polaroid is a sibling outside it. 'viewing' mode hides
             this whole group in one toggle so only the polaroid remains on screen. */}
         <group name="CAMERA" visible={cameraVisible}>
-        <mesh name="Object_7" geometry={nodes.Object_7.geometry} material={materials.metal} position={[-1.685, -0.861, 0.18]} rotation={[0, 0.518, 0]} scale={[0.558, 0.504, 0.558]} />{/* BASE_TEXTURE meshes below use the UV0 variant; the MAIN BODY (mesh005 / mesh005_3) uses the UV1 variant so its decals show. */}
+        <mesh name="Object_7" geometry={nodes.Object_7.geometry} material={materials.metal} position={[-1.685, -0.861, 0.18]} rotation={[0, 0.518, 0]} scale={[0.558, 0.504, 0.558]} />
         <mesh name="Object_7001" geometry={nodes.Object_7001.geometry} material={materials.metal} position={[-1.685, -0.861, -0.407]} rotation={[0, 0.433, 0]} scale={[-0.558, -0.504, -0.558]} />
         <mesh name="Object_8" geometry={nodes.Object_8.geometry} material={materials.Ikae} position={[-1.685, -0.861, 0.18]} rotation={[0, 0.518, 0]} scale={[0.558, 0.504, 0.558]} />
         <mesh name="Object_8001" geometry={nodes.Object_8001.geometry} material={materials.Ikae} position={[-1.685, -0.861, -0.407]} rotation={[0, 0.433, 0]} scale={[-0.558, -0.504, -0.558]} />
         <group name="MAIN_BODY" {...partHandlers('body')}>
-          <mesh name="mesh005" geometry={nodes.mesh005.geometry} material={baseMatUV1} />
+          <mesh name="mesh005" geometry={nodes.mesh005.geometry} material={materials.BASE_TEXTURE} />
           <mesh name="mesh005_1" geometry={nodes.mesh005_1.geometry} material={materials['Material.001']} />
           <mesh name="mesh005_2" geometry={nodes.mesh005_2.geometry} material={materials['Material.003']} />
-          <mesh name="mesh005_3" geometry={nodes.mesh005_3.geometry} material={baseMatUV1} />
+          <mesh name="mesh005_3" geometry={nodes.mesh005_3.geometry} material={materials.BASE_TEXTURE} />
         </group>
         <mesh
           ref={shutterButtonRef}
           name="button_2"
           geometry={nodes.button_2.geometry}
-          material={baseMatUV0}
+          material={materials.BASE_TEXTURE}
           position={[-1.524, 0.341, 0.944]}
           {...(!interactive
             ? {}
@@ -671,10 +647,10 @@ export function Model({
           <mesh name="Cube003_1" geometry={nodes.Cube003_1.geometry} material={materials['eevee glass 1.001']} />
         </group>
         <group name="LENS" {...partHandlers('lens')}>
-          <mesh name="lense" geometry={nodes.lense.geometry} material={baseMatUV0} position={[0.502, -0.475, 1.319]} />
-          <mesh name="lesne1" geometry={nodes.lesne1.geometry} material={baseMatUV0} position={[0.502, -0.475, 1.319]} />
+          <mesh name="lense" geometry={nodes.lense.geometry} material={materials.BASE_TEXTURE} position={[0.502, -0.475, 1.319]} />
+          <mesh name="lesne1" geometry={nodes.lesne1.geometry} material={materials.BASE_TEXTURE} position={[0.502, -0.475, 1.319]} />
           <group name="lense2" position={[0.502, -0.475, 1.319]}>
-            <mesh name="Cylinder003" geometry={nodes.Cylinder003.geometry} material={baseMatUV0} />
+            <mesh name="Cylinder003" geometry={nodes.Cylinder003.geometry} material={materials.BASE_TEXTURE} />
             <mesh name="Cylinder003_1" geometry={nodes.Cylinder003_1.geometry} material={materials['Material.001']} />
             <mesh name="Cylinder003_2" geometry={nodes.Cylinder003_2.geometry} material={materials['Material.002']} />
             <mesh name="lenselid_1" geometry={nodes.lenselid_1.geometry} material={materials['Material.001']} position={[0, 0, 0.094]} />
@@ -682,27 +658,27 @@ export function Model({
             <mesh name="lense_ref" geometry={nodes.lense_ref.geometry} material={materials['Material.003']} position={[0, 0, -0.22]} />
           </group>
           <group name="lensebody" position={[0.502, -0.475, 1.319]}>
-            <mesh name="Cylinder004" geometry={nodes.Cylinder004.geometry} material={baseMatUV0} />
+            <mesh name="Cylinder004" geometry={nodes.Cylinder004.geometry} material={materials.BASE_TEXTURE} />
             <mesh name="Cylinder004_1" geometry={nodes.Cylinder004_1.geometry} material={materials.Material} />
           </group>
         </group>
         <group name="Retopo_MAIN_BODY001">
-          <mesh name="mesh011" geometry={nodes.mesh011.geometry} material={baseMatUV0} />
+          <mesh name="mesh011" geometry={nodes.mesh011.geometry} material={materials.BASE_TEXTURE} />
           <mesh name="mesh011_1" geometry={nodes.mesh011_1.geometry} material={materials['Material.003']} />
         </group>
-        <mesh name="Cube001" geometry={nodes.Cube001.geometry} material={baseMatUV0} position={[0.639, 1.899, -0.639]} />
+        <mesh name="Cube001" geometry={nodes.Cube001.geometry} material={materials.BASE_TEXTURE} position={[0.639, 1.899, -0.639]} />
         <group name="BATTERY_COVER_GROUP" {...partHandlers('battery-cover')}>
           <mesh name="BATTERY_COVER_HITAREA" geometry={nodes.BATTERY_COVER.geometry} position={[-1.989, -1.081, -0.151]}>
             <meshBasicMaterial transparent opacity={0} depthWrite={false} />
           </mesh>
           <group position={[-1.989, -1.081, -0.151]}>
             <group ref={batteryCoverRef} name="BATTERY_COVER">
-              <mesh name="BATTERY_COVER_MESH" geometry={nodes.BATTERY_COVER.geometry} material={baseMatUV0} />
+              <mesh name="BATTERY_COVER_MESH" geometry={nodes.BATTERY_COVER.geometry} material={materials.BASE_TEXTURE} />
               <mesh name="BATTERY_COVER001" geometry={nodes.BATTERY_COVER001.geometry} material={materials['Material.001']} position={[-0.014, 0, 0]} />
             </group>
           </group>
         </group>
-        <mesh name="Cube004" geometry={nodes.Cube004.geometry} material={baseMatUV0} position={[0.387, 2.397, 0]} />
+        <mesh name="Cube004" geometry={nodes.Cube004.geometry} material={materials.BASE_TEXTURE} position={[0.387, 2.397, 0]} />
         <group
           ref={flashRef}
           name="FLASHLIGHT"

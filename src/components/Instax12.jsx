@@ -1,19 +1,30 @@
 /*
 Auto-generated base by: https://github.com/pmndrs/gltfjsx
-Command: npx gltfjsx@6.5.3 public/models/try-1.glb -o src/components/Instax12.jsx -r public
-Model swapped to try-1.glb. Its gltfjsx extraction is structurally identical to
-the previous instaxmini12.glb (same node/mesh/material/animation names and node
-transforms), so the interaction layer below — colour change, drag, hover/tap part
-selection, flash glow, lens & photo animations — is unchanged and works as-is.
+Command: npx gltfjsx@6.5.3 public/models/INSTAX_FINAL.glb -o src/components/Instax12.jsx -r public
+Model swapped to INSTAX_FINAL.glb (finalized model). Node/mesh accessor names are
+the same as the previous try-1.glb EXCEPT renamed materials and the polaroid mesh:
+  • body/lens material  'pastel blue' + 'screws'  ->  'BASE_TEXTURE'
+  • polaroid photo plane 'Plane005'/'Material.004' -> 'Plane'/'POLAROID_1'
+  • polaroid frame        'Plane005_1'/'Material.005' -> 'Plane_1'/'POLAROID_2' (+ 'Plane_2'/'POLAROID_3' back)
+  • eject animation       'Plane.001Action.001'  ->  'POLAROID ACTION'
+The interaction layer below — colour change, drag, hover/tap part selection, flash
+glow, lens & photo animations — is otherwise unchanged. (The new model ships an
+extra animation we deliberately don't drive yet.)
 */
 
 import React from 'react'
 import { useFrame } from '@react-three/fiber'
-import { useAnimations, useGLTF } from '@react-three/drei'
-import { AdditiveBlending, CanvasTexture, LoopOnce, LoopRepeat, SRGBColorSpace } from 'three'
+import { Html, useAnimations, useGLTF } from '@react-three/drei'
+import { AdditiveBlending, Box3, CanvasTexture, Euler, LoopOnce, LoopRepeat, Quaternion, SRGBColorSpace, Vector3 } from 'three'
 import { useMediaQuery } from 'react-responsive'
 
 const TAP_MOVE_TOLERANCE = 12
+
+// On-canvas close button placement, as multiples of the polaroid's half-size from
+// its centre (+x = right, +y = up). Tune these to move the ✕ — they're applied in
+// the JSX, so edits take effect on hot-reload without re-entering viewing mode.
+const CLOSE_BTN_MX = 2.0
+const CLOSE_BTN_MY = 1.7
 
 // Instax "develop" effect: the print fades up from a blank cream sheet to the
 // full, colour-saturated photo over a few seconds. It's drawn onto a 2D canvas
@@ -21,81 +32,32 @@ const TAP_MOVE_TOLERANCE = 12
 // it's robust across GPUs.
 const DEVELOP_DURATION = 3.4 // seconds
 
-// The polaroid plane is a flat rectangle, but its UVs sample a ~20°-rotated
-// rectangle of the texture, so a straight print looks like a neatly tilted card.
-// The only thing that maps onto it correctly is a texture laid out exactly like
-// the model's built-in print — so rather than draw our own card, we use the
-// model's DEFAULT polaroid as the base layer and replace just the photo inside
-// it. PHOTO_QUAD is that photo window, measured from the default texture as
-// fractions of its size (a clean rotated rectangle: origin TL, edges TL->TR and
-// TL->BL).
-const PHOTO_QUAD = {
-  tl: [0.0737, 0.2416],
-  tr: [0.6207, 0.0818],
-  bl: [0.3427, 0.8347],
-}
-
-// Fine rotation nudge (radians, + = clockwise) applied to the PHOTO ONLY (not the
-// clip/cream fill) to square the developed selfie inside the polaroid: the measured
-// quad's tilt is a hair off how the photo reads, so the selfie looked slightly
-// rotated. Keep this small; tweak/flip the sign here if it's ever off.
-const PHOTO_TILT_FIX = 0.02
-
-const drawDevelop = (ctx, baseImg, photo, p) => {
+// On INSTAX_FINAL.glb the photo is its OWN plane (material POLAROID_1) whose UVs
+// map cleanly to the full 0..1 texture, with the white frame on a separate plane
+// (POLAROID_2). So printing is simple: draw the selfie to fill the whole canvas
+// and cross-fade it up from a blank cream sheet — no tilted-window compositing,
+// no base-card layer (the frame lives on its own mesh and is untouched).
+const drawDevelop = (ctx, photo, p) => {
   const w = ctx.canvas.width
   const h = ctx.canvas.height
   ctx.setTransform(1, 0, 0, 1, 0, 0)
   ctx.globalAlpha = 1
   ctx.filter = 'none'
-  // Base = the model's own default polaroid (its decoded image holds the correctly
-  // laid-out, tilted card). The plane only samples the card region, so the texture's
-  // transparent surround is never seen.
   ctx.clearRect(0, 0, w, h)
-  if (baseImg) ctx.drawImage(baseImg, 0, 0, w, h)
-
-  // Work in the photo window's own rotated frame so the fill + photo land squarely
-  // inside it and never spill onto the white border.
-  const TL = [PHOTO_QUAD.tl[0] * w, PHOTO_QUAD.tl[1] * h]
-  const TR = [PHOTO_QUAD.tr[0] * w, PHOTO_QUAD.tr[1] * h]
-  const BL = [PHOTO_QUAD.bl[0] * w, PHOTO_QUAD.bl[1] * h]
-  const ux = TR[0] - TL[0], uy = TR[1] - TL[1]
-  const vx = BL[0] - TL[0], vy = BL[1] - TL[1]
-  const qw = Math.hypot(ux, uy)
-  const qh = Math.hypot(vx, vy)
-  // Clip + cream fill use the EXACT measured angle so they cover the default
-  // photo window underneath perfectly (no default peeking out at the corners).
-  const ang = Math.atan2(uy, ux)
-
-  ctx.save()
-  ctx.translate(TL[0], TL[1])
-  ctx.rotate(ang)
-  ctx.beginPath()
-  ctx.rect(0, 0, qw, qh)
-  ctx.clip()
-  // Blank "undeveloped" film, covering the default photo underneath.
+  // Blank "undeveloped" film.
   ctx.fillStyle = '#e7e0d2'
-  ctx.fillRect(0, 0, qw, qh)
+  ctx.fillRect(0, 0, w, h)
   if (photo) {
     const ease = p * p * (3 - 2 * p) // smoothstep
     ctx.globalAlpha = ease
-    // Nudge ONLY the selfie by PHOTO_TILT_FIX about the window's centre. The clip
-    // above stays put, so the cream still hides the default; a small overscale
-    // keeps the rotated photo filling the window with no cream triangles at the
-    // corners.
-    const over = 1.06
-    ctx.translate(qw / 2, qh / 2)
-    ctx.rotate(PHOTO_TILT_FIX)
-    ctx.scale(over, over)
-    ctx.translate(-qw / 2, -qh / 2)
-    // Cover-fit the square photo into the window (crop the long side), centered.
+    // Cover-fit the photo into the plane (crop the long side), centered.
     const pw = photo.width, ph = photo.height
-    const ar = qw / qh
+    const ar = w / h
     let sw = pw, sh = ph, sx = 0, sy = 0
     if (pw / ph > ar) { sw = ph * ar; sx = (pw - sw) / 2 }
     else { sh = pw / ar; sy = (ph - sh) / 2 }
-    ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, qw, qh)
+    ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h)
   }
-  ctx.restore()
   ctx.globalAlpha = 1
 }
 
@@ -107,20 +69,79 @@ const getPointerPoint = (event) => {
   }
 }
 
-export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, onShutterPress, photoImage = null, photoNonce = 0, interactive = true, ...props }) {
+export function Model({
+  hoveredPart,
+  setHoveredPart,
+  onSelect,
+  isDraggingRef,
+  onShutterPress,
+  photoImage = null,
+  photoNonce = 0,
+  interactive = true,
+  // Polaroid present/view flow (driven by ModelCanvas):
+  //   'idle'      -> camera only, polaroid hidden
+  //   'ejecting'  -> polaroid prints/ejects out of the (still visible) camera
+  //   'viewing'   -> camera hidden, polaroid alone, free to rotate in place
+  //   'returning' -> camera back, polaroid retracts into it
+  polaroidPhase = 'idle',
+  polaroidRotXRef,
+  polaroidRotYRef,
+  onEjectDone,
+  onReturnDone,
+  onPolaroidClose,
+  ...props
+}) {
   const group = React.useRef()
   const shutterButtonRef = React.useRef()
   const flashRef = React.useRef()
   const flashGlowLightRef = React.useRef()
   const flashGlowMaterialRef = React.useRef()
   const batteryCoverRef = React.useRef()
+  const polaroidRef = React.useRef()
   const wasLensHovered = React.useRef(false)
   const touchStartRef = React.useRef(null)
   // Develop-fade state for the printed photo (see drawDevelop / the print effect).
-  const developRef = React.useRef({ active: false, t: 0, ctx: null, texture: null, photo: null, base: null })
+  const developRef = React.useRef({ active: false, pending: false, t: 0, ctx: null, texture: null, photo: null })
+  // Manual polaroid-rotation state for 'viewing' mode. When active we take the
+  // polaroid away from the animation mixer and spin it rigidly about its own
+  // bbox centre (captured once, in the model root's local space).
+  const viewRef = React.useRef({ active: false, center: null, pePos: null, peQuat: null })
+  const polRotCurRef = React.useRef({ x: 0, y: 0 })
+  const phaseRef = React.useRef('idle')
+  // Guards the eject/return "animation finished" callback so it fires once.
+  const doneFiredRef = React.useRef(false)
   const [photoVisible, setPhotoVisible] = React.useState(false)
-  const { nodes, materials, animations } = useGLTF('/models/try-1.glb')
+  const [cameraVisible, setCameraVisible] = React.useState(true)
+  // Polaroid centre + half-extent (parent space) captured when entering 'viewing'.
+  // The close button's <Html> offset from this is applied in the JSX (CLOSE_BTN_*),
+  // so the button tracks the polaroid and its offset stays hot-reload tunable.
+  const [polaroidBtnAnchor, setPolaroidBtnAnchor] = React.useState(null)
+  const { nodes, materials, animations, scene } = useGLTF('/models/INSTAX_FINAL.glb')
   const { actions } = useAnimations(animations, group)
+
+  // The model ships TWO materials both named "BASE_TEXTURE": one samples its maps
+  // via UV0 (lens, buttons, covers…), the other via UV1 — the MAIN BODY, whose
+  // printed decals/branding are laid out on the 2nd UV set. drei's `materials` dict
+  // keys by name, so the two collapse into one; assigning that single instance to
+  // the body sampled the wrong UV set and the decals vanished. Recover both here by
+  // their base-map's UV channel and assign the UV1 one to the body in the JSX.
+  const { baseMatUV0, baseMatUV1 } = React.useMemo(() => {
+    let uv0 = null
+    let uv1 = null
+    scene?.traverse((o) => {
+      if (!o.isMesh) return
+      const list = Array.isArray(o.material) ? o.material : [o.material]
+      list.forEach((m) => {
+        if (!m || m.name !== 'BASE_TEXTURE') return
+        if (m.map && m.map.channel === 1) uv1 = m
+        else uv0 = m
+      })
+    })
+    return {
+      baseMatUV0: uv0 || materials.BASE_TEXTURE,
+      baseMatUV1: uv1 || uv0 || materials.BASE_TEXTURE,
+    }
+  }, [scene, materials])
   const flashGlassMaterial = React.useMemo(() => materials['eevee glass 1'].clone(), [materials])
   const flashDoorMaterial = React.useMemo(() => materials['Material.007'].clone(), [materials])
   // Tablets use tap-to-select parts (no hover). Width clause matches the ≤1399
@@ -145,21 +166,28 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, on
     onSelect(part)
   }
 
-  const playPhotoAnimation = () => {
-    if (!interactive) return
-    const action = actions['Plane.001Action.001']
+  // Play the polaroid eject clip forward (out of the camera) or reversed (back in).
+  const runEject = (reversed = false) => {
+    const action = actions['POLAROID ACTION']
     if (!action) return
-
-    setPhotoVisible(true)
-    action.stop()
-    action.reset()
-    action.paused = false
+    const dur = action.getClip().duration
     action.enabled = true
+    action.paused = false
     action.clampWhenFinished = true
     action.setLoop(LoopOnce, 1)
-    action.timeScale = 1
     action.setEffectiveWeight(1)
+    action.timeScale = reversed ? -1 : 1
+    action.time = reversed ? dur : 0
     action.play()
+  }
+
+  const playPhotoAnimation = () => {
+    if (!interactive) return
+    // Standalone fallback (no ModelCanvas phase wiring): just show + eject.
+    setPhotoVisible(true)
+    const action = actions['POLAROID ACTION']
+    if (action) action.reset()
+    runEject(false)
   }
 
   const activateTouchPart = (part) => {
@@ -168,9 +196,9 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, on
 
     if (part === 'shutter-button') {
       setHoveredPart('polaroid-image')
-      // Open the webcam capture flow; ModelCanvas drives capture -> photoNonce,
-      // which triggers the print + develop below. Fall back to the plain eject
-      // animation if no handler is wired (keeps the model usable standalone).
+      // Open the webcam capture flow; ModelCanvas drives capture -> photoNonce
+      // (texture only) and, on "Done", the eject + view phases below. Fall back to
+      // the plain eject animation if no handler is wired (standalone use).
       if (onShutterPress) onShutterPress()
       else playPhotoAnimation()
       return
@@ -283,9 +311,9 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, on
   React.useEffect(() => {
     if (!interactive || photoNonce <= 0) return
 
-    const photoMat = materials['Material.004']
+    const photoMat = materials.POLAROID_1
     if (!photoMat) {
-      console.warn('Instax12: polaroid photo material (Material.004) not found; cannot print.')
+      console.warn('Instax12: polaroid photo material (POLAROID_1) not found; cannot print.')
     }
     if (photoMat) {
       // Remember the model's built-in default print so we can restore it on deny.
@@ -306,22 +334,19 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, on
 
       if (photoImage) {
         const dev = developRef.current
-        // The default print texture's decoded image is our base layer — it holds
-        // the correctly laid-out (tilted) card. Size the canvas to match it so the
-        // measured photo quad lines up 1:1, draw the card, then develop the selfie
-        // inside the photo window. The material is otherwise untouched, so the
-        // result renders exactly like the built-in print, just with a new photo.
+        // The photo plane (POLAROID_1) maps cleanly to the full 0..1 texture, so we
+        // size the canvas to the captured photo (744×1024) and draw it to fill —
+        // preserving its resolution. The frame lives on its own mesh (POLAROID_2)
+        // and is untouched.
         const src = photoMat.userData.defaultMap
-        const baseImg = src && src.image ? src.image : null
         if (!dev.texture) {
-          const canvas = document.createElement('canvas')
-          canvas.width = baseImg ? baseImg.width : 500
-          canvas.height = baseImg ? baseImg.height : 623
-          dev.ctx = canvas.getContext('2d')
-          dev.texture = new CanvasTexture(canvas)
+          dev.ctx = document.createElement('canvas').getContext('2d')
+          dev.texture = new CanvasTexture(dev.ctx.canvas)
         }
-        // Mirror the default texture's sampler settings so our canvas maps onto the
-        // (tilted-UV) polaroid plane identically to the built-in print.
+        dev.ctx.canvas.width = photoImage.width || 744
+        dev.ctx.canvas.height = photoImage.height || 1024
+        // Mirror the default photo texture's sampler settings so our canvas maps onto
+        // the polaroid photo plane identically to the built-in print.
         if (src) {
           dev.texture.flipY = src.flipY
           dev.texture.colorSpace = src.colorSpace
@@ -335,24 +360,119 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, on
           dev.texture.flipY = false
           dev.texture.colorSpace = SRGBColorSpace
         }
-        dev.base = baseImg
         dev.photo = photoImage
         dev.t = 0
-        dev.active = true
-        drawDevelop(dev.ctx, dev.base, dev.photo, 0)
+        // Draw the blank cream sheet now, but DON'T start the fade yet — it begins
+        // when the polaroid ejects (see the 'ejecting' phase) so the develop plays
+        // on screen rather than while the polaroid is still hidden.
+        dev.active = false
+        dev.pending = true
+        drawDevelop(dev.ctx, dev.photo, 0)
         dev.texture.needsUpdate = true
         photoMat.map = dev.texture
       } else {
         // Permission denied / fallback: restore the model's built-in default photo.
         developRef.current.active = false
+        developRef.current.pending = false
         photoMat.map = photoMat.userData.defaultMap
       }
       photoMat.needsUpdate = true
     }
-
-    playPhotoAnimation()
+    // NOTE: no eject here — capture only stages the texture. The eject + view
+    // sequence is driven by the polaroidPhase effect below once the user hits Done.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [photoNonce])
+
+  // Drive the polaroid present/view phases. ModelCanvas owns the phase state; this
+  // effect turns each transition into the right animation / visibility / control.
+  React.useEffect(() => {
+    if (!interactive) return
+    phaseRef.current = polaroidPhase
+    const action = actions['POLAROID ACTION']
+    if (polaroidPhase !== 'viewing') setPolaroidBtnAnchor(null)
+
+    if (polaroidPhase === 'ejecting') {
+      // Camera visible, polaroid prints out. (Texture already staged via photoNonce.)
+      viewRef.current.active = false
+      polRotCurRef.current = { x: 0, y: 0 }
+      if (polaroidRotXRef) polaroidRotXRef.current = 0
+      if (polaroidRotYRef) polaroidRotYRef.current = 0
+      setCameraVisible(true)
+      setPhotoVisible(true)
+      // Kick off the develop fade staged at capture, now that it's on screen.
+      const dev = developRef.current
+      if (dev.pending && dev.ctx) {
+        dev.t = 0
+        dev.active = true
+        dev.pending = false
+      }
+      doneFiredRef.current = false
+      if (action) action.reset()
+      runEject(false)
+    } else if (polaroidPhase === 'viewing') {
+      // Eject finished: hide the camera and hand the polaroid to manual rotation.
+      setCameraVisible(false)
+      setPhotoVisible(true)
+      const pol = polaroidRef.current
+      if (pol && pol.parent) {
+        pol.updateWorldMatrix(true, true)
+        const box = new Box3().setFromObject(pol)
+        const centerW = box.getCenter(new Vector3())
+        const sizeW = box.getSize(new Vector3())
+        // Polaroid bbox centre, in the polaroid's PARENT space (same space as
+        // pol.position) so the rigid spin about it in useFrame is exact.
+        const centerL = pol.parent.worldToLocal(centerW.clone())
+        viewRef.current = {
+          active: true,
+          center: centerL,
+          pePos: pol.position.clone(),
+          peQuat: pol.quaternion.clone(),
+        }
+        // Close-button anchor: store the polaroid's centre + half-extent in PARENT
+        // space (the actual offset is applied in the JSX so it's hot-reload tunable).
+        // Convert a world corner to local to get the half-extent in the same space.
+        const halfCornerL = pol.parent.worldToLocal(
+          centerW.clone().add(new Vector3(sizeW.x * 0.5, sizeW.y * 0.5, 0))
+        )
+        setPolaroidBtnAnchor({
+          cx: centerL.x,
+          cy: centerL.y,
+          cz: centerL.z,
+          hx: halfCornerL.x - centerL.x,
+          hy: halfCornerL.y - centerL.y,
+        })
+        // Take the polaroid away from the mixer so our manual transform sticks.
+        if (action) action.enabled = false
+      }
+    } else if (polaroidPhase === 'returning') {
+      // Snap rotation back to the ejected pose, give control back to the mixer,
+      // show the camera, then retract the polaroid into it (reverse clip).
+      setCameraVisible(true)
+      const pol = polaroidRef.current
+      const v = viewRef.current
+      if (pol && v.pePos) {
+        pol.position.copy(v.pePos)
+        pol.quaternion.copy(v.peQuat)
+      }
+      viewRef.current.active = false
+      polRotCurRef.current = { x: 0, y: 0 }
+      if (polaroidRotXRef) polaroidRotXRef.current = 0
+      if (polaroidRotYRef) polaroidRotYRef.current = 0
+      doneFiredRef.current = false
+      if (action) action.enabled = true
+      runEject(true)
+    } else {
+      // idle: everything back to normal, polaroid hidden.
+      viewRef.current.active = false
+      setCameraVisible(true)
+      setPhotoVisible(false)
+      if (action) {
+        action.stop()
+        action.enabled = true
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [polaroidPhase])
 
   // Free the develop CanvasTexture's GPU memory when the model unmounts.
   React.useEffect(() => {
@@ -386,10 +506,28 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, on
     if (dev.active && dev.ctx) {
       dev.t += delta
       const p = Math.min(1, dev.t / DEVELOP_DURATION)
-      drawDevelop(dev.ctx, dev.base, dev.photo, p)
+      drawDevelop(dev.ctx, dev.photo, p)
       dev.texture.needsUpdate = true
       dirty = true
       if (p >= 1) dev.active = false
+    }
+
+    // Manual polaroid rotation ('viewing' mode): spin the card rigidly about its
+    // own captured centre, lerping toward the drag targets. The mixer no longer
+    // touches the polaroid here, so these writes stick.
+    const view = viewRef.current
+    if (view.active && polaroidRef.current) {
+      const tx = polaroidRotXRef ? polaroidRotXRef.current : 0
+      const ty = polaroidRotYRef ? polaroidRotYRef.current : 0
+      const cur = polRotCurRef.current
+      const s = Math.min(1, delta * 9)
+      cur.x += (tx - cur.x) * s
+      cur.y += (ty - cur.y) * s
+      const R = new Quaternion().setFromEuler(new Euler(cur.x, cur.y, 0))
+      const rel = view.pePos.clone().sub(view.center).applyQuaternion(R)
+      polaroidRef.current.position.copy(view.center).add(rel)
+      polaroidRef.current.quaternion.copy(R).multiply(view.peQuat)
+      if (Math.abs(tx - cur.x) > 0.0002 || Math.abs(ty - cur.y) > 0.0002) dirty = true
     }
 
     if (shutterButtonRef.current) {
@@ -468,27 +606,50 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, on
       if (action.isRunning()) dirty = true
     })
 
+    // Advance the polaroid phase machine when the eject / retract clip clamps.
+    // (Checking the clamped clip time is more reliable than the mixer 'finished'
+    // event for reverse playback.)
+    const ph = phaseRef.current
+    if ((ph === 'ejecting' || ph === 'returning') && !doneFiredRef.current) {
+      const ejectAction = actions['POLAROID ACTION']
+      if (ejectAction) {
+        const dur = ejectAction.getClip().duration
+        const finished =
+          ph === 'ejecting' ? ejectAction.time >= dur - 1e-3 : ejectAction.time <= 1e-3
+        if (finished) {
+          doneFiredRef.current = true
+          dirty = true
+          if (ph === 'ejecting') onEjectDone?.()
+          else onReturnDone?.()
+        }
+      }
+    }
+
     if (dirty) state.invalidate()
   })
 
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">
-        <mesh name="Object_7" geometry={nodes.Object_7.geometry} material={materials.metal} position={[-1.685, -0.861, 0.18]} rotation={[0, 0.518, 0]} scale={[0.558, 0.504, 0.558]} />
+        {/* Every camera mesh is parented here (mirrors the GLB's "MAIN BODY"
+            parenting); the polaroid is a sibling outside it. 'viewing' mode hides
+            this whole group in one toggle so only the polaroid remains on screen. */}
+        <group name="CAMERA" visible={cameraVisible}>
+        <mesh name="Object_7" geometry={nodes.Object_7.geometry} material={materials.metal} position={[-1.685, -0.861, 0.18]} rotation={[0, 0.518, 0]} scale={[0.558, 0.504, 0.558]} />{/* BASE_TEXTURE meshes below use the UV0 variant; the MAIN BODY (mesh005 / mesh005_3) uses the UV1 variant so its decals show. */}
         <mesh name="Object_7001" geometry={nodes.Object_7001.geometry} material={materials.metal} position={[-1.685, -0.861, -0.407]} rotation={[0, 0.433, 0]} scale={[-0.558, -0.504, -0.558]} />
         <mesh name="Object_8" geometry={nodes.Object_8.geometry} material={materials.Ikae} position={[-1.685, -0.861, 0.18]} rotation={[0, 0.518, 0]} scale={[0.558, 0.504, 0.558]} />
         <mesh name="Object_8001" geometry={nodes.Object_8001.geometry} material={materials.Ikae} position={[-1.685, -0.861, -0.407]} rotation={[0, 0.433, 0]} scale={[-0.558, -0.504, -0.558]} />
         <group name="MAIN_BODY" {...partHandlers('body')}>
-          <mesh name="mesh005" geometry={nodes.mesh005.geometry} material={materials['pastel blue']} />
+          <mesh name="mesh005" geometry={nodes.mesh005.geometry} material={baseMatUV1} />
           <mesh name="mesh005_1" geometry={nodes.mesh005_1.geometry} material={materials['Material.001']} />
           <mesh name="mesh005_2" geometry={nodes.mesh005_2.geometry} material={materials['Material.003']} />
-          <mesh name="mesh005_3" geometry={nodes.mesh005_3.geometry} material={materials.screws} />
+          <mesh name="mesh005_3" geometry={nodes.mesh005_3.geometry} material={baseMatUV1} />
         </group>
         <mesh
           ref={shutterButtonRef}
           name="button_2"
           geometry={nodes.button_2.geometry}
-          material={materials['pastel blue']}
+          material={baseMatUV0}
           position={[-1.524, 0.341, 0.944]}
           {...(!interactive
             ? {}
@@ -510,10 +671,10 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, on
           <mesh name="Cube003_1" geometry={nodes.Cube003_1.geometry} material={materials['eevee glass 1.001']} />
         </group>
         <group name="LENS" {...partHandlers('lens')}>
-          <mesh name="lense" geometry={nodes.lense.geometry} material={materials['pastel blue']} position={[0.502, -0.475, 1.319]} />
-          <mesh name="lesne1" geometry={nodes.lesne1.geometry} material={materials['pastel blue']} position={[0.502, -0.475, 1.319]} />
+          <mesh name="lense" geometry={nodes.lense.geometry} material={baseMatUV0} position={[0.502, -0.475, 1.319]} />
+          <mesh name="lesne1" geometry={nodes.lesne1.geometry} material={baseMatUV0} position={[0.502, -0.475, 1.319]} />
           <group name="lense2" position={[0.502, -0.475, 1.319]}>
-            <mesh name="Cylinder003" geometry={nodes.Cylinder003.geometry} material={materials['pastel blue']} />
+            <mesh name="Cylinder003" geometry={nodes.Cylinder003.geometry} material={baseMatUV0} />
             <mesh name="Cylinder003_1" geometry={nodes.Cylinder003_1.geometry} material={materials['Material.001']} />
             <mesh name="Cylinder003_2" geometry={nodes.Cylinder003_2.geometry} material={materials['Material.002']} />
             <mesh name="lenselid_1" geometry={nodes.lenselid_1.geometry} material={materials['Material.001']} position={[0, 0, 0.094]} />
@@ -521,27 +682,27 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, on
             <mesh name="lense_ref" geometry={nodes.lense_ref.geometry} material={materials['Material.003']} position={[0, 0, -0.22]} />
           </group>
           <group name="lensebody" position={[0.502, -0.475, 1.319]}>
-            <mesh name="Cylinder004" geometry={nodes.Cylinder004.geometry} material={materials['pastel blue']} />
+            <mesh name="Cylinder004" geometry={nodes.Cylinder004.geometry} material={baseMatUV0} />
             <mesh name="Cylinder004_1" geometry={nodes.Cylinder004_1.geometry} material={materials.Material} />
           </group>
         </group>
         <group name="Retopo_MAIN_BODY001">
-          <mesh name="mesh011" geometry={nodes.mesh011.geometry} material={materials['pastel blue']} />
+          <mesh name="mesh011" geometry={nodes.mesh011.geometry} material={baseMatUV0} />
           <mesh name="mesh011_1" geometry={nodes.mesh011_1.geometry} material={materials['Material.003']} />
         </group>
-        <mesh name="Cube001" geometry={nodes.Cube001.geometry} material={materials['pastel blue']} position={[0.639, 1.899, -0.639]} />
+        <mesh name="Cube001" geometry={nodes.Cube001.geometry} material={baseMatUV0} position={[0.639, 1.899, -0.639]} />
         <group name="BATTERY_COVER_GROUP" {...partHandlers('battery-cover')}>
           <mesh name="BATTERY_COVER_HITAREA" geometry={nodes.BATTERY_COVER.geometry} position={[-1.989, -1.081, -0.151]}>
             <meshBasicMaterial transparent opacity={0} depthWrite={false} />
           </mesh>
           <group position={[-1.989, -1.081, -0.151]}>
             <group ref={batteryCoverRef} name="BATTERY_COVER">
-              <mesh name="BATTERY_COVER_MESH" geometry={nodes.BATTERY_COVER.geometry} material={materials['pastel blue']} />
+              <mesh name="BATTERY_COVER_MESH" geometry={nodes.BATTERY_COVER.geometry} material={baseMatUV0} />
               <mesh name="BATTERY_COVER001" geometry={nodes.BATTERY_COVER001.geometry} material={materials['Material.001']} position={[-0.014, 0, 0]} />
             </group>
           </group>
         </group>
-        <mesh name="Cube004" geometry={nodes.Cube004.geometry} material={materials['pastel blue']} position={[0.387, 2.397, 0]} />
+        <mesh name="Cube004" geometry={nodes.Cube004.geometry} material={baseMatUV0} position={[0.387, 2.397, 0]} />
         <group
           ref={flashRef}
           name="FLASHLIGHT"
@@ -559,17 +720,45 @@ export function Model({ hoveredPart, setHoveredPart, onSelect, isDraggingRef, on
             <meshBasicMaterial ref={flashGlowMaterialRef} color="#fff4c7" transparent opacity={0} depthWrite={false} blending={AdditiveBlending} />
           </mesh>
         </group>
+        </group>
         <group
-          name="Polaroid"
+          ref={polaroidRef}
+          name="POLAROID"
           visible={photoVisible}
           {...partHandlers('polaroid-image')}
         >
-          <mesh name="Plane005" geometry={nodes.Plane005.geometry} material={materials['Material.004']} />
-          <mesh name="Plane005_1" geometry={nodes.Plane005_1.geometry} material={materials['Material.005']} />
+          <mesh name="Plane" geometry={nodes.Plane.geometry} material={materials.POLAROID_1} />
+          <mesh name="Plane_1" geometry={nodes.Plane_1.geometry} material={materials.POLAROID_2} />
+          <mesh name="Plane_2" geometry={nodes.Plane_2.geometry} material={materials.POLAROID_3} />
         </group>
+        {/* On-canvas close button anchored beside the polaroid (a sibling, so it
+            doesn't spin with the card). Offset = centre + half-extent × CLOSE_BTN_*.
+            Retracts the polaroid + brings the camera back. */}
+        {polaroidPhase === 'viewing' && polaroidBtnAnchor && (
+          <Html
+            position={[
+              polaroidBtnAnchor.cx + polaroidBtnAnchor.hx * CLOSE_BTN_MX,
+              polaroidBtnAnchor.cy + polaroidBtnAnchor.hy * CLOSE_BTN_MY,
+              polaroidBtnAnchor.cz,
+            ]}
+            center
+            zIndexRange={[50, 0]}
+            style={{ pointerEvents: 'auto' }}
+          >
+            <button
+              type="button"
+              className="polaroid-view-close"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={onPolaroidClose}
+              aria-label="Close polaroid and bring the camera back"
+            >
+              ✕
+            </button>
+          </Html>
+        )}
       </group>
     </group>
   )
 }
 
-useGLTF.preload('/models/try-1.glb')
+useGLTF.preload('/models/INSTAX_FINAL.glb')

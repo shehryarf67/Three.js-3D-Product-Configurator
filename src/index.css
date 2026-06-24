@@ -1075,6 +1075,31 @@ header nav .hideOnMobile a.active {
   margin-top: -1px;
 }
 
+/* Cross button shown beside a printed polaroid while it's being viewed on its own.
+   Positioned in 3D via drei <Html> (anchored next to the polaroid), so it needs no
+   CSS positioning of its own — just the circular look. Clicking it retracts the
+   polaroid and brings the camera back. */
+.polaroid-view-close {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  /* White circle + dark glyph so it reads clearly against the pink section. */
+  background: #ffffff;
+  color: #2a1620;
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+}
+.polaroid-view-close:hover { background: var(--main_bg_color); color: #fff; transform: scale(1.08); }
+.polaroid-view-close:active { transform: scale(0.92); }
+
 .model-canvas::before {
   content: "";
   position: absolute;
@@ -4582,7 +4607,11 @@ button:focus-visible {
 .camera-capture__stage {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1;
+  /* Match the 744×1024 capture so the live preview is WYSIWYG. Cap the height on
+     short viewports so the shutter/buttons stay reachable. */
+  aspect-ratio: 744 / 1024;
+  max-height: 56vh;
+  margin: 0 auto;
   border-radius: 18px;
   overflow: hidden;
   background: #1c1118;

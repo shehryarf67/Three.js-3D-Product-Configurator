@@ -19,53 +19,62 @@ import { createPortal } from "react-dom";
     onClose()         -> dismiss the overlay (✕ / backdrop / Escape / Done).
 */
 
-const PRINT_SIZE = 1024; // square source-photo resolution
-// Polaroid frame layout — matches drawDevelop() in Instax12.jsx so the saved /
-// previewed polaroid looks identical to the one printed on the 3D model.
+// Source-photo resolution. Portrait 744×1024 to match the polaroid photo plane
+// (POLAROID_1) on the 3D model and the live-preview aspect below.
+const PRINT_W = 744;
+const PRINT_H = 1024;
+const PRINT_AR = PRINT_W / PRINT_H;
+
+// DOM preview / saved-file polaroid frame layout (portrait photo + thick instax
+// bottom border). This is just for the overlay preview + Save download; the 3D
+// model has its own frame mesh.
 const CARD_W = 600;
-const CARD_H = 747;
-const PHOTO_MARGIN = 0.1; // side/top margin as a fraction of card width
-const PHOTO_TOP = 0.07;   // top margin as a fraction of card height
+const CARD_MARGIN = 48;            // side + top margin (px)
+const CARD_PHOTO_W = CARD_W - 2 * CARD_MARGIN;
+const CARD_PHOTO_H = Math.round(CARD_PHOTO_W / PRINT_AR);
+const CARD_BOTTOM = 150;           // thick instax bottom border
+const CARD_H = CARD_MARGIN + CARD_PHOTO_H + CARD_BOTTOM;
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
-// Square-crop the centre of the video, mirror it (selfie), bake a subtle instax
-// colour grade (warm wash + vignette).
+// Cover-crop the centre of the video to the 744×1024 portrait frame, mirror it
+// (selfie), bake a subtle instax colour grade (warm wash + vignette).
 function captureFrame(video) {
   const canvas = document.createElement("canvas");
-  canvas.width = PRINT_SIZE;
-  canvas.height = PRINT_SIZE;
+  canvas.width = PRINT_W;
+  canvas.height = PRINT_H;
   const ctx = canvas.getContext("2d");
 
   const vw = video.videoWidth;
   const vh = video.videoHeight;
-  const side = Math.min(vw, vh);
-  const sx = (vw - side) / 2;
-  const sy = (vh - side) / 2;
+  // Cover-fit: crop the video to the target aspect, keeping the centre.
+  let sw = vw, sh = vh, sx = 0, sy = 0;
+  if (vw / vh > PRINT_AR) { sw = vh * PRINT_AR; sx = (vw - sw) / 2; }
+  else { sh = vw / PRINT_AR; sy = (vh - sh) / 2; }
 
   ctx.save();
-  ctx.translate(PRINT_SIZE, 0);
+  ctx.translate(PRINT_W, 0);
   ctx.scale(-1, 1);
-  ctx.drawImage(video, sx, sy, side, side, 0, 0, PRINT_SIZE, PRINT_SIZE);
+  ctx.drawImage(video, sx, sy, sw, sh, 0, 0, PRINT_W, PRINT_H);
   ctx.restore();
 
   ctx.fillStyle = "rgba(255, 224, 178, 0.10)";
-  ctx.fillRect(0, 0, PRINT_SIZE, PRINT_SIZE);
+  ctx.fillRect(0, 0, PRINT_W, PRINT_H);
 
   const g = ctx.createRadialGradient(
-    PRINT_SIZE / 2, PRINT_SIZE / 2, PRINT_SIZE * 0.3,
-    PRINT_SIZE / 2, PRINT_SIZE / 2, PRINT_SIZE * 0.72
+    PRINT_W / 2, PRINT_H / 2, PRINT_H * 0.3,
+    PRINT_W / 2, PRINT_H / 2, PRINT_H * 0.72
   );
   g.addColorStop(0, "rgba(0,0,0,0)");
   g.addColorStop(1, "rgba(25,12,0,0.34)");
   ctx.fillStyle = g;
-  ctx.fillRect(0, 0, PRINT_SIZE, PRINT_SIZE);
+  ctx.fillRect(0, 0, PRINT_W, PRINT_H);
 
   return canvas;
 }
 
-// Compose the square photo into a white instax frame (thick bottom border) — the
-// thing the user views and saves.
+// Compose the portrait photo into a white instax frame (thick bottom border) —
+// the thing the user views in the overlay and saves.
 function composePolaroid(photo) {
   const c = document.createElement("canvas");
   c.width = CARD_W;
@@ -73,17 +82,14 @@ function composePolaroid(photo) {
   const x = c.getContext("2d");
   x.fillStyle = "#f7f4ee";
   x.fillRect(0, 0, CARD_W, CARD_H);
-  const m = Math.round(CARD_W * PHOTO_MARGIN);
-  const top = Math.round(CARD_H * PHOTO_TOP);
-  const sq = CARD_W - 2 * m;
-  x.drawImage(photo, m, top, sq, sq);
+  x.drawImage(photo, CARD_MARGIN, CARD_MARGIN, CARD_PHOTO_W, CARD_PHOTO_H);
   x.strokeStyle = "rgba(0,0,0,0.08)";
   x.lineWidth = 2;
-  x.strokeRect(m, top, sq, sq);
+  x.strokeRect(CARD_MARGIN, CARD_MARGIN, CARD_PHOTO_W, CARD_PHOTO_H);
   return c;
 }
 
-const CameraCapture = ({ onCapture, onUseDefault, onClose }) => {
+const CameraCapture = ({ onCapture, onUseDefault, onClose, onDone }) => {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const photoRef = useRef(null); // the captured square photo canvas (for Save / Retake)
@@ -116,7 +122,14 @@ const CameraCapture = ({ onCapture, onUseDefault, onClose }) => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           // `ideal` (not required) so devices without a front camera still work.
-          video: { facingMode: { ideal: "user" }, width: { ideal: 1280 }, height: { ideal: 720 } },
+          // Request a portrait 744×1024 feed; the browser picks the closest mode
+          // the webcam supports and captureFrame() cover-crops to exactly that.
+          video: {
+            facingMode: { ideal: "user" },
+            width: { ideal: PRINT_W },
+            height: { ideal: PRINT_H },
+            aspectRatio: { ideal: PRINT_AR },
+          },
           audio: false,
         });
         if (cancelled) {
@@ -280,7 +293,17 @@ const CameraCapture = ({ onCapture, onUseDefault, onClose }) => {
               <button type="button" className="camera-capture__btn camera-capture__btn--primary" onClick={handleSave}>
                 Save
               </button>
-              <button type="button" className="camera-capture__btn" onClick={dismiss}>
+              <button
+                type="button"
+                className="camera-capture__btn camera-capture__btn--primary"
+                onClick={() => {
+                  // Commit: close the overlay and let the model eject + present the
+                  // polaroid for viewing (handled by ModelCanvas / Instax12).
+                  stopStream();
+                  if (onDone) onDone();
+                  else onClose();
+                }}
+              >
                 Done
               </button>
             </div>

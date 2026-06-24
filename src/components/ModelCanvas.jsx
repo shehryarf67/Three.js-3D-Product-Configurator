@@ -73,6 +73,12 @@ function ScrollingModel({
     onShutterPress,
     photoImage,
     photoNonce,
+    polaroidPhase,
+    polaroidRotXRef,
+    polaroidRotYRef,
+    onEjectDone,
+    onReturnDone,
+    onPolaroidClose,
     ...groupProps
 }) {
     const ref = useRef();
@@ -90,7 +96,7 @@ function ScrollingModel({
             const materials = Array.isArray(child.material) ? child.material : [child.material];
 
             materials.forEach((material) => {
-                if (!material || material.name !== "pastel blue" || !material.color) return;
+                if (!material || material.name !== "BASE_TEXTURE" || !material.color) return;
 
                 if (!material.userData.originalColor) {
                     material.userData.originalColor = material.color.clone();
@@ -128,6 +134,12 @@ function ScrollingModel({
                 onShutterPress={onShutterPress}
                 photoImage={photoImage}
                 photoNonce={photoNonce}
+                polaroidPhase={polaroidPhase}
+                polaroidRotXRef={polaroidRotXRef}
+                polaroidRotYRef={polaroidRotYRef}
+                onEjectDone={onEjectDone}
+                onReturnDone={onReturnDone}
+                onPolaroidClose={onPolaroidClose}
                 rotation={[0, 0, 0]}
             />
         </group>
@@ -145,6 +157,10 @@ const ModelCanvas = () => {
     const lastPointerYRef = useRef(0);
     const rotationTargetXRef = useRef(0);
     const rotationTargetYRef = useRef(0);
+    // Drag targets for the polaroid while it's being viewed on its own ('viewing').
+    const polaroidRotXRef = useRef(0);
+    const polaroidRotYRef = useRef(0);
+    const polaroidPhaseRef = useRef("idle");
     const invalidateRef = useRef(() => { });
     const [modelColor, setModelColor] = useState(INSTAX_COLORS[0].value);
     const [isDragging, setIsDragging] = useState(false);
@@ -155,8 +171,13 @@ const ModelCanvas = () => {
     const [captureOpen, setCaptureOpen] = useState(false);
     const [polaroidPhoto, setPolaroidPhoto] = useState(null);
     const [photoNonce, setPhotoNonce] = useState(0);
+    // Polaroid present/view phase: idle | ejecting | viewing | returning.
+    // (See Instax12.jsx Model — it turns each phase into the right animation.)
+    const [polaroidPhase, setPolaroidPhase] = useState("idle");
 
     const handleShutterPress = () => {
+        // Ignore the shutter unless we're idle — no re-triggering mid eject/view.
+        if (polaroidPhaseRef.current !== "idle") return;
         // The overlay opens on top and steals the pointer, so the model-3d's
         // pointerup never fires — clear the drag state so the model doesn't keep
         // following the mouse afterwards (fixes the "moves without holding" bug).
@@ -166,17 +187,42 @@ const ModelCanvas = () => {
         setCaptureOpen(true);
     };
     const handleCapture = (canvas) => {
-        // Print on the 3D model (eject + develop). Keep the overlay OPEN so it can
-        // show the result viewer (view / rotate / save); it closes via onClose.
+        // Stage the captured photo onto the polaroid's photo plane (POLAROID_1),
+        // but DON'T eject yet — that happens on "Done". Keep the overlay OPEN so it
+        // can show the result viewer (view / save / retake).
         setPolaroidPhoto(canvas);
         setPhotoNonce((n) => n + 1);
     };
+    // Bring the camera back to a front-facing rest pose so the polaroid presents
+    // upright once the camera is hidden.
+    const resetCameraRotation = () => {
+        rotationTargetXRef.current = 0;
+        rotationTargetYRef.current = 0;
+    };
+    // "Done" after a selfie: close the overlay and start the eject -> view sequence.
+    const handleDone = () => {
+        resetCameraRotation();
+        setCaptureOpen(false);
+        setPolaroidPhase("ejecting");
+    };
     const handleUseDefault = () => {
+        resetCameraRotation();
         setPolaroidPhoto(null); // null -> model prints its built-in default photo
         setCaptureOpen(false);
         setPhotoNonce((n) => n + 1);
+        setPolaroidPhase("ejecting");
     };
-    const handleCloseCapture = () => setCaptureOpen(false); // dismiss the overlay
+    const handleCloseCapture = () => setCaptureOpen(false); // dismiss without ejecting
+    // Phase advances driven by the model's animation 'finished' events.
+    const handleEjectDone = () => setPolaroidPhase("viewing");
+    const handleReturnDone = () => setPolaroidPhase("idle");
+    // Cross button while viewing: retract the polaroid, bring the camera back.
+    const handlePolaroidClose = () => {
+        isPointerDownRef.current = false;
+        isDraggingRef.current = false;
+        setIsDragging(false);
+        setPolaroidPhase("returning");
+    };
     // Treat tablets as touch (tap-to-select the model parts). The width clause
     // covers tablets that report a fine pointer / DevTools emulation where
     // (hover:none)/(pointer:coarse) don't fire — matches the ≤1399 tablet range.
@@ -185,6 +231,10 @@ const ModelCanvas = () => {
     useEffect(() => {
         hoveredPartRef.current = hoveredPart;
     }, [hoveredPart]);
+
+    useEffect(() => {
+        polaroidPhaseRef.current = polaroidPhase;
+    }, [polaroidPhase]);
 
     // The capture overlay covers the canvas and steals the pointer, so the
     // model-3d's pointerup never fires after the shutter click. Clear the drag
@@ -208,10 +258,19 @@ const ModelCanvas = () => {
         if (!node) return;
 
         const handleWheel = (event) => {
-            if (!isPointerInsideRef.current || !hoveredPartRef.current) return;
+            if (!isPointerInsideRef.current) return;
+            const viewing = polaroidPhaseRef.current === "viewing";
+            // Outside viewing mode, only rotate when hovering a part (so the page
+            // can still scroll past the model otherwise).
+            if (!viewing && !hoveredPartRef.current) return;
             event.preventDefault();
             event.stopPropagation();
-            rotationTargetYRef.current += event.deltaY * 0.003;
+            if (viewing) {
+                // Spin the lone polaroid in place, not the (hidden) camera group.
+                polaroidRotYRef.current += event.deltaY * 0.003;
+            } else {
+                rotationTargetYRef.current += event.deltaY * 0.003;
+            }
             invalidateRef.current();
         };
 
@@ -227,7 +286,7 @@ const ModelCanvas = () => {
             <div className="model-canvas-bg reveal-scale" />
             <div className="model-canvas-content reveal">
                 <div className="specs-anchor">
-                    {!activePart && (
+                    {!activePart && polaroidPhase !== "viewing" && (
                         <div className="default-specs">
                             <p className="default-specs-text">
                                 {isTouch
@@ -323,7 +382,7 @@ const ModelCanvas = () => {
             </div>
             <div
                 className="model-3d reveal"
-                style={{ cursor: isDragging ? "grabbing" : hoveredPart ? "grab" : "default" }}
+                style={{ cursor: isDragging ? "grabbing" : (hoveredPart || polaroidPhase === "viewing") ? "grab" : "default" }}
                 ref={model3dRef}
                 onPointerEnter={() => {
                     isPointerInsideRef.current = true;
@@ -332,7 +391,9 @@ const ModelCanvas = () => {
                     isPointerInsideRef.current = false;
                 }}
                 onPointerDown={(event) => {
-                    if (!hoveredPartRef.current) return;
+                    // In 'viewing' mode the camera is hidden, so allow a drag to
+                    // start anywhere on the canvas (there's nothing to hover).
+                    if (polaroidPhaseRef.current !== "viewing" && !hoveredPartRef.current) return;
                     isPointerDownRef.current = true;
                     lastPointerXRef.current = event.clientX;
                     lastPointerYRef.current = event.clientY;
@@ -358,8 +419,14 @@ const ModelCanvas = () => {
 
                     lastPointerXRef.current = event.clientX;
                     lastPointerYRef.current = event.clientY;
-                    rotationTargetYRef.current += deltaX * 0.01;
-                    rotationTargetXRef.current += deltaY * 0.01;
+                    if (polaroidPhaseRef.current === "viewing") {
+                        // Spin the lone polaroid instead of the (hidden) camera.
+                        polaroidRotYRef.current += deltaX * 0.01;
+                        polaroidRotXRef.current += deltaY * 0.01;
+                    } else {
+                        rotationTargetYRef.current += deltaX * 0.01;
+                        rotationTargetXRef.current += deltaY * 0.01;
+                    }
                     invalidateRef.current();
                 }}
                 onPointerUp={(event) => {
@@ -412,18 +479,29 @@ const ModelCanvas = () => {
                             onShutterPress={handleShutterPress}
                             photoImage={polaroidPhoto}
                             photoNonce={photoNonce}
+                            polaroidPhase={polaroidPhase}
+                            polaroidRotXRef={polaroidRotXRef}
+                            polaroidRotYRef={polaroidRotYRef}
+                            onEjectDone={handleEjectDone}
+                            onReturnDone={handleReturnDone}
+                            onPolaroidClose={handlePolaroidClose}
                         />
                     </Suspense>
                 </Canvas>
             </div>
             <p className="model-canvas-instruction reveal">
-                {isTouch ? "Drag the camera to rotate" : "Drag or scroll to rotate camera"}
+                {polaroidPhase === "viewing"
+                    ? "Drag to rotate your polaroid"
+                    : isTouch
+                    ? "Drag the camera to rotate"
+                    : "Drag or scroll to rotate camera"}
             </p>
             {captureOpen && (
                 <CameraCapture
                     onCapture={handleCapture}
                     onUseDefault={handleUseDefault}
                     onClose={handleCloseCapture}
+                    onDone={handleDone}
                 />
             )}
         </section>

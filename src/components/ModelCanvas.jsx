@@ -41,6 +41,11 @@ const getDragStartThreshold = (pointerType) => (pointerType === "touch" ? 12 : 4
 // flat, front-on product shot. The user can still drag it anywhere from here.
 const MODEL_REST_TILT = { x: 0.08, y: -0.35 };
 
+// The body's raised decals (logo, lens-ring text) live in the normal map. The GLB
+// authors normalScale = 1; under this scene's soft IBL the relief barely reads, so
+// we emphasise it a touch. Tune here if the decals are too strong/weak.
+const DECAL_NORMAL_SCALE = 1.5;
+
 function Backdrop() {
     const { scene } = useGLTF('/models/bg_dropoff-compressed.glb')
     return (
@@ -107,6 +112,9 @@ function ScrollingModel({
                 if (!material.userData.originalColor) {
                     material.userData.originalColor = material.color.clone();
                 }
+
+                // Emphasise the normal-map relief (the raised decals) — see DECAL_NORMAL_SCALE.
+                if (material.normalMap) material.normalScale.set(DECAL_NORMAL_SCALE, DECAL_NORMAL_SCALE);
 
                 if (modelColor) {
                     material.color.set(modelColor);
@@ -497,8 +505,13 @@ const ModelCanvas = () => {
                     }}
                 >
                     <Suspense fallback={<ModelLoader />}>
-                        <Environment background={false} preset="warehouse" intensity={2} resolution={64} />
-                        <directionalLight position={[2, 2, 2]} intensity={1} />
+                        {/* resolution bumped 64 -> 256: a sharper IBL gives the body
+                            surface defined specular gradients, which is what makes the
+                            normal-map decals read (a 64px env is too blurry/flat). */}
+                        <Environment background={false} preset="warehouse" intensity={2} resolution={256} />
+                        {/* A bit more directional punch (1 -> 1.5) so the raised decals
+                            catch a shading gradient and don't wash out under the soft IBL. */}
+                        <directionalLight position={[2, 2, 2]} intensity={1.5} />
                         {/* <Backdrop /> */}
                         <ScrollingModel
                             scale={modelSize}

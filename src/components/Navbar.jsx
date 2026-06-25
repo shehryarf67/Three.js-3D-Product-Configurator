@@ -7,7 +7,7 @@ const NAV_ITEMS = [
   { label: "Showcase", id: "showcase" },
   { label: "Details", id: "details" },
   { label: "About", id: "about" },
-  { label: "Contact", id: "contact" },
+  { label: "Contact Us", id: "contact" },
 ];
 
 const Navbar = () => {
@@ -56,6 +56,17 @@ const Navbar = () => {
       </ul>
 
       <header>
+        {/* Curve for the corner logo blob, defined in objectBoundingBox units
+            (0–1 fractions of the element box) so the SAME path scales to any
+            box size — letting .logo-blob grow fluidly with the viewport while
+            keeping the exact curve ratio (0.3358) used by the site's other lobes. */}
+        <svg className="logo-blob-defs" width="0" height="0" aria-hidden="true" focusable="false">
+          <defs>
+            <clipPath id="logoBlobClip" clipPathUnits="objectBoundingBox">
+              <path d="M0,1 V0 H1 C0.3358,0 0,0.3358 0,1 Z" />
+            </clipPath>
+          </defs>
+        </svg>
         <div className="logo-blob" />
         <a
           className="app-logo"

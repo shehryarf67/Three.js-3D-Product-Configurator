@@ -257,14 +257,25 @@ body {
   position: absolute;
   top: calc(100% - 2px);
   left: 0;
-  /* Smaller lobe so its curve matches the site's other corner radii (the hero's
-     bottom-left ~220px, etc.) rather than reading oversized. clip-path control
-     point scales with the box: 100.73 × 220/300 ≈ 73.87. */
-  width: 220px;
-  height: 220px;
+  /* Fluid size: starts small (~135px, continuous with the ≤768 mobile size) and
+     scales up with the viewport, reaching the original 220px by ~1257px and
+     holding there. So the tablet/small-laptop range is smaller than before, while
+     normal laptops (≥~1366px) keep the original 220px UNCHANGED. The curve comes
+     from the objectBoundingBox <clipPath> (see Navbar.jsx), which is
+     resolution-independent and keeps the exact 0.3358 control ratio at any size.
+     Mobile (≤768) keeps its own fixed sizes/paths in the blocks below. */
+  width: clamp(135px, 17.5vw, 220px);
+  height: clamp(135px, 17.5vw, 220px);
   background: var(--secondary_color);
-  clip-path: path('M0,220 V0 H220 C73.87,0 0,73.87 0,220 Z');
+  clip-path: url(#logoBlobClip);
   z-index: 110;
+  pointer-events: none;
+}
+
+.logo-blob-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
   pointer-events: none;
 }
 
@@ -784,6 +795,17 @@ header nav .hideOnMobile a.active {
   width: clamp(330px, 38vw, 640px);
 }
 
+/* Tablet → small-laptop: lower the blue hero ball so it sits further down the
+   left side instead of bleeding mostly off the top (base top:-28%). Range is
+   769–1399 because ≤768 hides every ball and ≥1400 keeps the large-screen comp.
+   Placed AFTER the base rule so it wins on source order within the range (an
+   earlier-placed copy was silently overridden by the base declaration). */
+@media (min-width: 769px) and (max-width: 1399px) {
+  .hero-ball--blue {
+    top: -6%;
+  }
+}
+
 .hero-ball--pink {
   left: -2%;
   top: 28%;
@@ -1070,8 +1092,19 @@ header nav .hideOnMobile a.active {
   box-sizing: border-box;
   background-color: var(--main_bg_color);
   position: relative;
-  overflow: hidden;
+  /* overflow:visible (NOT hidden) so the decorative balls can bleed past the
+     section's top/bottom edges and overlap the neighbouring sections. Horizontal
+     bleed is still clipped by html/body { overflow-x: clip }, so no h-scrollbar.
+     overflow:hidden here was clipping the balls AT the section edge, which is why
+     they read as "hidden behind the section above" — z-index alone can't fix that. */
+  overflow: visible;
   isolation: isolate;
+  /* Lift the whole section above the hero-bg layer (z-1) so its decorative balls,
+     which bleed past the section's edges, paint ON TOP of the neighbouring
+     sections instead of hiding behind them. Inside this stacking context the order
+     stays: ::before teal (0) < balls (1) < pink panel (2) < model (3) < copy/picker
+     (4) — so the panel and everything in it still sit above the balls. */
+  z-index: 2;
   margin-top: -1px;
 }
 
@@ -2464,14 +2497,15 @@ header nav .hideOnMobile a.active {
     width: 94%;
   }
 
-  /* Ball cluster (02/03): bigger and pushed to the top-right of the pipe. */
+  /* Ball cluster (02/03): bottom-right of the teal pipe, scaled up and pushed
+     further right (bleeds slightly off the right edge) so it reads as a bold
+     accent in the corner, clear of the lens. */
   .details-art-balls {
-    top: 30%;
-    /* Nudged left to match the desktop tweak. */
-    right: 8%;
-    bottom: auto;
+    top: auto;
+    bottom: 26%;
+    right: -6%;
     left: auto;
-    width: clamp(200px, 24vw, 360px);
+    width: clamp(200px, 22vw, 350px);
   }
 
   /* 04 selfie callout — bottom-anchored so the pointer tracks the camera, then
@@ -2767,8 +2801,18 @@ header nav .hideOnMobile a.active {
   padding: 1rem 1rem clamp(3rem, 6vw, 5rem);
   background-color: var(--main_bg_color);
   color: var(--secondary_color);
-  overflow: hidden;
+  /* overflow:visible (NOT hidden) so the white/purple balls bleed past this
+     section's top/bottom edges and overlap Details (above) and the Footer (below).
+     html/body { overflow-x: clip } still prevents any horizontal scrollbar.
+     overflow:hidden was clipping them at the edge — the reason they read as
+     "caught beneath the section above" despite the z-index lift. */
+  overflow: visible;
   isolation: isolate;
+  /* Lift above the (z-auto) Details section above it so the white ball, which
+     bleeds up past this section's top edge, paints ON TOP of Details instead of
+     being caught beneath it. Inside, the ball (z-1) still sits BELOW the cards
+     (.about-content, z-2), so the cards stay on top of the ball as required. */
+  z-index: 2;
 }
 
 .about-content {
@@ -4244,7 +4288,12 @@ button:focus-visible {
    the grid keeps copy | model | picker in separate tracks so they never collide.
    >1200px is intentionally LEFT ALONE — it uses the original desktop implementation
    (base absolute layout + the ≥1400 tuning), unchanged. */
-@media (min-width: 769px) and (max-width: 1200px) {
+/* Upper bound is 1300 (not 1200): the base absolute layout's centred model and
+   left-anchored copy visibly overlap up into the ~1300px range, while normal
+   laptops (>=1366px) clear it and keep the base layout the user approved. This
+   grid layout (+ the bigger hero-camera clamp below) therefore covers the whole
+   "around 1200px" zone. */
+@media (min-width: 769px) and (max-width: 1300px) {
   .model-canvas {
     --model-panel-x: clamp(1.25rem, 3vw, 2.5rem);
     display: grid;
@@ -4258,7 +4307,7 @@ button:focus-visible {
     align-items: center;
   }
 
-  /* Purple ball nudged up to the pink panel's top-left corner (≤1200 only). */
+  /* Purple ball nudged up to the pink panel's top-left corner (≤1300 only). */
   .model-ball--purple {
     top: -14%;
   }
@@ -4855,13 +4904,9 @@ button:focus-visible {
     margin-top: 0;
   }
 
-  /* The camera "figure" width drives the visible art size (art = 13.67% of it).
-     One clamp across the whole range = continuous growth, no 1024/1200 shrink. */
-  .hero-camera--center,
-  .hero-camera--left,
-  .hero-camera--top-left,
-  .hero-camera--top-right,
-  .hero-camera--right {
-    width: clamp(1240px, 132vw, 2100px);
-  }
+  /* NOTE: camera-figure width is intentionally NOT set here — it falls back to the
+     original base clamp(1270px, 108vw, 1950px) (laptops) + the ≥1400 / ≥1680
+     surface blocks (large screens). That keeps the cluster sized exactly "as
+     before"; the earlier 132vw override scaled it up too much on laptops. The base
+     is already continuous (flat 173px ≤1176, then grows), so there's no shrink. */
 }

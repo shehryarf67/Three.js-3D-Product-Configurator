@@ -37,8 +37,134 @@ const CARD_H = CARD_MARGIN + CARD_PHOTO_H + CARD_BOTTOM;
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
+/*
+  Instax Mini 12 print emulation.
+
+  The look is baked ONCE here, on the 2D capture canvas, the moment the shutter
+  fires — not per video frame and not on the GPU — so it's effectively free and
+  the same graded canvas flows to the 3D print (drawDevelop), the saved PNG and
+  the result viewer. The goal: warm, slightly soft, gently overexposed with
+  rolled-off highlights, lower contrast + saturation, a soft highlight bloom,
+  barely-there grain and a whisper of a vignette — clean and modern, NOT vintage.
+
+  All strengths live in GRADE so the look is one tunable place.
+*/
+const GRADE = {
+  // 1. Colour — warm white balance. Instax prints lean warm: lift red, a touch of
+  //    green (red+green reads as yellow) and pull blue down. Kept small so skin
+  //    tones stay natural rather than turning orange.
+  rGain: 1.045,
+  gGain: 1.012,
+  bGain: 0.95,
+  // 2. Exposure — a small lift (≈ +0.14 EV, 2^0.14 ≈ 1.10) for the gently
+  //    "slightly overexposed" print brightness.
+  exposure: 1.1,
+  // 2. Contrast — ~10% softer; values are pulled toward mid-grey.
+  contrast: 0.9,
+  // 2. Shadow lift — film blacks are never pure black; raise the floor a hair.
+  shadowLift: 0.035,
+  // 2. Highlight rolloff — a soft shoulder above the knee so highlights compress
+  //    (Instax highlight glow) instead of clipping hard to white.
+  highlightKnee: 0.75,
+  highlightCompress: 2.2,
+  // 3. Saturation — ~13% lower, but stop well short of washed-out.
+  saturation: 0.87,
+  // 7. Grain — extremely fine luminance noise (shared across RGB = filmic, not
+  //    coloured speckle). ±~3/255, barely perceptible.
+  grain: 0.012,
+  // 6. Softness — sub-pixel blur on the source so the print isn't phone-sharp.
+  softness: 0.6, // px
+  // 4. Bloom — soft, realistic glow on bright areas (not a cinematic flare).
+  bloomAlpha: 0.3,
+  bloomBlur: 6, // px at full res
+  bloomScale: 3, // bright-pass is computed downscaled, for performance
+  // 5. Vignette — barely-noticeable edge darkening; the centre stays clean.
+  vignette: 0.14,
+};
+
+const clamp255 = (c) => (c <= 0 ? 0 : c >= 1 ? 255 : ((c * 255 + 0.5) | 0));
+
+// Per-channel tone curve (2): exposure → contrast → shadow lift → highlight rolloff.
+function toneCurve(c) {
+  c *= GRADE.exposure; // exposure boost
+  c = (c - 0.5) * GRADE.contrast + 0.5; // lower contrast
+  c = GRADE.shadowLift + c * (1 - GRADE.shadowLift); // lift blacks off zero
+  const k = GRADE.highlightKnee;
+  if (c > k) c = k + (c - k) / (1 + (c - k) * GRADE.highlightCompress); // soft shoulder
+  return c;
+}
+
+// One pixel pass: warm WB (1), tone curve (2), desaturation (3) and grain (7).
+// Single pass over the buffer keeps it cheap even at 744×1024.
+function applyFilmGrade(ctx) {
+  const { width: w, height: h } = ctx.canvas;
+  const img = ctx.getImageData(0, 0, w, h);
+  const d = img.data;
+  const sat = GRADE.saturation;
+  const desat = 1 - sat;
+  const grain = GRADE.grain;
+  for (let i = 0; i < d.length; i += 4) {
+    let r = (d[i] / 255) * GRADE.rGain;
+    let g = (d[i + 1] / 255) * GRADE.gGain;
+    let b = (d[i + 2] / 255) * GRADE.bGain;
+    r = toneCurve(r);
+    g = toneCurve(g);
+    b = toneCurve(b);
+    // Desaturate toward Rec.601 luma (keeps skin weighting natural).
+    const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+    r = lum * desat + r * sat;
+    g = lum * desat + g * sat;
+    b = lum * desat + b * sat;
+    // Fine, shared (luminance) grain.
+    const n = (Math.random() - 0.5) * grain;
+    d[i] = clamp255(r + n);
+    d[i + 1] = clamp255(g + n);
+    d[i + 2] = clamp255(b + n);
+  }
+  ctx.putImageData(img, 0, 0);
+}
+
+// Soft highlight bloom (4). A downscaled bright-pass (mids/darks crushed, only
+// highlights survive) is blurred and screen-blended back, so bright surfaces glow
+// gently. Downscaling = the whole effect is a couple of cheap draws.
+function applyBloom(ctx, canvas) {
+  const w = canvas.width;
+  const h = canvas.height;
+  const bw = Math.max(1, Math.round(w / GRADE.bloomScale));
+  const bh = Math.max(1, Math.round(h / GRADE.bloomScale));
+  const bloom = document.createElement("canvas");
+  bloom.width = bw;
+  bloom.height = bh;
+  const bctx = bloom.getContext("2d");
+  // Bright pass: high contrast crushes everything but the highlights to ~black.
+  bctx.filter = "brightness(1.1) contrast(1.8)";
+  bctx.drawImage(canvas, 0, 0, bw, bh);
+  // Screen blend (black = no change) the blurred highlights back over the photo.
+  ctx.save();
+  ctx.globalCompositeOperation = "screen";
+  ctx.globalAlpha = GRADE.bloomAlpha;
+  ctx.filter = `blur(${GRADE.bloomBlur}px)`;
+  ctx.drawImage(bloom, 0, 0, w, h);
+  ctx.restore();
+  ctx.filter = "none";
+}
+
+// Whisper-soft vignette (5): only the far corners dim; the centre is untouched.
+function applyVignette(ctx) {
+  const w = ctx.canvas.width;
+  const h = ctx.canvas.height;
+  const g = ctx.createRadialGradient(
+    w / 2, h / 2, Math.min(w, h) * 0.42,
+    w / 2, h / 2, Math.max(w, h) * 0.72
+  );
+  g.addColorStop(0, "rgba(0,0,0,0)");
+  g.addColorStop(1, `rgba(20,12,4,${GRADE.vignette})`);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, w, h);
+}
+
 // Cover-crop the centre of the video to the 744×1024 portrait frame, mirror it
-// (selfie), bake a subtle instax colour grade (warm wash + vignette).
+// (selfie), then bake the full Instax Mini 12 grade above.
 function captureFrame(video) {
   const canvas = document.createElement("canvas");
   canvas.width = PRINT_W;
@@ -52,23 +178,18 @@ function captureFrame(video) {
   if (vw / vh > PRINT_AR) { sw = vh * PRINT_AR; sx = (vw - sw) / 2; }
   else { sh = vw / PRINT_AR; sy = (vh - sh) / 2; }
 
+  // Draw mirrored, with a sub-pixel blur (6) so the print isn't phone-sharp.
   ctx.save();
+  ctx.filter = `blur(${GRADE.softness}px)`;
   ctx.translate(PRINT_W, 0);
   ctx.scale(-1, 1);
   ctx.drawImage(video, sx, sy, sw, sh, 0, 0, PRINT_W, PRINT_H);
   ctx.restore();
+  ctx.filter = "none";
 
-  ctx.fillStyle = "rgba(255, 224, 178, 0.10)";
-  ctx.fillRect(0, 0, PRINT_W, PRINT_H);
-
-  const g = ctx.createRadialGradient(
-    PRINT_W / 2, PRINT_H / 2, PRINT_H * 0.3,
-    PRINT_W / 2, PRINT_H / 2, PRINT_H * 0.72
-  );
-  g.addColorStop(0, "rgba(0,0,0,0)");
-  g.addColorStop(1, "rgba(25,12,0,0.34)");
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, PRINT_W, PRINT_H);
+  applyFilmGrade(ctx); // 1, 2, 3, 7
+  applyBloom(ctx, canvas); // 4 (after the grade, so it blooms the final tones)
+  applyVignette(ctx); // 5 (last, over everything)
 
   return canvas;
 }

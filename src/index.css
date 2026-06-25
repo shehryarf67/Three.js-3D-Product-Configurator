@@ -4744,8 +4744,37 @@ button:focus-visible {
   height: 100%;
   object-fit: cover;
   display: block;
-  transform: scaleX(-1); /* mirror for a natural selfie preview */
 }
+
+/* Mirror only the front (selfie) camera for a natural preview; the back camera
+   shows the scene un-flipped. */
+.camera-capture__video--mirror {
+  transform: scaleX(-1);
+}
+
+/* Flip front/back camera — circular overlay in the top-right of the live stage. */
+.camera-capture__flip {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(28, 17, 24, 0.55);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+.camera-capture__flip:hover { background: rgba(28, 17, 24, 0.78); transform: scale(1.08); }
+.camera-capture__flip:active { transform: scale(0.92); }
+.camera-capture__flip:disabled { opacity: 0.5; cursor: default; transform: none; }
 
 .camera-capture__frame {
   position: absolute;

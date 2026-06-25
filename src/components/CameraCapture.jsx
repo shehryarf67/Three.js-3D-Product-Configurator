@@ -167,9 +167,11 @@ function applyVignette(ctx) {
   ctx.fillRect(0, 0, w, h);
 }
 
-// Cover-crop the centre of the video to the 744×1024 portrait frame, mirror it
-// (selfie), then bake the full Instax Mini 12 grade above.
-function captureFrame(video) {
+// Cover-crop the centre of the video to the 744×1024 portrait frame, then bake the
+// full Instax Mini 12 grade above. `mirror` flips horizontally for the front
+// (selfie) camera so the preview/print read naturally; the back camera is NOT
+// mirrored (text in the scene would otherwise come out reversed).
+function captureFrame(video, mirror) {
   const canvas = document.createElement("canvas");
   canvas.width = PRINT_W;
   canvas.height = PRINT_H;
@@ -182,11 +184,14 @@ function captureFrame(video) {
   if (vw / vh > PRINT_AR) { sw = vh * PRINT_AR; sx = (vw - sw) / 2; }
   else { sh = vw / PRINT_AR; sy = (vh - sh) / 2; }
 
-  // Draw mirrored, with a sub-pixel blur (6) so the print isn't phone-sharp.
+  // Draw (mirrored for the front camera), with a sub-pixel blur (6) so the print
+  // isn't phone-sharp.
   ctx.save();
   ctx.filter = `blur(${GRADE.softness}px)`;
-  ctx.translate(PRINT_W, 0);
-  ctx.scale(-1, 1);
+  if (mirror) {
+    ctx.translate(PRINT_W, 0);
+    ctx.scale(-1, 1);
+  }
   ctx.drawImage(video, sx, sy, sw, sh, 0, 0, PRINT_W, PRINT_H);
   ctx.restore();
   ctx.filter = "none";
@@ -238,6 +243,10 @@ const CameraCapture = ({ onCapture, onUseDefault, onClose, onDone, initialStep =
 
   const [step, setStep] = useState(initialStep); // choose | camera
   const [camStatus, setCamStatus] = useState("loading"); // loading | ready
+  // Which camera to use: "user" (front/selfie) or "environment" (back). The flip
+  // button only appears on devices that actually have more than one camera.
+  const [facingMode, setFacingMode] = useState("user");
+  const [hasMultipleCameras, setHasMultipleCameras] = useState(false);
 
   const stopStream = () => {
     if (streamRef.current) {
@@ -248,6 +257,7 @@ const CameraCapture = ({ onCapture, onUseDefault, onClose, onDone, initialStep =
   };
 
   // Request the camera only while on the 'camera' step; release it when leaving.
+  // Re-runs when facingMode changes (flip front<->back) to restart with the new camera.
   useEffect(() => {
     if (step !== "camera") return undefined;
     let cancelled = false;
@@ -260,11 +270,11 @@ const CameraCapture = ({ onCapture, onUseDefault, onClose, onDone, initialStep =
       }
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          // `ideal` (not required) so devices without a front camera still work.
-          // Request a portrait 744×1024 feed; the browser picks the closest mode
-          // the webcam supports and captureFrame() cover-crops to exactly that.
+          // `ideal` (not required) so devices without the requested camera still
+          // work (a laptop with only a front cam just keeps it when "environment"
+          // is asked). Portrait 744×1024 feed; captureFrame() cover-crops to that.
           video: {
-            facingMode: { ideal: "user" },
+            facingMode: { ideal: facingMode },
             width: { ideal: PRINT_W },
             height: { ideal: PRINT_H },
             aspectRatio: { ideal: PRINT_AR },
@@ -278,6 +288,17 @@ const CameraCapture = ({ onCapture, onUseDefault, onClose, onDone, initialStep =
         streamRef.current = stream;
         if (videoRef.current) videoRef.current.srcObject = stream;
         setCamStatus("ready");
+        // Now that permission is granted, device labels/counts are reliable — show
+        // the flip button only if there's genuinely more than one camera.
+        try {
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          if (!cancelled) {
+            const cams = devices.filter((d) => d.kind === "videoinput");
+            setHasMultipleCameras(cams.length > 1);
+          }
+        } catch {
+          /* enumerateDevices unsupported — just leave the flip button hidden. */
+        }
       } catch {
         if (!cancelled) onUseDefault();
       }
@@ -289,7 +310,7 @@ const CameraCapture = ({ onCapture, onUseDefault, onClose, onDone, initialStep =
       stopStream();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step]);
+  }, [step, facingMode]);
 
   // Lock background scroll and allow Escape to dismiss for the overlay's lifetime.
   useEffect(() => {
@@ -314,10 +335,14 @@ const CameraCapture = ({ onCapture, onUseDefault, onClose, onDone, initialStep =
     onClose();
   };
 
+  // Flip between front (selfie) and back camera. The effect restarts the stream.
+  const flipCamera = () => setFacingMode((m) => (m === "user" ? "environment" : "user"));
+
   const handleShutter = () => {
     const video = videoRef.current;
     if (!video || !video.videoWidth) return;
-    const photo = captureFrame(video);
+    // Only the front camera is mirrored (selfie); the back camera is left as-is.
+    const photo = captureFrame(video, facingMode === "user");
     stopStream();
     // Commit immediately: stage the photo on the 3D model and close the overlay so
     // the eject + develop animation plays. The Save / Retake actions are shown on
@@ -362,11 +387,35 @@ const CameraCapture = ({ onCapture, onUseDefault, onClose, onDone, initialStep =
         {step === "camera" && (
           <>
             <div className="camera-capture__stage">
-              <video ref={videoRef} className="camera-capture__video" autoPlay playsInline muted />
+              <video
+                ref={videoRef}
+                className={`camera-capture__video${facingMode === "user" ? " camera-capture__video--mirror" : ""}`}
+                autoPlay
+                playsInline
+                muted
+              />
               <div className="camera-capture__frame" aria-hidden="true" />
+              {hasMultipleCameras && (
+                <button
+                  type="button"
+                  className="camera-capture__flip"
+                  onClick={flipCamera}
+                  disabled={camStatus !== "ready"}
+                  aria-label={facingMode === "user" ? "Switch to back camera" : "Switch to front camera"}
+                  title="Switch camera"
+                >
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+                    <path d="M20 4h-3.17L15 2H9L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 11.5V13H9v2.5L5.5 12 9 8.5V11h6V8.5l3.5 3.5-3.5 3.5z" />
+                  </svg>
+                </button>
+              )}
               {camStatus === "loading" && <div className="camera-capture__loading">Starting camera…</div>}
             </div>
-            <p className="camera-capture__hint">Line up your shot, then tap the shutter</p>
+            <p className="camera-capture__hint">
+              {hasMultipleCameras
+                ? "Line up your shot, flip the camera if you like, then tap the shutter"
+                : "Line up your shot, then tap the shutter"}
+            </p>
             <button
               type="button"
               className="camera-capture__shutter"

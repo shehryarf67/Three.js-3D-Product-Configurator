@@ -15,7 +15,7 @@ extra animation we deliberately don't drive yet.)
 import React from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { Html, useAnimations, useGLTF } from '@react-three/drei'
-import { AdditiveBlending, Box3, CanvasTexture, Euler, LoopOnce, LoopRepeat, Quaternion, SRGBColorSpace, Vector3 } from 'three'
+import { AdditiveBlending, Box3, CanvasTexture, Euler, LoopOnce, Quaternion, SRGBColorSpace, Vector3 } from 'three'
 import { useMediaQuery } from 'react-responsive'
 
 const TAP_MOVE_TOLERANCE = 12
@@ -25,6 +25,13 @@ const TAP_MOVE_TOLERANCE = 12
 // the JSX, so edits take effect on hot-reload without re-entering viewing mode.
 const CLOSE_BTN_MX = 1.25
 const CLOSE_BTN_MY = 1.15
+
+// Lens "extend" clips. The full clip is an out-and-back (rest -> fully extended at
+// the MIDPOINT -> rest), so on hover/select we drive each clip to its midpoint and
+// HOLD it there (lens fully extended, no looping); on un-hover we play forward to
+// the end (back to rest). Holding at the midpoint also lets the demand render loop
+// go idle instead of spinning a looping clip forever (a real battery/heat win).
+const LENS_CLIPS = ['lenseAction', 'lesne1Action', 'lense2Action', 'lense2Action.001', 'lense2Action.002']
 
 // Instax "develop" effect: the print fades up from a blank cream sheet to the
 // full, colour-saturated photo over a few seconds. It's drawn onto a 2D canvas
@@ -119,7 +126,7 @@ export function Model({
   const [polaroidBtnAnchor, setPolaroidBtnAnchor] = React.useState(null)
   const { nodes, materials, animations } = useGLTF('/models/INSTAX_FINAL.glb')
   const { actions } = useAnimations(animations, group)
-  const { camera } = useThree()
+  const { camera, invalidate } = useThree()
   const flashGlassMaterial = React.useMemo(() => materials['eevee glass 1'].clone(), [materials])
   const flashDoorMaterial = React.useMemo(() => materials['Material.007'].clone(), [materials])
   // Tablets use tap-to-select parts (no hover). Width clause matches the ≤1399
@@ -251,38 +258,42 @@ export function Model({
           onPointerLeave: clearPartHover,
         }
 
-  const playClip = (name, reversed = false, repeat = false) => {
-    const action = actions[name]
-    if (!action) return
-
-    action.paused = false
-    action.enabled = true
-    action.clampWhenFinished = !repeat
-    action.setLoop(repeat ? LoopRepeat : LoopOnce, repeat ? Infinity : 1)
-    action.timeScale = reversed ? -1 : 1
-
-    if (reversed) {
-      if (action.time <= 0) {
-        action.time = action.getClip().duration
-      }
-      action.play()
-    } else {
-      if (action.time >= action.getClip().duration) {
-        action.time = 0
-      }
-      action.play()
-    }
-  }
-
   React.useEffect(() => {
     if (!interactive) return
     const isLensHovered = hoveredPart === 'lens'
     if (wasLensHovered.current === isLensHovered) return
-
-    const lensClips = ['lenseAction', 'lesne1Action', 'lense2Action', 'lense2Action.001', 'lense2Action.002']
-    lensClips.forEach((clip) => playClip(clip, !isLensHovered, isLensHovered))
     wasLensHovered.current = isLensHovered
-  }, [hoveredPart, actions, interactive])
+
+    LENS_CLIPS.forEach((name) => {
+      const action = actions[name]
+      if (!action) return
+      const dur = action.getClip().duration
+      const mid = dur / 2
+      const EPS = 1e-3
+      action.enabled = true
+      action.clampWhenFinished = true
+      action.setLoop(LoopOnce, 1)      // never loop
+      action.setEffectiveWeight(1)
+      action.paused = false
+
+      if (isLensHovered) {
+        // Extend to the midpoint (fully-extended pose) and hold. From rest (either
+        // clip end) start a clean first-half extend; from a partial pose, move
+        // toward the midpoint from whichever side we're on.
+        if (action.time >= dur - EPS || action.time <= EPS) {
+          action.time = 0
+          action.timeScale = 1
+        } else {
+          action.timeScale = action.time <= mid ? 1 : -1
+        }
+      } else {
+        // Finish the clip forward to the end (back to rest); clampWhenFinished stops it.
+        action.timeScale = 1
+      }
+      action.play()
+    })
+    invalidate() // kick the demand loop so the mixer starts advancing
+  }, [hoveredPart, actions, interactive, invalidate])
 
   // Print the captured (or default) photo: swap it onto the polaroid's photo
   // material, eject the print, and run the develop fade. Driven by photoNonce so
@@ -592,6 +603,24 @@ export function Model({
       if (Math.abs(diff) > 0.01) {
         flashGlassMaterial.emissiveIntensity += diff * delta * 8
         dirty = true
+      }
+    }
+
+    // Lens: while hovered/selected, stop each extend clip at its MIDPOINT (fully
+    // extended) and hold it there. Without this the clip would run its full
+    // out-and-back; pausing at the midpoint also lets the loop go idle (no more
+    // continuously-rendering looping clip). On un-hover the effect resumes it
+    // forward to the end, so we only clamp while hovered.
+    if (hoveredPart === 'lens') {
+      for (const name of LENS_CLIPS) {
+        const a = actions[name]
+        if (!a || a.paused || !a.isRunning()) continue
+        const mid = a.getClip().duration / 2
+        const reachedMid = a.timeScale >= 0 ? a.time >= mid : a.time <= mid
+        if (reachedMid) {
+          a.time = mid
+          a.paused = true
+        }
       }
     }
 

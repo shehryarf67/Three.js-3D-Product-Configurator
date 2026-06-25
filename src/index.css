@@ -4752,16 +4752,19 @@ button:focus-visible {
   transform: scaleX(-1);
 }
 
-/* Flip front/back camera — circular overlay in the top-right of the live stage. */
+/* Flip front/back camera — circular overlay in the BOTTOM-right of the live stage
+   (kept clear of the ✕ close button, which sits top-right). */
 .camera-capture__flip {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 42px;
-  height: 42px;
+  bottom: 12px;
+  right: 12px;
+  top: auto;
+  width: 50px;
+  height: 50px;
   border: none;
   border-radius: 50%;
-  background: rgba(28, 17, 24, 0.55);
+  /* Solid-ish dark disc + white icon = clearly legible over any camera feed. */
+  background: rgba(18, 11, 16, 0.66);
   color: #fff;
   display: flex;
   align-items: center;
@@ -4769,10 +4772,16 @@ button:focus-visible {
   cursor: pointer;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   transition: transform 0.15s ease, background 0.2s ease;
 }
-.camera-capture__flip:hover { background: rgba(28, 17, 24, 0.78); transform: scale(1.08); }
+/* Force the icon's size regardless of how the SVG width/height attrs are honoured. */
+.camera-capture__flip svg {
+  width: 28px;
+  height: 28px;
+  display: block;
+}
+.camera-capture__flip:hover { background: rgba(18, 11, 16, 0.85); transform: scale(1.08); }
 .camera-capture__flip:active { transform: scale(0.92); }
 .camera-capture__flip:disabled { opacity: 0.5; cursor: default; transform: none; }
 

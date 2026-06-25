@@ -1133,6 +1133,46 @@ header nav .hideOnMobile a.active {
 .polaroid-view-close:hover { background: var(--main_bg_color); color: #fff; transform: scale(1.08); }
 .polaroid-view-close:active { transform: scale(0.92); }
 
+/* Save / Retake actions shown BENEATH the printed polaroid while it's being viewed
+   on its own. A DOM overlay pinned to the bottom-centre of the 3D canvas (not 3D
+   anchored), so it stays put as the polaroid is dragged to rotate. Sized with clamp
+   so it scales cleanly from phones to desktop. */
+.polaroid-view-actions {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(0.6rem, 4%, 2.25rem);
+  transform: translateX(-50%);
+  display: flex;
+  gap: clamp(0.55rem, 1.6vw, 1rem);
+  z-index: 5;
+  pointer-events: auto;
+}
+
+.polaroid-view-btn {
+  border: none;
+  border-radius: 999px;
+  padding: clamp(0.5rem, 1.3vw, 0.72rem) clamp(1.1rem, 2.8vw, 1.7rem);
+  font-family: inherit;
+  font-size: clamp(0.85rem, 1.5vw, 1.02rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  /* White pill + dark text so it reads against the pink section, matching the
+     close button's treatment. */
+  background: #ffffff;
+  color: #2a1620;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+  transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.polaroid-view-btn--primary {
+  background: var(--main_bg_color);
+  color: #fff;
+}
+
+.polaroid-view-btn:hover { transform: translateY(-1px) scale(1.04); }
+.polaroid-view-btn:active { transform: scale(0.95); }
+
 .model-canvas::before {
   content: "";
   position: absolute;

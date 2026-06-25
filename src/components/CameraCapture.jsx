@@ -6,17 +6,23 @@ import { createPortal } from "react-dom";
   Lives in the DOM (outside the R3F Canvas). Everything is client-side — the
   photo never leaves the browser.
 
-  Three steps:
+  Two steps:
     choose  -> "Take a selfie" or "Print the default photo"
     camera  -> live preview + shutter
-    result  -> the developed polaroid, draggable to rotate, with Save / Retake / Done
+
+  Pressing the shutter commits immediately: it prints the photo on the 3D model
+  and closes the overlay so the eject + develop animation can play. There is no
+  longer a 2D "result" popup — the developed polaroid is viewed on the 3D model,
+  and the Save / Retake actions live there (beneath the polaroid; see ModelCanvas).
 
   Contract:
     onCapture(canvas) -> a square, selfie-mirrored, graded photo canvas; the caller
-                         prints it on the 3D model. The overlay STAYS open to show
-                         the result viewer; it closes via onClose.
+                         prints it on the 3D model and keeps it for the Save action.
+    onDone()          -> close the overlay and start the eject -> view sequence.
     onUseDefault()    -> print the model's built-in default photo, then close.
-    onClose()         -> dismiss the overlay (✕ / backdrop / Escape / Done).
+    onClose()         -> dismiss the overlay (✕ / backdrop / Escape).
+    initialStep       -> "choose" (default) or "camera" (used by Retake to jump
+                         straight back to the live camera).
 */
 
 // Source-photo resolution. Portrait 744×1024 to match the polaroid photo plane
@@ -34,8 +40,6 @@ const CARD_PHOTO_W = CARD_W - 2 * CARD_MARGIN;
 const CARD_PHOTO_H = Math.round(CARD_PHOTO_W / PRINT_AR);
 const CARD_BOTTOM = 150;           // thick instax bottom border
 const CARD_H = CARD_MARGIN + CARD_PHOTO_H + CARD_BOTTOM;
-
-const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
 /*
   Instax Mini 12 print emulation.
@@ -196,7 +200,7 @@ function captureFrame(video) {
 
 // Compose the portrait photo into a white instax frame (thick bottom border) —
 // the thing the user views in the overlay and saves.
-function composePolaroid(photo) {
+export function composePolaroid(photo) {
   const c = document.createElement("canvas");
   c.width = CARD_W;
   c.height = CARD_H;
@@ -210,16 +214,30 @@ function composePolaroid(photo) {
   return c;
 }
 
-const CameraCapture = ({ onCapture, onUseDefault, onClose, onDone }) => {
+// Download the framed polaroid as a PNG. Lives here (next to composePolaroid) so
+// the viewing-mode Save button in ModelCanvas can reuse the exact same framing as
+// the old in-overlay Save. `photo` is the graded square canvas from onCapture.
+export function savePolaroid(photo) {
+  if (!photo) return;
+  composePolaroid(photo).toBlob((blob) => {
+    if (!blob) return;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "instax-photo.png";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }, "image/png");
+}
+
+const CameraCapture = ({ onCapture, onUseDefault, onClose, onDone, initialStep = "choose" }) => {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
-  const photoRef = useRef(null); // the captured square photo canvas (for Save / Retake)
 
-  const [step, setStep] = useState("choose"); // choose | camera | result
+  const [step, setStep] = useState(initialStep); // choose | camera
   const [camStatus, setCamStatus] = useState("loading"); // loading | ready
-  const [polaroidUrl, setPolaroidUrl] = useState(null);
-  const [rot, setRot] = useState({ x: -10, y: 0 });
-  const rotDragRef = useRef(null);
 
   const stopStream = () => {
     if (streamRef.current) {
@@ -300,44 +318,13 @@ const CameraCapture = ({ onCapture, onUseDefault, onClose, onDone }) => {
     const video = videoRef.current;
     if (!video || !video.videoWidth) return;
     const photo = captureFrame(video);
-    photoRef.current = photo;
-    setPolaroidUrl(composePolaroid(photo).toDataURL("image/png"));
-    setRot({ x: -10, y: 0 });
     stopStream();
-    setStep("result");
-    onCapture(photo); // print on the 3D model (overlay stays open for the viewer)
-  };
-
-  const handleSave = () => {
-    if (!photoRef.current) return;
-    composePolaroid(photoRef.current).toBlob((blob) => {
-      if (!blob) return;
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "instax-photo.png";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    }, "image/png");
-  };
-
-  // Result-card drag-to-rotate.
-  const onCardDown = (e) => {
-    rotDragRef.current = { x: e.clientX, y: e.clientY, rx: rot.x, ry: rot.y };
-    e.currentTarget.setPointerCapture?.(e.pointerId);
-  };
-  const onCardMove = (e) => {
-    const d = rotDragRef.current;
-    if (!d) return;
-    setRot({
-      x: clamp(d.rx - (e.clientY - d.y) * 0.4, -70, 70),
-      y: d.ry + (e.clientX - d.x) * 0.4,
-    });
-  };
-  const onCardUp = () => {
-    rotDragRef.current = null;
+    // Commit immediately: stage the photo on the 3D model and close the overlay so
+    // the eject + develop animation plays. The Save / Retake actions are shown on
+    // the model afterwards (beneath the polaroid), not in a 2D popup here.
+    onCapture(photo);
+    if (onDone) onDone();
+    else onClose();
   };
 
   // Portal to <body> so the fixed-position overlay covers the whole viewport.
@@ -389,45 +376,6 @@ const CameraCapture = ({ onCapture, onUseDefault, onClose, onDone }) => {
             >
               <span className="camera-capture__shutter-ring" />
             </button>
-          </>
-        )}
-
-        {step === "result" && (
-          <>
-            <div className="camera-capture__viewer">
-              <div
-                className="camera-capture__polaroid"
-                style={{ transform: `rotateX(${rot.x}deg) rotateY(${rot.y}deg)` }}
-                onPointerDown={onCardDown}
-                onPointerMove={onCardMove}
-                onPointerUp={onCardUp}
-                onPointerCancel={onCardUp}
-              >
-                {polaroidUrl && <img src={polaroidUrl} alt="Your polaroid" draggable={false} />}
-              </div>
-            </div>
-            <p className="camera-capture__hint">Drag to rotate your polaroid</p>
-            <div className="camera-capture__actions">
-              <button type="button" className="camera-capture__btn" onClick={() => setStep("camera")}>
-                Retake
-              </button>
-              <button type="button" className="camera-capture__btn camera-capture__btn--primary" onClick={handleSave}>
-                Save
-              </button>
-              <button
-                type="button"
-                className="camera-capture__btn camera-capture__btn--primary"
-                onClick={() => {
-                  // Commit: close the overlay and let the model eject + present the
-                  // polaroid for viewing (handled by ModelCanvas / Instax12).
-                  stopStream();
-                  if (onDone) onDone();
-                  else onClose();
-                }}
-              >
-                Done
-              </button>
-            </div>
           </>
         )}
       </div>

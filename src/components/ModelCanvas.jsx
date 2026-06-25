@@ -14,7 +14,7 @@ import {
     useMediaQuery,
 } from "../imports.js";
 import { Model as Model } from "./Instax12.jsx";
-import CameraCapture from "./CameraCapture.jsx";
+import CameraCapture, { savePolaroid } from "./CameraCapture.jsx";
 // New hi-res balls (balls_hd 6-10 are the "lower sections" set): 6=purple 8=pink.
 import ballPink from "../assets/balls_hd/8.webp";
 import ballPurple from "../assets/balls_hd/6.webp";
@@ -35,6 +35,11 @@ const MODEL_BALLS = [
 ];
 
 const getDragStartThreshold = (pointerType) => (pointerType === "touch" ? 12 : 4);
+
+// Slight resting tilt (radians) for the model's initial pose so it reads as a 3D
+// object — a gentle 3/4 turn (yaw) with a touch of downward pitch — instead of a
+// flat, front-on product shot. The user can still drag it anywhere from here.
+const MODEL_REST_TILT = { x: 0.08, y: -0.35 };
 
 function Backdrop() {
     const { scene } = useGLTF('/models/bg_dropoff-compressed.glb')
@@ -79,6 +84,7 @@ function ScrollingModel({
     onEjectDone,
     onReturnDone,
     onPolaroidClose,
+    onDefaultImage,
     ...groupProps
 }) {
     const ref = useRef();
@@ -125,7 +131,7 @@ function ScrollingModel({
     });
 
     return (
-        <group ref={ref} rotation={[0, 0, 0]} {...groupProps}>
+        <group ref={ref} rotation={[MODEL_REST_TILT.x, MODEL_REST_TILT.y, 0]} {...groupProps}>
             <Model
                 hoveredPart={hoveredPart}
                 setHoveredPart={setHoveredPart}
@@ -140,6 +146,7 @@ function ScrollingModel({
                 onEjectDone={onEjectDone}
                 onReturnDone={onReturnDone}
                 onPolaroidClose={onPolaroidClose}
+                onDefaultImage={onDefaultImage}
                 rotation={[0, 0, 0]}
             />
         </group>
@@ -155,8 +162,12 @@ const ModelCanvas = () => {
     const hoveredPartRef = useRef(null);
     const lastPointerXRef = useRef(0);
     const lastPointerYRef = useRef(0);
-    const rotationTargetXRef = useRef(0);
-    const rotationTargetYRef = useRef(0);
+    // Start at the resting tilt so the model loads as a 3D 3/4 view (the group's
+    // initial rotation matches, so there's no intro snap). resetCameraRotation()
+    // still squares it to front before a polaroid eject so the print presents
+    // upright; the tilt is purely the idle presentation pose.
+    const rotationTargetXRef = useRef(MODEL_REST_TILT.x);
+    const rotationTargetYRef = useRef(MODEL_REST_TILT.y);
     // Drag targets for the polaroid while it's being viewed on its own ('viewing').
     const polaroidRotXRef = useRef(0);
     const polaroidRotYRef = useRef(0);
@@ -169,7 +180,13 @@ const ModelCanvas = () => {
     const activePart = hoveredPart;
     // Webcam selfie -> polaroid print flow.
     const [captureOpen, setCaptureOpen] = useState(false);
+    // Which step the capture overlay opens on: "choose" normally, "camera" when
+    // the user hits Retake from the viewing mode (jump straight back to the lens).
+    const [captureStart, setCaptureStart] = useState("choose");
     const [polaroidPhoto, setPolaroidPhoto] = useState(null);
+    // The built-in default photo's source image (reported by Instax12 when the
+    // default is printed), so the viewing-mode Save works for it too.
+    const defaultPhotoImageRef = useRef(null);
     const [photoNonce, setPhotoNonce] = useState(0);
     // Polaroid present/view phase: idle | ejecting | viewing | returning.
     // (See Instax12.jsx Model — it turns each phase into the right animation.)
@@ -184,12 +201,13 @@ const ModelCanvas = () => {
         isPointerDownRef.current = false;
         isDraggingRef.current = false;
         setIsDragging(false);
+        setCaptureStart("choose");
         setCaptureOpen(true);
     };
     const handleCapture = (canvas) => {
-        // Stage the captured photo onto the polaroid's photo plane (POLAROID_1),
-        // but DON'T eject yet — that happens on "Done". Keep the overlay OPEN so it
-        // can show the result viewer (view / save / retake).
+        // Stage the captured photo onto the polaroid's photo plane (POLAROID_1).
+        // The overlay then closes (onDone) and the eject + develop animation plays;
+        // the Save / Retake actions appear beneath the polaroid in viewing mode.
         setPolaroidPhoto(canvas);
         setPhotoNonce((n) => n + 1);
     };
@@ -222,6 +240,20 @@ const ModelCanvas = () => {
         isDraggingRef.current = false;
         setIsDragging(false);
         setPolaroidPhase("returning");
+    };
+    // Viewing-mode actions (rendered beneath the polaroid).
+    // Save: download the framed print — the captured selfie if there is one, else
+    // the built-in default photo's image (reported by Instax12 via onDefaultImage).
+    const handleSavePolaroid = () => savePolaroid(polaroidPhoto || defaultPhotoImageRef.current);
+    // Retake: drop straight back to idle (hides the polaroid, camera returns with
+    // no animation needed since the overlay covers it) and reopen the camera step.
+    const handleRetake = () => {
+        isPointerDownRef.current = false;
+        isDraggingRef.current = false;
+        setIsDragging(false);
+        setPolaroidPhase("idle");
+        setCaptureStart("camera");
+        setCaptureOpen(true);
     };
     // Treat tablets as touch (tap-to-select the model parts). The width clause
     // covers tablets that report a fine pointer / DevTools emulation where
@@ -488,19 +520,47 @@ const ModelCanvas = () => {
                             onEjectDone={handleEjectDone}
                             onReturnDone={handleReturnDone}
                             onPolaroidClose={handlePolaroidClose}
+                            onDefaultImage={(img) => { defaultPhotoImageRef.current = img; }}
                         />
                     </Suspense>
                 </Canvas>
+                {/* Viewing-mode actions, shown BENEATH the polaroid once the eject +
+                    develop animation has finished (the cross button in the 3D scene
+                    is the "done/close"). Positioned over the canvas via CSS so it
+                    stays put while the polaroid is dragged to rotate. stopPropagation
+                    keeps a button press from starting a model/polaroid drag. */}
+                {polaroidPhase === "viewing" && (
+                    <div
+                        className="polaroid-view-actions"
+                        onPointerDown={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            type="button"
+                            className="polaroid-view-btn"
+                            onClick={handleRetake}
+                        >
+                            Retake
+                        </button>
+                        <button
+                            type="button"
+                            className="polaroid-view-btn polaroid-view-btn--primary"
+                            onClick={handleSavePolaroid}
+                        >
+                            Save
+                        </button>
+                    </div>
+                )}
             </div>
             <p className="model-canvas-instruction reveal">
                 {polaroidPhase === "viewing"
-                    ? "Drag to rotate your polaroid"
+                    ? "Drag or scroll to rotate your polaroid"
                     : isTouch
                     ? "Drag the camera to rotate"
                     : "Drag or scroll to rotate camera"}
             </p>
             {captureOpen && (
                 <CameraCapture
+                    initialStep={captureStart}
                     onCapture={handleCapture}
                     onUseDefault={handleUseDefault}
                     onClose={handleCloseCapture}

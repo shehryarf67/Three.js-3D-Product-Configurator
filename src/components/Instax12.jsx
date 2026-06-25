@@ -89,6 +89,7 @@ export function Model({
   onEjectDone,
   onReturnDone,
   onPolaroidClose,
+  onDefaultImage,
   ...props
 }) {
   const group = React.useRef()
@@ -354,6 +355,9 @@ export function Model({
         developRef.current.active = false
         developRef.current.pending = false
         photoMat.map = photoMat.userData.defaultMap
+        // Surface the default photo's source image so the viewing-mode Save button
+        // can download it too (there's no captured canvas in the default case).
+        onDefaultImage?.(photoMat.userData.defaultMap?.image || null)
       }
       photoMat.needsUpdate = true
     }

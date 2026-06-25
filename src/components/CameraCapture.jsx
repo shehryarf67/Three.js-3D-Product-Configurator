@@ -203,19 +203,65 @@ function captureFrame(video, mirror) {
   return canvas;
 }
 
-// Compose the portrait photo into a white instax frame (thick bottom border) —
-// the thing the user views in the overlay and saves.
+const clampByte = (v) => (v < 0 ? 0 : v > 255 ? 255 : v);
+
+// Paint a subtle instax paper texture over the whole frame: fine grain plus a
+// faint woven-fibre weave, so the saved print reads as real photo paper instead
+// of flat white. (The photo is drawn on top afterwards, covering the centre.)
+function paintPaperTexture(ctx, w, h) {
+  const img = ctx.getImageData(0, 0, w, h);
+  const d = img.data;
+  for (let y = 0; y < h; y++) {
+    const wy = Math.sin(y * 1.15);
+    for (let px = 0; px < w; px++) {
+      const i = (y * w + px) * 4;
+      const grain = (Math.random() - 0.5) * 9;        // fine paper grain
+      const weave = (Math.sin(px * 1.15) + wy) * 1.9;  // soft woven fibres
+      const delta = grain + weave;
+      d[i] = clampByte(d[i] + delta);
+      d[i + 1] = clampByte(d[i + 1] + delta);
+      d[i + 2] = clampByte(d[i + 2] + delta);
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+}
+
+// Compose the portrait photo into a textured instax paper frame (thick bottom
+// border, recessed photo window) — the thing the user saves.
 export function composePolaroid(photo) {
   const c = document.createElement("canvas");
   c.width = CARD_W;
   c.height = CARD_H;
   const x = c.getContext("2d");
-  x.fillStyle = "#f7f4ee";
+
+  // Warm off-white paper base with a gentle top->bottom shade.
+  const g = x.createLinearGradient(0, 0, 0, CARD_H);
+  g.addColorStop(0, "#f8f5ef");
+  g.addColorStop(1, "#efe9dd");
+  x.fillStyle = g;
   x.fillRect(0, 0, CARD_W, CARD_H);
+
+  // Grain + weave over the paper.
+  paintPaperTexture(x, CARD_W, CARD_H);
+
+  // Recessed window: a soft shadow halo on the paper around the photo so it reads
+  // as a print sunk slightly below the paper surface.
+  x.save();
+  x.shadowColor = "rgba(54, 44, 38, 0.33)";
+  x.shadowBlur = 11;
+  x.shadowOffsetY = 2;
+  x.fillStyle = "#0b0b0b";
+  x.fillRect(CARD_MARGIN, CARD_MARGIN, CARD_PHOTO_W, CARD_PHOTO_H);
+  x.restore();
+
+  // The photo itself.
   x.drawImage(photo, CARD_MARGIN, CARD_MARGIN, CARD_PHOTO_W, CARD_PHOTO_H);
-  x.strokeStyle = "rgba(0,0,0,0.08)";
-  x.lineWidth = 2;
-  x.strokeRect(CARD_MARGIN, CARD_MARGIN, CARD_PHOTO_W, CARD_PHOTO_H);
+
+  // Crisp hairline at the photo edge for definition.
+  x.strokeStyle = "rgba(0, 0, 0, 0.12)";
+  x.lineWidth = 1.5;
+  x.strokeRect(CARD_MARGIN - 0.75, CARD_MARGIN - 0.75, CARD_PHOTO_W + 1.5, CARD_PHOTO_H + 1.5);
+
   return c;
 }
 

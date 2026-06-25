@@ -7,7 +7,7 @@ const NAV_ITEMS = [
   { label: "Showcase", id: "showcase" },
   { label: "Details", id: "details" },
   { label: "About", id: "about" },
-  { label: "Contact Us", id: "contact" },
+  { label: "Contact", id: "contact" },
 ];
 
 const Navbar = () => {

@@ -83,7 +83,9 @@ nav {
 nav ul {
   list-style: none;
   display: flex;
-  gap: 2.5rem;
+  /* Fluid gap so the row tightens on narrower desktops instead of overflowing /
+     colliding with the pinned Contact item. */
+  gap: clamp(1rem, 2.2vw, 2.5rem);
   margin: 0;
   padding: 0;
   margin-left: auto;
@@ -287,6 +289,11 @@ header nav .hideOnMobile a {
   color: var(--main_bg_color);
   display: inline-block;
   font-weight: 400;
+  /* Fluid link size (overrides the base 23px `a`): scales down on narrower
+     desktops so all items fit without crowding the right-pinned Contact, up to
+     ~25px on wide screens. */
+  font-size: clamp(1.05rem, 1.7vw, 1.55rem);
+  white-space: nowrap;
   transition: transform 0.18s ease, color 0.18s ease;
 }
 
@@ -300,10 +307,7 @@ header nav .hideOnMobile a.active {
   font-weight: 700;
 }
 
-/* Desktop nav layout: the items used to be flush-right (margin-left:auto), which
-   left the whole middle empty on wide screens. Instead, center the main items
-   and pin a single item (Contact, tagged .nav-right) to the right edge — logo
-   left, items centered, Contact right fills the bar evenly. */
+/* Desktop nav layout: center all the items as one evenly-spaced row. */
 @media (min-width: 769px) {
   nav {
     position: relative;
@@ -315,7 +319,12 @@ header nav .hideOnMobile a.active {
     padding-left: 0;
     justify-content: center;
   }
+}
 
+/* Pin Contact to the right edge so the bar reads "logo left, items centered,
+   Contact right". The links are now fluid-sized (and the gap is fluid), so the
+   centered cluster no longer collides with the pinned Contact down to 769px. */
+@media (min-width: 769px) {
   nav ul li.nav-right {
     position: absolute;
     right: 2rem;
@@ -4987,4 +4996,32 @@ button:focus-visible {
      surface blocks (large screens). That keeps the cluster sized exactly "as
      before"; the earlier 132vw override scaled it up too much on laptops. The base
      is already continuous (flat 173px ≤1176, then grows), so there's no shrink. */
+}
+
+/* Normal-laptop and larger: lift the hero copy UP and push it further RIGHT, and
+   let the heading/sub-copy keep GROWING with the viewport (bigger on bigger
+   screens). Placed after the fluid ≥769 block so it wins for ≥1024; tablets
+   (769–1023) keep the block above. */
+@media (min-width: 1024px) {
+  .hero {
+    --hero-copy-x: clamp(6rem, 10vw, 18rem);   /* further right; scales up */
+    --hero-copy-y: clamp(-6rem, -4vw, -3rem);  /* up; more lift on bigger screens */
+  }
+
+  .hero-content {
+    max-width: clamp(330px, 27vw, 560px);
+  }
+
+  .hero-content h1 {
+    font-size: clamp(3.6rem, 4.4vw, 6rem);     /* grows with screen width */
+    line-height: 1.08;
+  }
+
+  .hero-description {
+    font-size: clamp(2.1rem, 2.6vw, 3.5rem);
+  }
+
+  .hero-subtext {
+    font-size: clamp(1rem, 1.15vw, 1.7rem);
+  }
 }

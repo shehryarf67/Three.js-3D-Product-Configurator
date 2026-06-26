@@ -1157,6 +1157,13 @@ header nav .hideOnMobile a.active {
   pointer-events: auto;
 }
 
+/* Desktop only: lift the Retake/Save buttons a little further up the canvas. */
+@media (min-width: 1024px) {
+  .polaroid-view-actions {
+    bottom: clamp(3rem, 9%, 6rem);
+  }
+}
+
 .polaroid-view-btn {
   border: none;
   border-radius: 999px;

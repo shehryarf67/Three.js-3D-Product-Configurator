@@ -303,9 +303,10 @@ const ModelCanvas = () => {
         const handleWheel = (event) => {
             if (!isPointerInsideRef.current) return;
             const viewing = polaroidPhaseRef.current === "viewing";
-            // Outside viewing mode, only rotate when hovering a part (so the page
-            // can still scroll past the model otherwise).
-            if (!viewing && !hoveredPartRef.current) return;
+            // Only rotate when the pointer is actually over an interactive mesh: a
+            // camera part normally, or the polaroid itself while viewing. Otherwise
+            // let the page scroll (and don't spin the polaroid from empty canvas).
+            if (viewing ? hoveredPartRef.current !== "polaroid-image" : !hoveredPartRef.current) return;
             event.preventDefault();
             event.stopPropagation();
             if (viewing) {
@@ -425,7 +426,7 @@ const ModelCanvas = () => {
             </div>
             <div
                 className="model-3d reveal"
-                style={{ cursor: isDragging ? "grabbing" : (hoveredPart || polaroidPhase === "viewing") ? "grab" : "default" }}
+                style={{ cursor: isDragging ? "grabbing" : hoveredPart ? "grab" : "default" }}
                 ref={model3dRef}
                 onPointerEnter={() => {
                     isPointerInsideRef.current = true;
@@ -434,9 +435,13 @@ const ModelCanvas = () => {
                     isPointerInsideRef.current = false;
                 }}
                 onPointerDown={(event) => {
-                    // In 'viewing' mode the camera is hidden, so allow a drag to
-                    // start anywhere on the canvas (there's nothing to hover).
-                    if (polaroidPhaseRef.current !== "viewing" && !hoveredPartRef.current) return;
+                    // Only start a drag when the pointer is actually over an interactive
+                    // mesh: a camera part in normal mode, or the polaroid itself while
+                    // viewing. (Previously 'viewing' let you grab/rotate from anywhere on
+                    // the canvas, including the empty space around the polaroid.)
+                    if (polaroidPhaseRef.current === "viewing"
+                        ? hoveredPartRef.current !== "polaroid-image"
+                        : !hoveredPartRef.current) return;
                     isPointerDownRef.current = true;
                     lastPointerXRef.current = event.clientX;
                     lastPointerYRef.current = event.clientY;

@@ -4136,10 +4136,10 @@ button:focus-visible {
 
   .hero-3d {
     min-height: 360px;
-    /* Nudge the whole 3D block (camera fan + control pill) right so the cluster
-       reads as centred on phones — the art sits slightly left of the frame
-       centre otherwise. Shifts cameras and the button together. */
-    transform: translateX(5%);
+    /* Small nudge to centre the 3D block (camera fan + control pill) on phones.
+       Was 5%, which (with the right-leaning fan) pushed the cluster ~2.5% right of
+       centre; 2.5% lands it centred. Shifts cameras and the button together. */
+    transform: translateX(2.5%);
   }
 
   .hero-camera-stage {

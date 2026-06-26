@@ -325,17 +325,22 @@ export function Model({
 
       if (photoImage) {
         const dev = developRef.current
-        // The photo plane (POLAROID_1) maps cleanly to the full 0..1 texture, so we
-        // size the canvas to the captured photo (744×1024) and draw it to fill —
-        // preserving its resolution. The frame lives on its own mesh (POLAROID_2)
-        // and is untouched.
+        // The develop CanvasTexture is re-uploaded to the GPU every frame for the
+        // full develop fade, so its size is a per-frame cost. The on-screen photo
+        // plane is small, so we cap the canvas at 512px on the long side: ~4× less
+        // texture-upload bandwidth per frame (the cause of the laggy/slow eject on
+        // mobile), with no visible quality loss. The SAVED photo is unaffected — it
+        // uses the separate full-res capture canvas (composePolaroid), not this.
         const src = photoMat.userData.defaultMap
         if (!dev.texture) {
           dev.ctx = document.createElement('canvas').getContext('2d')
           dev.texture = new CanvasTexture(dev.ctx.canvas)
         }
-        dev.ctx.canvas.width = photoImage.width || 744
-        dev.ctx.canvas.height = photoImage.height || 1024
+        const srcW = photoImage.width || 744
+        const srcH = photoImage.height || 1024
+        const devScale = Math.min(1, 512 / Math.max(srcW, srcH))
+        dev.ctx.canvas.width = Math.round(srcW * devScale)
+        dev.ctx.canvas.height = Math.round(srcH * devScale)
         // Mirror the default photo texture's sampler settings so our canvas maps onto
         // the polaroid photo plane identically to the built-in print.
         if (src) {

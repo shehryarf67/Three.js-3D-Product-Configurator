@@ -2681,14 +2681,21 @@ header nav .hideOnMobile a.active {
     width: min(80vw, 58vh);
   }
 
-  /* Ball cluster (02/03): tucked into the bottom-right corner of the teal pipe
-     instead of floating over the camera. */
+  /* Ball scenes (02/03): shift the camera left of centre (keeping its normal
+     size) so the enlarged ball cluster sits to its right over the teal pipe. */
+  .details-art--on .details-cam,
+  .details-art--closeup .details-cam {
+    left: 40%;
+  }
+
+  /* Ball cluster (02/03): bigger, pushed down into the bottom-right corner over
+     the teal pipe. */
   .details-art-balls {
     top: auto;
     left: auto;
-    right: -3%;
-    bottom: -1%;
-    width: clamp(120px, 30vw, 180px);
+    right: -5%;
+    bottom: -3%;
+    width: clamp(150px, 36vw, 210px);
   }
 
   /* A small scroll cue tucked into the bottom-right corner. Shrunk down (smaller
@@ -2751,6 +2758,13 @@ header nav .hideOnMobile a.active {
     width: min(82vw, 56vh);
   }
 
+  /* Phones: ball-scene camera sits left of centre (normal size); the cluster is
+     pushed into the bottom-right corner (see ≤1024 block). */
+  .details-art--on .details-cam,
+  .details-art--closeup .details-cam {
+    left: 37%;
+  }
+
   .details-demo {
     gap: 1rem;
   }
@@ -2772,7 +2786,7 @@ header nav .hideOnMobile a.active {
   }
 
   .details-art-balls {
-    width: clamp(110px, 34vw, 170px);
+    width: clamp(150px, 44vw, 210px);
   }
 }
 
@@ -4149,6 +4163,14 @@ button:focus-visible {
   .hero-camera--top-right,
   .hero-camera--right {
     opacity: 1;
+  }
+
+  /* Bottom-right camera: push its art a bit further right so it reads as fully
+     in-frame on phones instead of being partly hidden behind the cluster. The
+     camera position lives in --hero-camera-art-left (% within the figure), so a
+     single value nudges just this one. (Tunable.) */
+  .hero-camera--right {
+    --hero-camera-art-left: 61%;
   }
 
   /* Phone hero balls — all top-anchored for predictable placement (the short

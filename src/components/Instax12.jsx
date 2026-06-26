@@ -33,6 +33,13 @@ const CLOSE_BTN_MY = 1.15
 // go idle instead of spinning a looping clip forever (a real battery/heat win).
 const LENS_CLIPS = ['lenseAction', 'lesne1Action', 'lense2Action', 'lense2Action.001', 'lense2Action.002']
 
+// Reusable scratch objects for the per-frame polaroid-rotation math. Reusing them
+// (instead of allocating a fresh Euler/Quaternion/Vector3 every frame) avoids
+// per-frame garbage — the GC churn was a needless CPU cost while rotating.
+const _spinEuler = new Euler()
+const _spinQuat = new Quaternion()
+const _spinRel = new Vector3()
+
 // Instax "develop" effect: the print fades up from a blank cream sheet to the
 // full, colour-saturated photo over a few seconds. It's drawn onto a 2D canvas
 // whose CanvasTexture is the polaroid's photo map — pure canvas, no shader, so
@@ -530,12 +537,13 @@ export function Model({
       const s = Math.min(1, delta * 9)
       cur.x += (tx - cur.x) * s
       cur.y += (ty - cur.y) * s
-      const R = new Quaternion().setFromEuler(new Euler(cur.x, cur.y, 0))
+      _spinEuler.set(cur.x, cur.y, 0)
+      _spinQuat.setFromEuler(_spinEuler)
       // Spin rigidly about the polaroid's centre, but place that centre at the
       // re-centred target so the card sits dead-centre in view while it rotates.
-      const rel = view.pePos.clone().sub(view.center).applyQuaternion(R)
-      polaroidRef.current.position.copy(view.targetCenter || view.center).add(rel)
-      polaroidRef.current.quaternion.copy(R).multiply(view.peQuat)
+      _spinRel.copy(view.pePos).sub(view.center).applyQuaternion(_spinQuat)
+      polaroidRef.current.position.copy(view.targetCenter || view.center).add(_spinRel)
+      polaroidRef.current.quaternion.copy(_spinQuat).multiply(view.peQuat)
       if (Math.abs(tx - cur.x) > 0.0002 || Math.abs(ty - cur.y) > 0.0002) dirty = true
     }
 
@@ -629,8 +637,10 @@ export function Model({
       }
     }
 
+    // Any clip still playing? (re-read fresh each frame so a transiently-undefined
+    // action entry can't get cached and crash the loop — that blanked the model.)
     Object.values(actions).forEach((action) => {
-      if (action.isRunning()) dirty = true
+      if (action && action.isRunning()) dirty = true
     })
 
     // Advance the polaroid phase machine when the eject / retract clip clamps.

@@ -24,27 +24,15 @@ Explore the Fujifilm Instax Mini 12 through a responsive 3D viewer, real-time co
 ## Preview
 
 <div align="center">
-  <img
-    src="https://github.com/user-attachments/assets/b6531d39-d004-4257-b110-4fb59b8130ca"
-    alt="Instax Mini 12 Hero Section"
-    width="100%"
-  >
+  <img src="https://github.com/user-attachments/assets/b6531d39-d004-4257-b110-4fb59b8130ca" alt="Hero Section" width="100%">
 
   <br><br>
 
-  <img
-    src="https://github.com/user-attachments/assets/29731427-8312-4d32-8b0c-e465b59efdf6"
-    alt="Interactive 3D Product Configurator"
-    width="100%"
-  >
+  <img src="https://github.com/user-attachments/assets/29731427-8312-4d32-8b0c-e465b59efdf6" alt="3D Configurator" width="100%">
 
   <br><br>
 
-  <img
-    src="https://github.com/user-attachments/assets/82ccfb1d-f771-40a9-9b00-189ddf193b90"
-    alt="Animated Features Section"
-    width="100%"
-  >
+  <img src="https://github.com/user-attachments/assets/82ccfb1d-f771-40a9-9b00-189ddf193b90" alt="Features Section" width="100%">
 </div>
 
 ---
